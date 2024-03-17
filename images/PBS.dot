@@ -1,0 +1,50 @@
+digraph PBS {
+  P1 [label="POP"]
+  P2 [label="POP"]
+  P3 [label="POP"]
+  P4 [label="POP"]
+  P5 [label="POP"]
+
+  B1 [label="BOP"]
+  B2 [label="BOP"]
+  B3 [label="BOP"]
+  B4 [label="BOP"]
+  B5 [label="BOP"]
+
+  S1 [label="SOP"]
+  S2 [label="SOP"]
+  S3 [label="SOP"]
+  S4 [label="SOP"]
+  S5 [label="SOP"]
+
+  a1 [label="a"]
+  a2 [label="a"]
+  a3 [label="a"]
+  a4 [label="a"]
+  a5 [label="a"]
+
+  b1 [label="b"]
+  b2 [label="b"]
+  b3 [label="b"]
+  b4 [label="b"]
+  b5 [label="b"]
+
+  /* P B S */
+  P1 -> B1 -> a1
+  B1 -> S1 -> b1
+
+  /* P S B */
+  P2 -> S2 -> B2 -> {a2 b2}
+
+  /* B P S, B S P */
+  B3 -> P3 -> a3
+  B3 -> S3 -> b3 
+
+  /* S P B */
+  S4 -> P4 -> B4 -> { a4 b4 }
+
+  /* S B P */
+  S5 -> B5 -> P5 -> a5
+    B5 -> b5
+
+}

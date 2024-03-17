@@ -1,0 +1,14 @@
+digraph ifthenelse {
+  /* illustration of a simple ambiguity */
+  /* if a then if b then c else d */
+
+  /* this is the tree we do not want */
+  if1 [label="if-then-else"];
+  if2 [label="if-then"];
+
+  if1 -> a [label="if"];
+  if1 -> if2 [label="then"];
+  if2 -> b [label="if"];
+  if2 -> c [label="then"];
+  if1 -> d [label="else"];
+}

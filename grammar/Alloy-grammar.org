@@ -1,0 +1,1564 @@
+:PROPERTIES:
+:ID:       Alloy
+:END:
+#+title: Alloy grammar in invisible XML
+#+date: 2024-02-23/2024-03/13
+#+author: Michael Sperberg-McQueen
+#+startup: showall
+#+tangle: yes
+
+This document gives a grammar for Alloy in invisible XML (ixml) form,
+embedded in expository prose.
+
+The reader is assumed to have some familiarity with Alloy and
+context-free grammars.
+
+*** Revision history
+
+Revisions:
+
+- 2024-03-15 : CMSMcQ : find and fix some bugs; change some s to S.
+- 2024-03-14 : CMSMcQ : better names (without reserved words)
+- 2024-03-10/13 : CMSMcQ : pushing through
+- 2024-03-10 : CMSMcQ : split expr into expr01 .. expr19
+- 2024-03-10 : CMSMcQ : I think whitespace is dealt with.
+- 2024-02-23 : CMSMcQ : move to an org file (as illustrated by NDTW).
+- 2024-02-23 : CMSMcQ : resume work.
+- 2021-05-06 : CMSMcQ : made ixml grammar.  Not finished.
+
+* Preliminary notes
+:PROPERTIES:
+:CUSTOM_ID: notes
+:END:
+
+The grammar started as a fairly literal transcription from the
+Alloy 4 grammar on the Alloy Tools web site, but in its current
+form it is a manually constructed mixture of
+
+- the grammar in Appendix B of Daniel Jackson's /Software abstractions/ 2d edition.
+- the grammar at http://alloytools.org/download/alloy4-grammar.txt
+- the grammar at https://github.com/AlloyTools/org.alloytools.alloy/blob/master/org.alloytools.alloy.core/parser/Alloy.cup
+
+In what follows, these may be referred to respectively as /J/, /G/,
+and /C/ (for /Jackson/, /grammar/, and /CUP/ grammar).
+
+*Differences from /J/ and /G/:* In the grammar given here, I have
+- rewritten the rule for expressions so that operator precedence
+  follows automatically from the structure of the grammar, rather
+  than being declared separately;
+  
+- renamed some nonterminals in an attempt to give them more
+  descriptive names (which affects the readability of the grammar, but
+  even more so the readability of the XML produced);
+
+- split a number of nonterminals in order to give distinct names to
+  variants of the production which are notionally distinct; and
+
+- introduced some new nonterminals so as to give some things more
+  informative labels (e.g. the /module-arguments/ and /alias/ in an
+  /import/).
+
+*Relations and formulas:* Semantically, Alloy distinguishes between
+relation-valued and boolean-valued expressions (aka formulas or
+constraints), but the distinction is not made in the grammar given
+here. But it may be observed that the logical operators bind less
+tightly than the relational operators, so at a first approximation we
+can say that /expr01/ through /expr08/ (or at least /expr07/) are
+boolean-valued, and /expr09/ through /expr19/ are relation-valued.
+
+*Whitespace handling:* For the most part, we follow the basic
+principle that no nonterminal except the outermost one starts or ends
+with whitespace.  Some exceptions are made for common separators
+(/slash/, /comma/, /plus/).
+
+In this grammar, /s/ denotes optional whitespace, /S/ required
+whitespace.  I've tried to use /S/ whenever two alphabetic tokens can
+be adjacent, because otherwise the parser will insert nonsensical
+token boundaries (like parsing "~none~" as the keyword "~no~" followed
+by the name "~ne~").  This has the unfortunate side effect of making
+the grammar reject some modules which the Alloy parser would accept.
+
+*Unit rules:* A unit rule in the grammar produces a parse-tree node
+with a single child.  In the XML produced by an ixml processor, this
+can lead to very deep trees which some readers find less easy to
+navigate than shallower trees would be.  In the XML form of the
+abstract syntax tree, I have where possible tried to eliminate either
+the child node or the parent node; sometimes this has entailed
+restructuring a production.
+
+* Top level:  modules
+:PROPERTIES:
+:CUSTOM_ID: toplevel
+:END:
+
+An Alloy module consists of a series of zero or more paragraphs,
+optionally preceded by a module declaration and zero or more import
+statements.
+
+#+BEGIN_SRC ixml :tangle yes
+Alloy-module: s, (module-decl, s)?, (import++s, s)?, (paragraph++s, s)?.
+#+END_SRC
+
+For comparison, /J/ has:
+#+BEGIN_SRC Jebnf :tangle no
+alloyModule ::= [moduleDecl] import* paragraph*
+#+END_SRC
+
+/G/ has:
+#+BEGIN_SRC ebnf4 :tangle no
+specification ::= [module] open* paragraph*
+#+END_SRC
+
+** Module declaration
+
+A module declaration gives the module a name (optionally
+qualified by a prepended path) and may specify a series of
+signature parameters given in square brackets.
+
+#+BEGIN_SRC ixml :tangle yes
+  -module-decl: -"module", s, module-name, (s, parameters)?.
+  module-name: OQName.
+  parameters:  "[", s, name++comma, s, "]".
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+moduleDecl ::= "module" qualName  [ "[" name,+ "]" ]
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+module ::= "module" name  [ "["  ["exactly"] name  ("," ["exactly"] num)*    "]" ]
+#+END_SRC
+
+*Q* What does "exactly" do here?
+
+/J/ and /G/ differ in their treatment of names, in a way that needs to
+be mentioned.  /J/ distinguishes
+- /name/, a single-token lexical symbol, and 
+- /qualName/, a sequence of one or more names separated with slashes,
+  optionally preceded by ~this/~.
+
+For its (slightly different) versions of these two, /G/ uses the
+nonterminals /ID/ and /name/, respectively.  Also, /G/ often uses the
+nonterminal /ref/ where /J/ uses /name/: in /G/, /ref/ is a name or
+one of a small number of predefined identifiers (~univ~, ~Int~,
+~seq/Int~).
+
+Here, the nonterminal /name/ is used for a single token, and
+/qual-name/ is reserved for compound (qualified) names with non-empty
+paths.  In context where either is possible (/J/'s /qualName/ or /G/'s
+/name/ or /ref/), the nonterminal /OQName/ ('optionally qualified
+name') is used.
+
+** Imports
+Import statements identify modules to be imported.  If the module
+being imported is parameterized, each parameter must be given a value
+consisting of the qualified name of a signature.  The module can also
+be given an alias.
+
+#+BEGIN_SRC ixml :tangle yes
+import: (private, s)?, -"open", s, OQName, s,
+        (module-arguments, s)?,
+        ("as", s, alias)?.
+module-arguments: "[", s, ref++comma, s, "]".
+alias: -name.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+import ::= "open"  qualName  [ "[" qualName,+ "]" ]  [ "as" name ]
+#+END_SRC
+
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+open ::= ["private"]  "open"  name  [ "[" ref,+ "]" ]  [ "as" name ]
+#+END_SRC
+
+** Kinds of paragraphs
+#+BEGIN_SRC ixml :tangle yes
+paragraph: fact-decl | assert-decl | fun-decl | pred-decl 
+         | cmd-decl | enum-decl | sig-decl.
+#+END_SRC
+
+/J/ lacks /enumDecl/:
+#+BEGIN_SRC Jebnf :tangle no
+paragraph ::= sigDecl | factDecl | predDecl | funDecl | assertDecl | cmdDecl 
+#+END_SRC
+
+/G/ omits /factDecl/ and adds /enumDecl/.
+#+BEGIN_SRC ebnf4 :tangle no
+paragraph ::= factDecl | assertDecl | funDecl | cmdDecl | enumDecl | sigDecl
+#+END_SRC
+
+* Signatures
+:PROPERTIES:
+:CUSTOM_ID: signatures
+:END:
+
+A signature declares a set of atoms, specifies some relations in which
+they participate (as the left-most member), and may optionally impose
+constraints on them.
+
+#+BEGIN_SRC ixml :tangle yes
+sig-decl: ("private", s)?, ("abstract", s)?, (mult, s)?, 
+          -"sig", S, name++comma, s,
+          (sig-ext, s)?,
+          sig-body, 
+          (s, sig-constraints)?.
+sig-ext: extends; superset.
+extends: -"extends", S, ref.
+superset: -"in", S, ref++plus.
+sig-body: -"{", s, (decl++comma, s)?, -"}".
+sig-constraints: -block.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+sigDecl ::= ["abstract"] [mult] "sig" name,+ [sigExt] "{" decl,* "}" [block]
+sigExt ::= "extends" qualName | "in" qualName ["+" qualName]*
+#+END_SRC
+
+/G/ adds a ~private~ keyword (and allows repeated keywords):
+#+BEGIN_SRC ebnf4 :tangle no
+sigDecl ::= sigQual* "sig" name,+ [sigExt] "{" decl,* "}" [block]
+sigQual ::= "abstract" | "lone" | "one" | "some" | "private"
+sigExt ::= "extends" ref
+sigExt ::= "in" ref ["+" ref]*
+#+END_SRC
+
+* Functions and predicates
+#+BEGIN_SRC ixml :tangle yes
+fun-decl: (private, s)?, 
+          "fun", s, (ref, ".")?, name, s, (args, s)?, ":", s, 
+          expr, s, block.
+pred-decl: (private, s)?, 
+           "pred", s, (ref, ".")?, name, s, (args, s)?, block.
+args:  "(", s, decl**comma, s, ")"
+    |  "[", s, decl**comma, s, "]".
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+funDecl ::= "fun" [qualName "."] name [paraDecls] ":" expr "{" expr "}"
+predDecl ::= "pred" [qualName "."] name [paraDecls] block
+paraDecls ::= "(" decl,* ")" | "[" decl,* "]"
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+funDecl ::= ["private"] "fun" [ref "."] name "(" decl,* ")" ":" expr block
+funDecl ::= ["private"] "fun" [ref "."] name "[" decl,* "]" ":" expr block
+funDecl ::= ["private"] "fun" [ref "."] name                ":" expr block
+
+funDecl ::= ["private"] "pred" [ref "."] name "(" decl,* ")" block
+funDecl ::= ["private"] "pred" [ref "."] name "[" decl,* "]" block
+funDecl ::= ["private"] "pred" [ref "."] name                block
+#+END_SRC
+
+* Facts and assertions
+Facts and assertions are statements about the universe.
+Assertions may or may not be true; facts are true by fiat.
+#+BEGIN_SRC ixml :tangle yes
+fact-decl: "fact", s, (name, s)?, block.
+assert-decl: "assert", s, (name, s)?, block.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+factDecl ::= "fact" [name] block
+assertDecl ::= "assert" [name] block
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+factDecl ::= "fact" [name] block
+assertDecl ::= "assert" [name] block
+#+END_SRC
+
+* Commands
+Commands are instructions to the Alloy Analyser to check certain
+states of affairs within instances with a given maximum size (scope):
+seek instances of a predicate, seek counter-examples to an assertion.
+
+#+BEGIN_SRC ixml :tangle yes
+cmd-decl: (name, s, ":", s)?, ("run"|"check"), S, (name|block), (S, scope)?.
+scope: expectation
+       | "for", S, numbers, S, expectation?.
+-numbers: number, (s, "but", s, typescope++comma)?
+       | typescope++comma.
+expectation:  "expect", s, ("0" | "1").
+typescope: ("exactly", s)?, number, s, (name|"int"|"seq")?.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+cmdDecl ::= [name ":"] ["run"|"check"] [qualName|block] [scope]
+scope ::= "for" number ["but" typescope,+] | "for" typescope,+
+typescope ::= ["exactly"] number qualName
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+cmdDecl ::= [name ":"] ("run"|"check") (name|block) scope
+scope ::= "for" number                   ["expect" (0|1)]
+scope ::= "for" number "but" typescope,+ ["expect" (0|1)]
+scope ::= "for"              typescope,+ ["expect" (0|1)]
+scope ::=                                ["expect" (0|1)]
+typescope ::= ["exactly"] number [name|"int"|"seq"]
+#+END_SRC
+
+* Common constructs
+** Declarations
+
+Declarations are used in many places, so I've given them their
+own section here rather than putting them with just one of
+their possible contexts.
+
+#+BEGIN_SRC ixml :tangle yes
+decl: (private, s)?, ("disj", s)?, name++comma, s, ":", s, ("disj", s)?, expr.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+decl ::= ["disj"] name,+ ":" ["disj"] expr
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+decl ::= ["private"] ["disj"] name,+ ":" ["disj"] expr
+#+END_SRC
+
+** Expressions
+
+Like many grammars involving multiple operators, both /J/ and /G/ use
+a single highly ambiguous production rule for expressions (/expr/),
+and provide an operator precedence table to clarify which parse trees
+should be accepted and which should be discarded.  See [[#ops][section on
+Operators]] below.
+
+This is the definition of /expr/ in /J/:
+
+#+BEGIN_SRC Jebnf :tangle no
+expr ::= const 
+   | qualName 
+   | "@" name 
+   | "this"
+   | unOp expr 
+   | expr binOp expr 
+   | expr arrowOp expr
+   | expr "[" expr,* "]"
+   | expr ["!"|"not"] compareOp expr
+   | expr ("=>"|"implies") expr "else" expr
+   | "let" letDecl,+ blockOrBar
+   | quant    decl,+ blockOrBar
+   | "{" decl,+ blockOrBar "}"
+   | "(" expr ")" 
+   | block
+#+END_SRC
+
+/G/ is largely the same but differs ih some details:
+- It inlines /const/.
+- It merges ~qualName | "@" name~.
+- It does not single out ~this~, treating it instead as a /name/.
+- It adds ~Int~ and ~seq/Int~.
+
+#+BEGIN_SRC ebnf
+expr ::= "let" letDecl,+ blockOrBar
+       | quant decl,+    blockOrBar
+       | unOp expr
+       | expr binOp   expr
+       | expr arrowOp expr
+       | expr ["!"|"not"] compareOp expr
+       | expr ("=>"|"implies") expr "else" expr
+       | expr "[" expr,* "]"
+       |     number
+       | "-" number
+       | "none"
+       | "iden"
+       | "univ"
+       | "Int"
+       | "seq/Int"
+       | "(" expr ")"
+       | ["@"] name
+       | block
+       | "{" decl,+ blockOrBar "}"
+#+END_SRC
+
+Because ixml makes no use of precedence tables, we need to re-express
+operator precedence in the structure of the grammar.  We will do this
+by factoring /expr/ into several flavors, which we name /expr01/,
+/expr02/, etc., each defining expressions involving operators at one
+precedence level.
+
+In their pure form, the levels look something like this:
+
+- 1: let-expr:  "let", s, let-decl++comma, s, block-or-bar.
+- 1: all-ex01:  "all",  s, decl++comma, s, block-or-bar.
+  /(And similarly for ~no~, ~some~, ~lone~, ~one~, ~sum~.)/
+- 2: disjunction:  expr02, s, ("||"; "or"), s, expr03.
+- 3: bi-implication:  expr03, s, ("<=>"; "iff"), s, expr04.
+- 4: if-then:  expr05, s, ("=>"; "implies"), s, expr04.
+- 4 bis: if-then-else: expr05, s, ("=>"; "implies"), s, expr04-bis, s, "else", s, expr04.
+- 5: conjunction:  expr05, s, ("&&"; "and"), s, expr06.
+- 6: negation:  NOT, s, expr06.
+- 7: in:  expr07, s, "in", s, expr08.
+  /(And so also for ~eq~, ~lt~, ~gt~, ~le~, ~gt~, ~not-in~, etc.)/
+- 8: quantified-expression: QUANT, s, expr07.
+  /(For QUANT in: ~no~, ~some~, ~lone~, ~one~, ~set~, ~seq~.)/
+- 9: bit-shift: expr09, s, ("<<"; ">>"; ">>>"), s, expr10.
+- 10: union, difference: expr10, s, ["+-"], s, expr11.
+- 11: cardinality: "#", s, expr12.
+- 12: override: base-12, s, "++", s, overlay-13.
+- 13: intersection:  expr13, s, "&", s, expr14.
+- 14: arrow-expr: expr14, s, (left-mult, s)?, -"->", s, (right-mult, s)?, expr15.
+- 15: left-restriction: lr-set-15, s, "<:", s, lr-rel-16.
+- 16: right-restriction: rr-rel-16, s, ":>", s, rr-set-17.
+- 17: box-join:  expr17, "[", s, (selector-10 ++ comma, s)?, "]".
+- 18: dot-join: expr18, s, ".", s, expr19.
+- 19: inverse, closure: ["~^*"], s, expr20.
+- 20: base expressions:  names, numbers, (...), {...}.
+
+Note at level 17 that box-join is syntactically the same as function
+application.  The choice of level-10 expressions for /selector/ is a
+guess: in box-join (as in dot-join), selectors denote relations, so
+formulas like those at levels 1-6 and values like those at levels 7-9
+seem implausible.  If we ever need needing logical expressions as
+function arguments, we'll need parentheses.  (Or maybe we should just
+use /expr/.)
+
+There is a complication that needs to be described briefly here.  I
+have not found any very clear explicit statement about this in
+discussions of operator precedence parsing (e.g. in Grune and Jacobs),
+but the behavior of parsers (e.g. in Alloy and SWI Prolog) and
+discussions on the web suggest that unary operators which bind loosely
+can appear without parentheses in the operands of binary operators
+which bind tightly, since they don't give rise to ambiguity.
+
+For example, consider a language with binary operator BOP, unary
+prefix operator POP, and unary suffix operator SOP.  In the pattern /a
+SOP BOP POP b/, there is no possible ambiguity, regardless of
+positions in the precedence hierarchy: SOP can only govern /a/, POP
+can only govern /b/.  The precedence comes into place only in a
+pattern like /POP a BOP b SOP/, in which the precedence hierarchy
+determines whether this is parsed as (POP (a BOP (b SOP))) or ((POP (a
+BOP b)) SOP), or one of the other possible structures shown below.
+
+[[file:images/PBS.dot.png]]
+
+Concretely, Alloy accepts without demur an expression like /p and some
+x : Doc | q[x]/, with an unparenthesized level-1 quantified formula as
+the right operand of a level-5 conjunction.
+
+To model this behavior, we need the right-hand side of any binary
+operator to allow expressions rooted in prefix unary operators (let,
+all, some, ... in level 1; negation at level 6; quantified expressions
+at level 8; cardinality (#) at level 11) even if they bind less
+tightly.  The same should at least in  principle be true of the sole
+suffix operator (box-join):  if operator precedence applies only when
+necessary to resolve ambiguity, then /a[b].c/ should clearly be
+parsed as /(a[b]).c/ and resolved ultimately to /(b.a).c/.
+
+*** /Let/ expressions, quantified expressions (/expr01/)
+:PROPERTIES:
+:CUSTOM_ID: expr01
+:END:
+
+#+BEGIN_SRC ixml :tangle yes
+-expr: expr01.
+
+{ expr01:  Weakest binding:  let, quantified statements }
+-expr01: let-expr;
+         all-ex01; none-ex01; some-ex01; lone-ex01; one-ex01; sum-ex01; 
+         expr02.
+
+let-expr:  "let", s, let-decl++comma, s, block-or-bar.
+let-decl: name, s, "=", s, expr.
+
+{ quantified expressions }
+all-ex01:  "all",  S, decl++comma, s, block-or-bar.
+none-ex01: "no",   S, decl++comma, s, block-or-bar.
+some-ex01: "some", S, decl++comma, s, block-or-bar.
+lone-ex01: "lone", S, decl++comma, s, block-or-bar.
+one-ex01:  "one",  S, decl++comma, s, block-or-bar.
+sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
+
+{ level-1 prefix expressions }
+
+prefix-ex01: let-expr; all-ex01; none-ex01; 
+             some-ex01; lone-ex01; one-ex01; 
+             sum-ex01.
+#+END_SRC
+
+For now /block-or-bar/ is defined as containg /expr/.  I think that that
+may be all right, but it has not been tested.
+
+In both /J/ and /G/, ~let~ expressions are defined thus:
+#+BEGIN_SRC Jebnf :tangle no
+expr ::= "let" letDecl,+ blockOrBar.
+letDecl ::= name "=" expr
+#+END_SRC
+
+The various quantified expressions are instances of a single pattern:
+#+BEGIN_SRC ebnf4 :tangle no
+expr ::= quant decl,+    blockOrBar.
+#+END_SRC
+
+*** Disjunctions (/expr02/)
+
+#+BEGIN_SRC ixml :tangle yes
+{ expr02:  disjunctions }
+-expr02:  disjunction; expr03.
+disjunction:  expr02, 
+              s, ("||"; "or"), s, 
+              (expr03; prefix-ex01).
+#+END_SRC
+
+In /J/ and /G/, disjunctions are the first of many instances of
+the pattern shown for all binary operators:
+
+#+BEGIN_SRC ebnf4 :tangle no
+expr ::= expr binOp expr.  
+#+END_SRC
+
+*** Bi-implications (/expr03/)
+Bi-implication is another binary operator.
+#+BEGIN_SRC ixml :tangle yes
+{ expr03:  bi-implication }
+-expr03:  bi-implication; expr04.
+bi-implication:  expr03, 
+                 s, ("<=>"; "iff"), s, 
+                 (expr04; prefix-ex01).
+#+END_SRC
+
+*** Implications (/expr04/)
+Conditionals / implications are right-associative:  an embedded
+implication can appear within either sub-clause.
+
+Note that implications may be formulas or just expressions.
+A first cut would be:
+#+BEGIN_SRC ixml :tangle no
+{ expr04:  implication }
+-expr04:  implication; expr05.
+implication:  expr04, s, 
+              ("=>"; "implies"), s, expr04, s, 
+              "else", s, expr04.
+#+END_SRC
+
+/J/ and /G/ give the form thus:
+#+BEGIN_SRC ebnf4 :tangle no
+expr ::= expr ("=>"|"implies") expr "else" expr.
+#+END_SRC
+
+Note that this production makes the ~else~ clause obligatory,
+although the informal example on p. 69 of the book lacks a
+trailing ~else~.
+
+If trailing ~else~ is really optional, then the then-clause should
+be rewrittten here to refer to /expr05/ not /expr04/.  Otherwise
+we end up with the classic dangling-else problem of Algol 60.
+
+[Later.  Hmmm.]  We seem to have an issue.  Since "=>" is included in
+the definition of /binOp/ in /J/ and /G/, the expression "~A => B~" is
+clearly grammatical.  In addition, page 263 says "So, for example, /p
+=> q => r/ is parsed as /p => (q => r)/", and "In an implication, an
+else-clause is associated with its closest then-clause."
+
+Can we enforce the nearest-then-clause rule grammatically?
+
+Consider the simple case "if a then if b then c else d".  The rule
+says we want the parse tree for this case to be
+[[file:images/ifthenelse-1.dot.png]]
+and not
+[[file:images/ifthenelse-2.dot.png]]
+
+The diagrams distinguish /if-then/ expressions from /if-then-else/
+expressions, and the rule appears to amount to saying that an /if-then/
+expression is not allowed in the /then/-clause of an /if-then-else/
+expression.  To be painfully explicit:
+
+- In the /then/-clause of an /if-then/:
+  + /if-then/ is OK.
+  + /if-then-else/ is OK.
+- In the /then/-clause of an /if-then-else/:
+  + /if-then/ is not OK.
+  + /if-then-else/ is OK.
+
+Or in tabular form:
+|---------------------+-----------------+----------------------|
+|                     | Parent: if-then | Parent: if-then-else |
+|---------------------+-----------------+----------------------|
+| Child: if-then      | OK              | not OK               |
+| Child: if-then-else | OK              | OK                   |
+|---------------------+-----------------+----------------------|
+
+We can, I think, express this by subdividing /expr04/ into two
+levels of precedence.
+
+#+BEGIN_SRC ixml :tangle yes
+{ expr04:  implication }
+-expr04:  if-then; expr04-bis.
+-expr04-bis: if-then-else; expr05.
+if-then:  expr05, 
+          s, ("=>"; "implies"), s, 
+          (expr04; prefix-ex01).
+if-then-else:  expr05, 
+               s, ("=>"; "implies"), s, 
+               expr04-bis, 
+               s, "else", s, 
+               (expr04; prefix-ex01).
+#+END_SRC
+
+*** Conjunctions (/expr05/)
+
+#+BEGIN_SRC ixml :tangle yes
+{ expr05:  conjunction }
+-expr05:  conjunction; expr06.
+conjunction:  expr05, 
+              s, ("&&"; "and"), s, 
+              (expr06; prefix-ex01).
+#+END_SRC
+
+*** Negated expressions (/expr06/)
+
+Jackson appears not to say explicitly that negation is
+right-associative, but it cannot be left-associative
+and I think it's probably a bad idea to try to say that
+a double negation requires parentheses.
+#+BEGIN_SRC ixml :tangle yes
+{ expr06:  negated expressions }
+-expr06:  negation; expr07.
+negation:  NOT, s, (expr06; prefix-ex01).
+NOT: "!"; "not".
+#+END_SRC
+
+Including /prefix-ex01/ allows expressions like /not all a : Addr |
+some n : Name | a->n in address/ without parentheses around everything
+following the /not/.
+
+In /J/ and /G/, negation is just an instance of /unOp/:
+#+BEGIN_SRC ebnf4 :tangle no
+expr ::= unOp expr.
+#+END_SRC
+
+*** Comparisons and negated comparisons (/expr07/)
+
+Since Alloy allows negation symbols both on the overall comparison
+(e.g. "~not x < y~") and on the comparison operator (e.g. "~x not < y~"),
+comparisons and their negations are a little more complex than
+other binary operators.
+
+#+BEGIN_SRC ixml :tangle yes
+{ expr07: comparisons } 
+-expr07:  comparison; expr08.
+-comparison: in; eq; lt; gt; le; ge;
+             not-in; not-eq; not-lt; not-gt; not-le; not-ge.
+in:  expr07, S, "in", S, expr08.
+eq:  expr07, s, "=",  s, expr08.
+lt:  expr07, s, "<",  s, expr08.
+gt:  expr07, s, ">",  s, expr08.
+le:  expr07, s, "=<", s, expr08.
+ge:  expr07, s, ">=", s, expr08.
+not-in:  expr07, S, NOT, s, "in", S, expr08.
+not-eq:  expr07, s, NOT, s, "=",  s, expr08.
+not-lt:  expr07, s, NOT, s, "<",  s, expr08.
+not-gt:  expr07, s, NOT, s, ">",  s, expr08.
+not-le:  expr07, s, NOT, s, "=<", s, expr08.
+not-ge:  expr07, s, NOT, s, ">=", s, expr08.
+#+END_SRC
+
+/J/ and /G/ have:
+#+begin_src ebnf4 :tangle no
+expr ::= expr ["!"|"not"] compareOp expr.
+#+end_src
+
+Since these comparison operators expect integer operands,
+there is no need to allow /prefix-ex01/ expressions on their
+right-hand sides.
+
+*** Expression quantifiers and multiplicities (/expr08/)
+Quantifiers may be used not only on formulas (see [[#expr01][above]])
+but also on expressions.  Here, the quantifiers are classed
+as unary operators.
+
+#+BEGIN_SRC ixml :tangle yes
+-expr08: quantified-expression; 
+         expr09.
+-quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
+         set-ex08; seq-ex08.
+no-ex08: "no", S, expr07.
+some-ex08: "some", S, expr07.
+lone-ex08: "lone", S, expr07.
+one-ex08: "one", S, expr07. 
+set-ex08: "set", S, expr07.
+seq-ex08: "seq", S, expr07.
+#+END_SRC
+
+The names chosen are awkward; it is hoped that some experimentation
+and examination of examples will suggest better names which convey
+more information about the difference between the expressions
+dominated by quantifiers at levels /expr01/ and /expr08/.  For now,
+the awkwardness is partly intentional: to underscore my current
+imperfect understanding.
+
+For comparison, expressions dominated by unary operators are defined
+as follows in /J/ and /G/:
+#+BEGIN_SRC Jebnf :tangle no
+expr ::= unOp expr.
+#+END_SRC
+
+*** Bit-shifting operators (/expr09/)
+
+The grammar file defines operators "<<", ">>", and ">>>" at precedence
+level 9.  These are not documented in Jackson's book¸but in the
+[[http://alloytools.org/quickguide/a4.html][supplementary
+documentation of Alloy 4] on the Alloy Tools web site, they are
+identified as left shift ("~<<~"), sign-extended right shift ("~>>~"),
+and zero-extended right shift ("~>>>~").  The Alloy.cup grammar of
+Alloy 6 assigns them the names SHL, SHA, and SHR, respectively.
+Both operands should be /int/ values.
+
+/G/ defines them as binary operators, so we'll follow the usual
+pattern for them.
+
+#+BEGIN_SRC ixml :tangle yes
+-expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
+SHL-expr: expr09, s, "<<", s, expr10.
+SHR-expr: expr09, s, ">>>", s, expr10.
+SHA-expr: expr09, s, ">>", s, expr10.
+#+END_SRC
+
+*** Union and difference (/expr10/)
+
+#+BEGIN_SRC ixml :tangle yes 
+-expr10:  union; set-diff; expr11.
+union: expr10, s, "+", s, expr11.
+set-diff: expr10, s, "-", s, expr11.
+#+END_SRC
+
+*** Cardinality (#) (/expr11/)
+
+#+BEGIN_SRC ixml :tangle yes
+-expr11:  cardinality; expr12.
+cardinality: "#", s, expr12.
+#+END_SRC
+
+*** Override (++) (/expr12/)
+To try to guide later readers, we give distinct
+names to the two operands of "~++~".  The left-hand
+operand is the /base/ relation, the right-hand operand
+is the /overlay/. 
+#+BEGIN_SRC ixml :tangle yes 
+-expr12: override; expr13.
+override: base, s, "++", s, overlay.
+base: expr12.
+overlay: expr13.
+#+END_SRC
+
+*** Intersection (&) (/expr13/)
+
+#+BEGIN_SRC ixml :tangle yes 
+-expr13:  intersection; expr14.
+intersection:  expr13, s, "&", s, expr14.
+#+END_SRC
+
+*** Arrow product (->) (/expr14/)
+Arrow operators are used to define relations.  They get
+a little complex because they can specify multiplicity
+on each side of the operator.
+#+BEGIN_SRC ixml :tangle yes
+-expr14: arrow-expr; expr15.
+arrow-expr: expr14, s, (left-mult, s)?, -"->", s, (right-mult, s)?, expr15.
+left-mult:  -mult; "set".
+right-mult:  -mult; "set".
+#+END_SRC
+
+/J/ and /G/ have:
+#+begin_src ebnf4
+expr ::= expr arrowOp expr.
+#+end_src
+*** Restriction operators (<: and :>) (/expr15/, /expr16/)
+Out of blind faith in generality, I follow Jackson's statement that
+binary operators are left-associative, although anyone who has an
+intuitive notion that one parse tree for an expression like "~a :> b
+<: c <: d~" is distinctly more natural than any other is apparently
+possessed of an intuition quite unlike mine.  (For one thing, one
+argument should be a relation and the other a set, that is a singleton
+relation.)  It would surprise me if any restriction operator found in
+the wild immediately dominated any other restriction operator, and
+still more if a human wrote such an expression without using
+parentheses.  But I've been surprised before.  So by all means, each
+of these is left-associative.
+
+Thinking about this, I remind myself that I often have to look the
+restriction operators up when I want to use them, because I forget
+which way they point.  So for both left- and right-restriction, I'm
+going to name the operands as a set or a rel[ation].
+#+BEGIN_SRC ixml :tangle yes
+-expr15: left-restriction; expr16.
+-expr16: right-restriction; expr17.
+left-restriction: lr-set, s, "<:", s, lr-rel.
+right-restriction: rr-rel, s, ":>", s, rr-set.
+lr-set: expr15.
+lr-rel: expr16.
+rr-rel: expr16.
+rr-set: expr17.
+#+END_SRC
+
+*** Box join (/expr17/)
+It is not clear what kind of expressions should be allowed within the
+box.  I've put /expr10/ on the theory that they should be
+relation-valued.
+#+BEGIN_SRC ixml :tangle yes
+-expr17: box-join; expr18.
+box-join: expr17, "[", s, (selector ++ comma, s)?, "]".
+selector: expr10.
+#+END_SRC
+
+/J/ and /G/ have:
+#+begin_src ebnf4
+expr ::= expr "[" expr,* "]".
+#+end_src
+*** Dot join (/expr18/)
+#+BEGIN_SRC ixml :tangle yes
+-expr18: dot-join; expr19.
+dot-join: expr18, s, ".", s, expr19.
+#+END_SRC
+
+Note that we define /dot-join/ as accepting /expr17/ on its
+left side, in order to allow box-join in the left operand.
+(Still looking for an example in the book.)
+*** Tightly binding unary operators (/expr19/)
+It's not completely clear whether Alloy 4 intends these three unary
+operators to be right-associative or non-associative.  The Alloy 6
+CUP grammar declares them non-associative, so that's how they are
+defined here.
+#+BEGIN_SRC ixml :tangle yes
+-expr19: inverse; t-closure; rt-closure; expr20.
+inverse: "~", s, expr20.
+t-closure: "^", s, expr20.
+rt-closure: "*", s, expr20.
+#+END_SRC
+
+*** Base expressions
+
+There are several forms of expression which contain no operators; we
+define them here.
+
+#+BEGIN_SRC ixml :tangle yes
+-expr20:  OQName;
+          "@", s, name;
+          { "none"; "iden"; "univ"; } { named sets, parse as name }
+          { "Int"; "seq/Int" } { ditto }        
+          number; 
+          "-", number;
+          "(", s, expr, s, ")";
+          "{", s, decl ++ comma, s, block-or-bar, s, "}";
+          block.          
+#+END_SRC
+
+The keywords "none", "iden", "univ", "Int", and "seq/Int" are
+predefined names denoting the empty set, the identity relation, the
+universal set, and so on.  If we include them in the ixml grammar, any
+module that uses any of them will be ambiguous, since they can all be
+parsed as /OQName/, and ixml does not have any mechanism for saying to
+prefer the keyword parse over the other.  So we omit them and tell the
+user of the XML to watch out for ~<name>univ</name>~ and the like, and
+handle it appropriately.
+
+
+** Blocks
+A block is just a sequence of expressions enclosed in braces; in some
+contexts, the braces will determine the scope of some relevant
+declaration.
+
+In several constructs, a declaration is separated from the expression
+it governs by a vertical bar.  If the declaration should govern
+multiple expressions, the bar and expression can be replaced by a
+brace-delimited block.  That idiom is expressed in the grammar by the
+nonterminal /block-or-bar/.
+
+#+BEGIN_SRC ixml :tangle yes
+block: "{", s, (expr++S, s)?, "}".
+block-or-bar: block;
+              "|", s, expr.
+#+END_SRC
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+block ::= "{" expr* "}"
+blockOrBar ::= block | bar expr
+bar ::= "|"
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+block ::= "{" expr* "}"
+blockOrBar ::= block
+blockOrBar ::= "|" expr
+#+END_SRC
+
+
+
+* Low-level constructs
+
+** Names and numbers
+:PROPERTIES:
+:CUSTOM_ID: names-nums
+:END:
+
+Note: Grammar /G/ uses /name/ and /ID/ where grammar /J/ 
+uses /qualName/ and /name/.  Since I want a bare name when possible, a
+wrapped name sequence where necessary, I use /OQName/ (i.e. optionally
+qualified name) where B has /qualName/.  So we should have
+
+- /OQName/ matches either a /qualName/ or a /name/.  The nonterminal
+  is never serialized.
+- /qualName/ matches a name with a non-empty qualifier.  
+- /name/ matches an unqualified identifier.
+
+The nonterminals /qualName/ and /name/ are typically serialized,
+unless a more informative nonterminal name is provided.
+
+#+BEGIN_SRC ixml :tangle yes
+  ref: OQName | UNIV | INT | SEQINT.
+
+  -OQName:  qual-name; name.
+
+  { qualName: ("this", "/")?, name++slash. }
+  { qual-name: THIS, "/", name++slash
+             | name, "/", name++slash. }
+  qual-name: THIS, -"/", (qual, -"/")*, name
+           | (qual, -"/")+, name.
+  qual: ID.
+
+  number: ['1'-'9'], digit*.
+  -digit: ['0'-'9'].
+
+  -ID: letter, (letter; digit; '_'; sq; dq)*.
+  -letter: ['a'-'z'; 'A'-'Z'].
+  -sq: "'" { single quote ' }.
+  -dq: '"' { double quote " }.
+#+END_SRC
+
+For reasons which will become clear later, we want the definition of /name/ in a separate code block.
+
+#+begin_src ixml :tangle no
+name: ID.
+#+end_src
+
+/J/ uses /qualName/ where we have /OQName/, and treats /name/ as a
+primitive lexical token.
+#+BEGIN_SRC Jebnf :tangle no
+qualName ::= ["this/" ] (name "/")* name
+#+END_SRC
+
+/G/, on the other hand, uses /name/ where /J/ has /qualName/.
+#+BEGIN_SRC ebnf4 :tangle no
+name ::= ("this" | ID) ["/" ID]*
+ref ::= name | "univ" | "Int" | "seq/Int"  
+#+END_SRC
+
+Note: the definition of name given above introduces ambiguities
+because any reserved word (e.g. "and" or "else") also parses as an
+/ID/ and thus as a /name/.  A possible solution to the ensuing
+problems (a more complicated definition that excludes the
+reserved words) is given [[#names-minus][below]].
+
+
+** Multiplicities and quantifiers
+
+#+BEGIN_SRC ixml :tangle yes
+quant: "all" | "no" | -mult | "sum".
+mult: "some" | "lone" | "one".
+#+END_SRC
+
+/J/ defines both /mult/ and /quant/:
+#+BEGIN_SRC Jebnf :tangle no
+mult ::= "lone" | "some" | "one"
+#+END_SRC
+#+BEGIN_SRC Jebnf :tangle no
+quant ::= "all" | "no" | "sum" | mult
+#+END_SRC
+
+/G/ has no /mult/ production.
+#+BEGIN_SRC ebnf4 :tangle no
+quant ::= "all" | "no" | "some" | "lone" | "one" | "sum"
+#+END_SRC
+
+
+** Operators
+:PROPERTIES:
+:CUSTOM_ID: ops
+:END:
+
+In the ixml grammar, these productions are unreachable (I hope)
+and are here only for the moment.
+
+#+BEGIN_SRC ixml :tangle yes
+binOp: "||" | "or" | "&&" | "and" | "&" | "<=>" | "iff"
+        | "=>" | "implies" | "+" | "-" | "++" | "<:" | ":>" | "." | "<<" | ">>" | ">>>".
+
+arrowOp: ("some"|"one"|"lone"|"set")?, "->", ("some"|"one"|"lone"|"set")?.
+
+compareOp: "=" | "in" | "<" | ">" | "=<" | ">=".
+
+unOp: "!" | "not" | "no" | "some" | "lone" | "one" | "set" | "seq" | "#" | "~" | "*" | "^".
+#+END_SRC
+
+In order to get more informative nonterminal names, we have
+embedded each operator into a distinctive production.  Both /J/
+and /G/, however, make the grammar briefer by handling operators
+generically.
+
+*** Unary operators
+/J/ has:
+#+BEGIN_SRC Jebnf :tangle no
+unOp ::= "!" | "not" | "no" | mult | "set" | "#" | "~" | "*" | "^"
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+unOp ::= "!" | "not" | "no" | "some" | "lone" | "one" | "set" | "seq" | "#" | "~" | "*" | "^"
+#+END_SRC
+
+*** Binary operators
+Both /J/ and /G/ distinguish arrow operators and comparison operators
+from other binary operators.
+
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+binOp ::= "||" | "or" | "&&" | "and" | "<=>" | "iff" | "=>" | "implies" |
+   | "&" | "+" | "-" | "++" | "<:" | ":>" | "." 
+
+arrowOp ::= [mult|"set"] "->" [mult|"set"]
+
+compareOp ::= "in" | "=" | "<" | ">" | "=<" | ">="
+#+END_SRC
+
+/G/:
+#+BEGIN_SRC ebnf4 :tangle no
+binOp ::= "||" | "or" | "&&" | "and" | "&" | "<=>" | "iff"
+        | "=>" | "implies" | "+" | "-" | "++" | "<:" | ":>" | "." | "<<" | ">>" | ">>>"
+
+arrowOp ::= ["some"|"one"|"lone"|"set"] "->" ["some"|"one"|"lone"|"set"]
+
+compareOp ::= "=" | "in" | "<" | ">" | "=<" | ">="
+#+END_SRC
+
+
+*** Precedence
+/G/ starts with a list of operator precedence values (low to high):
+
+1.    let    all a:X|F   no a:X|F   some a:X|F   lone a:X|F   one a:x|F   sum a:x|F
+2.    ||
+3.    <=>
+4.    =>     => else
+5.    &&
+6.    !
+7.    in     =        <        >       <=      >=      !in   !=   !<   !>  !<=  !>=
+8.    no X   some X   lone X   one X   set X   seq X
+9.    <<     >>       >>>
+10.   +      -
+11.   #X
+12.   ++
+13.   &
+14.   ->
+15.   <:
+16.   :>
+17.   []
+18.   .
+19.   ~    *     ^
+
+All binary operators are left-associative, except the arrow operators (~->~),
+the implication (~a=>b~), and if-then-else (~a=>b else c~).
+
+
+** Constants
+/J/:
+#+BEGIN_SRC Jebnf :tangle no
+const ::= ["-"] number | "none" | "univ" | "iden"
+#+END_SRC
+
+In /G/, constants are not separately identified.
+
+** Separators
+
+#+BEGIN_SRC ixml :tangle yes
+-comma: s, ",", s.
+slash: s, "/", s.
+plus:  s, "+", s.
+#+END_SRC
+
+** Whitespace
+#+BEGIN_SRC ixml :tangle yes
+-S = (ws_char | comment)+.
+-s = S?.
+
+-ws_char: -[#20; #9; #A; #D]. 
+{ ws_char: SP; TAB; LF; CR.
+SP: #20.
+TAB: #9.
+LF: #A.
+CR: #D. }
+#+END_SRC
+
+** Comments
+There are two kinds of comments: from "//" or "--" to the
+end of the line, and from "~/*~" to "~*/~".  The first is
+fairly straightforward.
+
+#+BEGIN_SRC ixml :tangle yes
+comment:  one-liner; slash-star.
+-one-liner:  (-"--" | -"//"), ~[#A; #D]*, NL.
+-NL: -#D?, -#A.
+#+END_SRC
+
+Slash-star comments don't nest and /slash-star/ thus defines
+a regular language.  For reasons which may be pragmatic or
+merely quixotic, I'd like to define the non-terminal with a
+single production rule with a regular expression on the
+right-hand side.  But experience shows that getting the
+regular expression correct can be tricky.  (Put it this way:
+it took the XML working group at least two weeks to get the
+definition of XML comments correct.)
+
+But it is not hard to describe the desired language with a
+finite state automaton which is simple enough to inspire some
+confidence:
+
+[[file:images/slash-star.dot.png]]
+
+This, in turn, can be translated readily into a regular grammar:
+
+#+BEGIN_SRC ixml :tangle no
+      slash-star: -"/*", looking-for-star.
+looking-for-star: ~["*"], looking-for-star
+                | "*", found-star.
+      found-star: "/", end-comment
+                | "*", found-star
+                | ~["/"; "*"], looking-for-star.
+     end-comment: {}.
+#+END_SRC 
+
+From this, we can derive a regular expression by systmatically
+modifying the grammar.
+
+1. Apply Arden's Lemma to /looking-for-star/ to get
+   #+BEGIN_SRC ixml :tangle no
+   looking-for-star: ~["*"]*, "*", found-star.
+   #+END_SRC 
+
+2. Expand /looking-for-star/ in the last line of /found-star/ to get:
+   #+BEGIN_SRC ixml :tangle no
+   found-star: "/", end-comment
+             | "*", found-star
+             | ~["/"; "*"], ~["*"]*, "*", found-star.
+   #+END_SRC 
+
+3. Fold the second and third lines of /found-star/ together to get:
+   #+BEGIN_SRC ixml :tangle no
+   found-star: "/", end-comment
+             | ("*" | (~["/"; "*"], ~["*"]*, "*")), found-star.
+   #+END_SRC 
+
+4. Simplify in the second line of /found-star/ to get:
+   #+BEGIN_SRC ixml :tangle no
+   found-star: "/", end-comment
+             | (~["/"; "*"], ~["*"]*)?, "*", found-star.
+   #+END_SRC 
+
+5. Apply Arden's Lemma to /found-star/:
+   #+BEGIN_SRC ixml :tangle no
+   found-star: ((~["/"; "*"], ~["*"]*)?, "*")*, "/", end-comment.
+   #+END_SRC 
+
+   We now have:
+   #+BEGIN_SRC ixml :tangle no
+   slash-star: -"/*", looking-for-star.
+   looking-for-star: ~["*"]*, "*", found-star.
+   found-star: ((~["/"; "*"], ~["*"]*)?, "*")*, "/", end-comment.
+   end-comment: {}.
+   #+END_SRC 
+
+6. The nonterminals /end-comment/, /found-star/, and
+   /looking-for-star/ can now be expanded in place:
+   #+BEGIN_SRC ixml :tangle no
+   slash-star: -"/*", ~["*"]*, "*", ((~["/"; "*"], ~["*"]*)?, "*")*, "/".
+   #+END_SRC 
+
+This gives us the desired single-rule definition of /slash-star/.
+#+BEGIN_SRC ixml :tangle yes
+-slash-star: -"/*", ~["*"]*, "*", ((~["/"; "*"], ~["*"]*)?, "*")*, "/".
+#+END_SRC
+
+** Keywords
+
+Are these used?  Should they be?
+
+#+BEGIN_SRC ixml :tangle yes
+THIS: "this".
+PRIVATE:  "private".
+UNIV: "univ".
+INT: "Int".
+SEQINT: "seq/Int".
+private: "private".
+#+END_SRC
+
+* Miscellaneous
+
+There is some stuff that doesn't have a good home.  Some of it I don't know anything about.
+
+** Enumerations
+Enumerations are not present in /J/ but are added as a new
+form of paragraph in /G/.
+
+#+BEGIN_SRC ixml :tangle yes
+enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
+#+END_SRC
+
+/G/ defines them thus:
+#+BEGIN_SRC ebnf4 :tangle no
+enumDecl ::= "enum" name "{" name  ("," name)*  "}"
+#+END_SRC
+
+
+** Avoiding ambiguity between keywords and names
+:PROPERTIES:
+:CUSTOM_ID: names-minus
+:END:
+
+Defining /name/ and /ID/ as done [[#names-nums][above]] is sub-optimal, because it
+means that keywords are all also recognizable as names.  Perhaps we
+can derive a suitable grammar by starting from a simple FSA, as was
+done for comments.
+
+The following keywords are reserved:
+abstract, all, and, as, assert,
+but,
+check,
+disj,
+else, exactly, extends,
+fact, for, fun,
+iden, iff, implies, in,
+Int,
+let, lone,
+module,
+no, none, not,
+one, open, or,
+pred,
+run,
+set, sig, some, sum,
+univ.
+
+For the record (it will matter at some point), the Alloy 6 grammar
+also appears to have: enum, expect, int (lowercase), private, seq,
+String, this, NAME, NUMBER, STRING, var, always, eventually, after,
+before, historically, once, releases, until, since, triggered, steps.
+(I say "appears to have" because I'm not finding the CUP file
+completely clear.)
+
+Alloy 6 may also have the spellings "disjoint" and "<=".  At first
+glance I thought it also added the keyword "trace", but I now think
+that that was just a gloss on ";", the trace-sequence operator.
+
+
+If we had a set subtraction operator, we could write:
+#+begin_src ixml :tangle no
+name: ID but-not reserved-word.
+
+reserved-word: "abstract"; "all"; "and"; "as"; "assert"; 
+               "but"; 
+               "check";
+               "disj";
+               "else "; "exactly "; "extends";
+               "fact "; "for "; "fun"; 
+               "iden "; "iff "; "implies "; "in"; 
+               "Int"; 
+               "let "; "lone"; 
+               "module"; 
+               "no "; "none "; "not"; 
+               "one"; "open"; "or"; 
+               "pred"; "
+               run"; 
+               "set"; "sig"; "some"; "sum"; 
+               "univ".
+#+end_src
+
+And similarly, if we had a priority operator, we could say that if
+something can be parsed as either a /name/ or as the keyword ~else~,
+the latter parse is to be preferred.
+
+But we don't have a set subtraction operator, or a priority operator.
+Since both /name/ and the list of reserved words are regular, we know
+that we can express what we want as a regular language.
+
+It should be possible in principle to devise an FSA analogous to the
+one given above for slash-star comments, turn it into a grammar, and
+then simplify the grammar, either partially or all the way into a
+single regular expression.  But given these thirty-five reserved
+words, there would be somewhat more than 100 states in the FSA; even
+drawing it would be tedious, and manipulating the resulting regular
+grammar would be rather error prone.
+
+But the principle of the FSA is simple enough to describe: it has a
+start state, and depending on the initial letter, the next state
+reached is either
+
+- a state in which we know that the /name/ we are about to match
+  is not a keyword; or
+- a state in which we have matched part of a keyword but not the
+  entire keyword.
+
+For the first of these, one state suffices.  When we have matched part
+of a keyword, the state must depend on which keyword(s) we have
+partially matched, and how much of them.  One state for each prefix of
+each keyword. But I won't go into more detail.
+
+For now, I will abandon thought of a regular expression and settle for
+a comprehensible grammatical expression.
+
+One form that is simple to understand is a rule with a flat set of
+right-hand sides, one for each string which is a prefix (proper or
+improper) of any reserved word.
+
+For any such prefix /p/, one of three cases applies:
+
+- /p/ is itself a reserved word (and not a prefix of any other
+  reserved word).  E.g. "~assert~".
+
+  We must require more characters, so the expression we
+  want is "~'assert', namechar+~".
+  
+- /p/ is both a proper prefix of some reserved word /r/ and
+  is itself a reserved word. E.g. "~as~".
+
+  We must require more characters, and ensure that the characters
+  added distinguish the string from /r/.  The easiest way is to
+  require that it differ from /r/ in the next character.
+  "~'as', nc-not-s, namechar*~".
+  
+- /p/ is a proper prefix of some reserved word /r/ and
+  not itself a reserved word /t/.  E.g. "~asse~".
+
+  We must accept /p/ as a name, and ensure that any name
+  beginning with /p/ differs from /r/ in the next character
+  after /p/.  So:  "~'asse', (nc-not-r, namechar*)?~".
+
+Note the structural similarity between the second and third cases;
+they differ only in that one requires a non-empty suffix to /p/ (so as
+to ensure that /p/ itself is not accepted as a name), and the other
+makes the suffix optional (because /p/ should be accepted as a name).
+
+It will be convenient to have nonterminals meaning "any name character"
+and "any name character except /x/" for some character /x/.
+
+#+begin_src ixml :tangle yes
+{ name characters:  possible continuations for a name }
+-namechar: ["a"-"z";          "A"-"Z"; "0"-"9"; "_"; #27; #22].
+
+{ The set of name characters, minus individual characters }
+-nc-not-a: [         "b"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-b: ["a";     "c"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-c: ["a"-"b"; "d"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-d: ["a"-"c"; "e"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-e: ["a"-"d"; "f"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-f: ["a"-"e"; "g"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-g: ["a"-"f"; "h"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-h: ["a"-"g"; "i"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-i: ["a"-"h"; "j"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-j: ["a"-"i"; "k"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-k: ["a"-"j"; "l"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-l: ["a"-"k"; "m"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-m: ["a"-"l"; "n"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-n: ["a"-"m"; "o"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-o: ["a"-"n"; "p"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-p: ["a"-"o"; "q"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-r: ["a"-"q"; "s"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-s: ["a"-"r"; "t"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-t: ["a"-"s"; "u"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-u: ["a"-"t"; "v"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-v: ["a"-"u"; "w"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-x: ["a"-"w"; "y"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-y: ["a"-"x";     "z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-I: ["a"-"z"; "A"-"H"; "J"-"Z"; "0"-"9"; "_"; #27; #22].
+#+end_src
+
+It turns out that some times we want to exclude more than one name
+character from the set.  After we have read an "a", for example, we
+must be careful about the letters "b" (as in "~abstract~"), "l" (as in
+"~all~"), "n" ("~and~'), and "s" ("~as~", "~assert~").
+
+#+begin_src ixml :tangle yes
+{ Some doubles and triples }
+-nc-not-aou: ["b"-"n"; "p"-"t"; "v"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-at: ["b"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-blns: ["a"; "c"-"k"; "m"; "o"-"r"; "t"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-dfmn: ["a"-"c"; "e"; "g"-"l"; "o"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-eiou: ["a"-"d"; "f"-"h"; "j"-"n"; "p"-"t"; "v"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-eo: ["a"-"d"; "f"-"n"; "p"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-lx: ["a"-"k"; "m"-"w"; "y"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-npr: ["a"-"m"; "o"; "q"; "s"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-nt: ["a"-"m"; "o"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+#+end_src
+
+We also want a nonterminal defining the set of letters (possible
+name-initial characters) which do not begin any keyword.
+
+#+begin_src ixml :tangle yes
+letter-no-abcdefiIlmnoprsu: ["ghjkqtvwxyz"; "A"-"H"; "J"-"Z"].
+#+end_src
+
+And now we can define the nonterminal we want:
+
+#+begin_src ixml :tangle yes
+name-minus-reserved-words = 
+  -letter-no-abcdefiIlmnoprsu, namechar*;
+
+  'a', (nc-not-blns, namechar*)? ; 
+  'ab', (nc-not-s, namechar*)? ; 
+  'abs', (nc-not-t, namechar*)? ; 
+  'abst', (nc-not-r, namechar*)? ; 
+  'abstr', (nc-not-a, namechar*)? ; 
+  'abstra', (nc-not-c, namechar*)? ; 
+  'abstrac', (nc-not-t, namechar*)? ; 
+  'abstract', namechar+ ; 
+  'al', (nc-not-l, namechar*)? ; 
+  'all', namechar+ ; 
+  'an', (nc-not-d, namechar*)? ; 
+  'and', namechar+ ; 
+  'as', nc-not-s, namechar* ; 
+  'ass', (nc-not-e, namechar*)? ; 
+  'asse', (nc-not-r, namechar*)? ; 
+  'asser', (nc-not-t, namechar*)? ; 
+  'assert', namechar+ ; 
+  'b', (nc-not-u, namechar*)? ; 
+  'bu', (nc-not-t, namechar*)? ; 
+  'but', namechar+ ; 
+  'c', (nc-not-h, namechar*)? ; 
+  'ch', (nc-not-e, namechar*)? ; 
+  'che', (nc-not-c, namechar*)? ; 
+  'chec', (nc-not-k, namechar*)? ; 
+  'check', namechar+ ; 
+  'd', (nc-not-i, namechar*)? ; 
+  'di', (nc-not-s, namechar*)? ; 
+  'dis', (nc-not-j, namechar*)? ; 
+  'disj', namechar+ ; 
+  'e', (nc-not-lx, namechar*)? ; 
+  'el', (nc-not-s, namechar*)? ; 
+  'els', (nc-not-e, namechar*)? ; 
+  'else', namechar+ ; 
+  'ex', (nc-not-at, namechar*)? ; 
+  'exa', (nc-not-c, namechar*)? ; 
+  'exac', (nc-not-t, namechar*)? ; 
+  'exact', (nc-not-l, namechar*)? ; 
+  'exactl', (nc-not-y, namechar*)? ; 
+  'exactly', namechar+ ; 
+  'ext', (nc-not-e, namechar*)? ; 
+  'exte', (nc-not-n, namechar*)? ; 
+  'exten', (nc-not-d, namechar*)? ; 
+  'extend', (nc-not-s, namechar*)? ; 
+  'extends', namechar+ ; 
+  'f', (nc-not-aou, namechar*)? ; 
+  'fa', (nc-not-c, namechar*)? ; 
+  'fac', (nc-not-t, namechar*)? ; 
+  'fact', namechar+ ; 
+  'fo', (nc-not-r, namechar*)? ; 
+  'for', namechar+ ; 
+  'fu', (nc-not-n, namechar*)? ; 
+  'fun', namechar+ ; 
+  'i', (nc-not-dfmn, namechar*)? ; 
+  'id', (nc-not-e, namechar*)? ; 
+  'ide', (nc-not-n, namechar*)? ; 
+  'iden', namechar+ ; 
+  'if', (nc-not-f, namechar*)? ; 
+  'iff', namechar+ ; 
+  'im', (nc-not-p, namechar*)? ; 
+  'imp', (nc-not-l, namechar*)? ; 
+  'impl', (nc-not-i, namechar*)? ; 
+  'impli', (nc-not-e, namechar*)? ; 
+  'implie', (nc-not-s, namechar*)? ; 
+  'implies', namechar+ ; 
+  'in', namechar+ ; 
+  'I', (nc-not-n, namechar*)? ; 
+  'In', (nc-not-t, namechar*)? ; 
+  'Int', namechar+ ; 
+  'l', (nc-not-eo, namechar*)? ; 
+  'le', (nc-not-t, namechar*)? ; 
+  'let', namechar+ ; 
+  'lo', (nc-not-n, namechar*)? ; 
+  'lon', (nc-not-e, namechar*)? ; 
+  'lone', namechar+ ; 
+  'm', (nc-not-o, namechar*)? ; 
+  'mo', (nc-not-d, namechar*)? ; 
+  'mod', (nc-not-u, namechar*)? ; 
+  'modu', (nc-not-l, namechar*)? ; 
+  'modul', (nc-not-e, namechar*)? ; 
+  'module', namechar+ ; 
+  'n', (nc-not-o, namechar*)? ; 
+  'no', nc-not-nt, namechar* ; 
+  'non', (nc-not-e, namechar*)? ; 
+  'none', namechar+ ; 
+  'not', namechar+ ; 
+  'o', (nc-not-npr, namechar*)? ; 
+  'on', (nc-not-e, namechar*)? ; 
+  'one', namechar+ ; 
+  'op', (nc-not-e, namechar*)? ; 
+  'ope', (nc-not-n, namechar*)? ; 
+  'open', namechar+ ; 
+  'or', namechar+ ; 
+  'p', (nc-not-r, namechar*)? ; 
+  'pr', (nc-not-e, namechar*)? ; 
+  'pre', (nc-not-d, namechar*)? ; 
+  'pred', namechar+ ; 
+  'r', (nc-not-u, namechar*)? ; 
+  'ru', (nc-not-n, namechar*)? ; 
+  'run', namechar+ ; 
+  's', (nc-not-eiou, namechar*)? ; 
+  'se', (nc-not-t, namechar*)? ; 
+  'set', namechar+ ; 
+  'si', (nc-not-g, namechar*)? ; 
+  'sig', namechar+ ; 
+  'so', (nc-not-m, namechar*)? ; 
+  'som', (nc-not-e, namechar*)? ; 
+  'some', namechar+ ; 
+  'su', (nc-not-m, namechar*)? ; 
+  'sum', namechar+ ; 
+  'u', (nc-not-n, namechar*)? ; 
+  'un', (nc-not-i, namechar*)? ; 
+  'uni', (nc-not-v, namechar*)? ; 
+  'univ', namechar+ .
+#+end_src
+
+Note that none of the nonterminals used in the production for
+/name-minus-reserved-words/ is recursive.  So we can in fact, if we
+wish, create a single regular expression by inlining all the
+nonterminals (I mean, replacing each reference to /namechar/ with its
+definition, and similarly for each of the other nonterminals).
+
+Now we can define /name/ as any ID other than a reserved word:
+
+#+begin_src ixml :tangle no
+name: -name-minus-reserved-words.          
+#+end_src
+
+But that's not quite right: the predefined names "none", "univ", and
+"iden" need to be included.
+
+#+begin_src ixml :tangle yes
+name: -name-minus-reserved-words
+    ; "none"
+    ; "univ"
+    ; "iden".
+#+end_src
+

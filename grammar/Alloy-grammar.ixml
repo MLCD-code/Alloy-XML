@@ -1,0 +1,426 @@
+Alloy-module: s, (module-decl, s)?, (import++s, s)?, (paragraph++s, s)?.
+
+-module-decl: -"module", s, module-name, (s, parameters)?.
+module-name: OQName.
+parameters:  "[", s, name++comma, s, "]".
+
+import: (private, s)?, -"open", s, OQName, s,
+        (module-arguments, s)?,
+        ("as", s, alias)?.
+module-arguments: "[", s, ref++comma, s, "]".
+alias: -name.
+
+paragraph: fact-decl | assert-decl | fun-decl | pred-decl 
+         | cmd-decl | enum-decl | sig-decl.
+
+sig-decl: ("private", s)?, ("abstract", s)?, (mult, s)?, 
+          -"sig", S, name++comma, s,
+          (sig-ext, s)?,
+          sig-body, 
+          (s, sig-constraints)?.
+sig-ext: extends; superset.
+extends: -"extends", S, ref.
+superset: -"in", S, ref++plus.
+sig-body: -"{", s, (decl++comma, s)?, -"}".
+sig-constraints: -block.
+
+fun-decl: (private, s)?, 
+          "fun", s, (ref, ".")?, name, s, (args, s)?, ":", s, 
+          expr, s, block.
+pred-decl: (private, s)?, 
+           "pred", s, (ref, ".")?, name, s, (args, s)?, block.
+args:  "(", s, decl**comma, s, ")"
+    |  "[", s, decl**comma, s, "]".
+
+fact-decl: "fact", s, (name, s)?, block.
+assert-decl: "assert", s, (name, s)?, block.
+
+cmd-decl: (name, s, ":", s)?, ("run"|"check"), S, (name|block), (S, scope)?.
+scope: expectation
+       | "for", S, numbers, S, expectation?.
+-numbers: number, (s, "but", s, typescope++comma)?
+       | typescope++comma.
+expectation:  "expect", s, ("0" | "1").
+typescope: ("exactly", s)?, number, s, (name|"int"|"seq")?.
+
+decl: (private, s)?, ("disj", s)?, name++comma, s, ":", s, ("disj", s)?, expr.
+
+-expr: expr01.
+
+{ expr01:  Weakest binding:  let, quantified statements }
+-expr01: let-expr;
+         all-ex01; none-ex01; some-ex01; lone-ex01; one-ex01; sum-ex01; 
+         expr02.
+
+let-expr:  "let", s, let-decl++comma, s, block-or-bar.
+let-decl: name, s, "=", s, expr.
+
+{ quantified expressions }
+all-ex01:  "all",  S, decl++comma, s, block-or-bar.
+none-ex01: "no",   S, decl++comma, s, block-or-bar.
+some-ex01: "some", S, decl++comma, s, block-or-bar.
+lone-ex01: "lone", S, decl++comma, s, block-or-bar.
+one-ex01:  "one",  S, decl++comma, s, block-or-bar.
+sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
+
+{ level-1 prefix expressions }
+
+prefix-ex01: let-expr; all-ex01; none-ex01; 
+             some-ex01; lone-ex01; one-ex01; 
+             sum-ex01.
+
+{ expr02:  disjunctions }
+-expr02:  disjunction; expr03.
+disjunction:  expr02, 
+              s, ("||"; "or"), s, 
+              (expr03; prefix-ex01).
+
+{ expr03:  bi-implication }
+-expr03:  bi-implication; expr04.
+bi-implication:  expr03, 
+                 s, ("<=>"; "iff"), s, 
+                 (expr04; prefix-ex01).
+
+{ expr04:  implication }
+-expr04:  if-then; expr04-bis.
+-expr04-bis: if-then-else; expr05.
+if-then:  expr05, 
+          s, ("=>"; "implies"), s, 
+          (expr04; prefix-ex01).
+if-then-else:  expr05, 
+               s, ("=>"; "implies"), s, 
+               expr04-bis, 
+               s, "else", s, 
+               (expr04; prefix-ex01).
+
+{ expr05:  conjunction }
+-expr05:  conjunction; expr06.
+conjunction:  expr05, 
+              s, ("&&"; "and"), s, 
+              (expr06; prefix-ex01).
+
+{ expr06:  negated expressions }
+-expr06:  negation; expr07.
+negation:  NOT, s, (expr06; prefix-ex01).
+NOT: "!"; "not".
+
+{ expr07: comparisons } 
+-expr07:  comparison; expr08.
+-comparison: in; eq; lt; gt; le; ge;
+             not-in; not-eq; not-lt; not-gt; not-le; not-ge.
+in:  expr07, S, "in", S, expr08.
+eq:  expr07, s, "=",  s, expr08.
+lt:  expr07, s, "<",  s, expr08.
+gt:  expr07, s, ">",  s, expr08.
+le:  expr07, s, "=<", s, expr08.
+ge:  expr07, s, ">=", s, expr08.
+not-in:  expr07, S, NOT, s, "in", S, expr08.
+not-eq:  expr07, s, NOT, s, "=",  s, expr08.
+not-lt:  expr07, s, NOT, s, "<",  s, expr08.
+not-gt:  expr07, s, NOT, s, ">",  s, expr08.
+not-le:  expr07, s, NOT, s, "=<", s, expr08.
+not-ge:  expr07, s, NOT, s, ">=", s, expr08.
+
+-expr08: quantified-expression; 
+         expr09.
+-quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
+         set-ex08; seq-ex08.
+no-ex08: "no", S, expr07.
+some-ex08: "some", S, expr07.
+lone-ex08: "lone", S, expr07.
+one-ex08: "one", S, expr07. 
+set-ex08: "set", S, expr07.
+seq-ex08: "seq", S, expr07.
+
+-expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
+SHL-expr: expr09, s, "<<", s, expr10.
+SHR-expr: expr09, s, ">>>", s, expr10.
+SHA-expr: expr09, s, ">>", s, expr10.
+
+-expr10:  union; set-diff; expr11.
+union: expr10, s, "+", s, expr11.
+set-diff: expr10, s, "-", s, expr11.
+
+-expr11:  cardinality; expr12.
+cardinality: "#", s, expr12.
+
+-expr12: override; expr13.
+override: base, s, "++", s, overlay.
+base: expr12.
+overlay: expr13.
+
+-expr13:  intersection; expr14.
+intersection:  expr13, s, "&", s, expr14.
+
+-expr14: arrow-expr; expr15.
+arrow-expr: expr14, s, (left-mult, s)?, -"->", s, (right-mult, s)?, expr15.
+left-mult:  -mult; "set".
+right-mult:  -mult; "set".
+
+-expr15: left-restriction; expr16.
+-expr16: right-restriction; expr17.
+left-restriction: lr-set, s, "<:", s, lr-rel.
+right-restriction: rr-rel, s, ":>", s, rr-set.
+lr-set: expr15.
+lr-rel: expr16.
+rr-rel: expr16.
+rr-set: expr17.
+
+-expr17: box-join; expr18.
+box-join: expr17, "[", s, (selector ++ comma, s)?, "]".
+selector: expr10.
+
+-expr18: dot-join; expr19.
+dot-join: expr18, s, ".", s, expr19.
+
+-expr19: inverse; t-closure; rt-closure; expr20.
+inverse: "~", s, expr20.
+t-closure: "^", s, expr20.
+rt-closure: "*", s, expr20.
+
+-expr20:  OQName;
+          "@", s, name;
+          { "none"; "iden"; "univ"; } { named sets, parse as name }
+          { "Int"; "seq/Int" } { ditto }        
+          number; 
+          "-", number;
+          "(", s, expr, s, ")";
+          "{", s, decl ++ comma, s, block-or-bar, s, "}";
+          block.
+
+block: "{", s, (expr++S, s)?, "}".
+block-or-bar: block;
+              "|", s, expr.
+
+ref: OQName | UNIV | INT | SEQINT.
+
+-OQName:  qual-name; name.
+
+{ qualName: ("this", "/")?, name++slash. }
+{ qual-name: THIS, "/", name++slash
+           | name, "/", name++slash. }
+qual-name: THIS, -"/", (qual, -"/")*, name
+         | (qual, -"/")+, name.
+qual: ID.
+
+number: ['1'-'9'], digit*.
+-digit: ['0'-'9'].
+
+-ID: letter, (letter; digit; '_'; sq; dq)*.
+-letter: ['a'-'z'; 'A'-'Z'].
+-sq: "'" { single quote ' }.
+-dq: '"' { double quote " }.
+
+quant: "all" | "no" | -mult | "sum".
+mult: "some" | "lone" | "one".
+
+binOp: "||" | "or" | "&&" | "and" | "&" | "<=>" | "iff"
+        | "=>" | "implies" | "+" | "-" | "++" | "<:" | ":>" | "." | "<<" | ">>" | ">>>".
+
+arrowOp: ("some"|"one"|"lone"|"set")?, "->", ("some"|"one"|"lone"|"set")?.
+
+compareOp: "=" | "in" | "<" | ">" | "=<" | ">=".
+
+unOp: "!" | "not" | "no" | "some" | "lone" | "one" | "set" | "seq" | "#" | "~" | "*" | "^".
+
+-comma: s, ",", s.
+slash: s, "/", s.
+plus:  s, "+", s.
+
+-S = (ws_char | comment)+.
+-s = S?.
+
+-ws_char: -[#20; #9; #A; #D]. 
+{ ws_char: SP; TAB; LF; CR.
+SP: #20.
+TAB: #9.
+LF: #A.
+CR: #D. }
+
+comment:  one-liner; slash-star.
+-one-liner:  (-"--" | -"//"), ~[#A; #D]*, NL.
+-NL: -#D?, -#A.
+
+-slash-star: -"/*", ~["*"]*, "*", ((~["/"; "*"], ~["*"]*)?, "*")*, "/".
+
+THIS: "this".
+PRIVATE:  "private".
+UNIV: "univ".
+INT: "Int".
+SEQINT: "seq/Int".
+private: "private".
+
+enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
+
+{ name characters:  possible continuations for a name }
+-namechar: ["a"-"z";          "A"-"Z"; "0"-"9"; "_"; #27; #22].
+
+{ The set of name characters, minus individual characters }
+-nc-not-a: [         "b"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-b: ["a";     "c"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-c: ["a"-"b"; "d"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-d: ["a"-"c"; "e"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-e: ["a"-"d"; "f"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-f: ["a"-"e"; "g"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-g: ["a"-"f"; "h"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-h: ["a"-"g"; "i"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-i: ["a"-"h"; "j"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-j: ["a"-"i"; "k"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-k: ["a"-"j"; "l"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-l: ["a"-"k"; "m"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-m: ["a"-"l"; "n"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-n: ["a"-"m"; "o"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-o: ["a"-"n"; "p"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-p: ["a"-"o"; "q"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-r: ["a"-"q"; "s"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-s: ["a"-"r"; "t"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-t: ["a"-"s"; "u"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-u: ["a"-"t"; "v"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-v: ["a"-"u"; "w"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-x: ["a"-"w"; "y"-"z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-y: ["a"-"x";     "z"; "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-I: ["a"-"z"; "A"-"H"; "J"-"Z"; "0"-"9"; "_"; #27; #22].
+
+{ Some doubles and triples }
+-nc-not-aou: ["b"-"n"; "p"-"t"; "v"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-at: ["b"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-blns: ["a"; "c"-"k"; "m"; "o"-"r"; "t"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-dfmn: ["a"-"c"; "e"; "g"-"l"; "o"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-eiou: ["a"-"d"; "f"-"h"; "j"-"n"; "p"-"t"; "v"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-eo: ["a"-"d"; "f"-"n"; "p"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-lx: ["a"-"k"; "m"-"w"; "y"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-npr: ["a"-"m"; "o"; "q"; "s"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-nt: ["a"-"m"; "o"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
+
+letter-no-abcdefiIlmnoprsu: ["ghjkqtvwxyz"; "A"-"H"; "J"-"Z"].
+
+name-minus-reserved-words = 
+  -letter-no-abcdefiIlmnoprsu, namechar*;
+
+  'a', (nc-not-blns, namechar*)? ; 
+  'ab', (nc-not-s, namechar*)? ; 
+  'abs', (nc-not-t, namechar*)? ; 
+  'abst', (nc-not-r, namechar*)? ; 
+  'abstr', (nc-not-a, namechar*)? ; 
+  'abstra', (nc-not-c, namechar*)? ; 
+  'abstrac', (nc-not-t, namechar*)? ; 
+  'abstract', namechar+ ; 
+  'al', (nc-not-l, namechar*)? ; 
+  'all', namechar+ ; 
+  'an', (nc-not-d, namechar*)? ; 
+  'and', namechar+ ; 
+  'as', nc-not-s, namechar* ; 
+  'ass', (nc-not-e, namechar*)? ; 
+  'asse', (nc-not-r, namechar*)? ; 
+  'asser', (nc-not-t, namechar*)? ; 
+  'assert', namechar+ ; 
+  'b', (nc-not-u, namechar*)? ; 
+  'bu', (nc-not-t, namechar*)? ; 
+  'but', namechar+ ; 
+  'c', (nc-not-h, namechar*)? ; 
+  'ch', (nc-not-e, namechar*)? ; 
+  'che', (nc-not-c, namechar*)? ; 
+  'chec', (nc-not-k, namechar*)? ; 
+  'check', namechar+ ; 
+  'd', (nc-not-i, namechar*)? ; 
+  'di', (nc-not-s, namechar*)? ; 
+  'dis', (nc-not-j, namechar*)? ; 
+  'disj', namechar+ ; 
+  'e', (nc-not-lx, namechar*)? ; 
+  'el', (nc-not-s, namechar*)? ; 
+  'els', (nc-not-e, namechar*)? ; 
+  'else', namechar+ ; 
+  'ex', (nc-not-at, namechar*)? ; 
+  'exa', (nc-not-c, namechar*)? ; 
+  'exac', (nc-not-t, namechar*)? ; 
+  'exact', (nc-not-l, namechar*)? ; 
+  'exactl', (nc-not-y, namechar*)? ; 
+  'exactly', namechar+ ; 
+  'ext', (nc-not-e, namechar*)? ; 
+  'exte', (nc-not-n, namechar*)? ; 
+  'exten', (nc-not-d, namechar*)? ; 
+  'extend', (nc-not-s, namechar*)? ; 
+  'extends', namechar+ ; 
+  'f', (nc-not-aou, namechar*)? ; 
+  'fa', (nc-not-c, namechar*)? ; 
+  'fac', (nc-not-t, namechar*)? ; 
+  'fact', namechar+ ; 
+  'fo', (nc-not-r, namechar*)? ; 
+  'for', namechar+ ; 
+  'fu', (nc-not-n, namechar*)? ; 
+  'fun', namechar+ ; 
+  'i', (nc-not-dfmn, namechar*)? ; 
+  'id', (nc-not-e, namechar*)? ; 
+  'ide', (nc-not-n, namechar*)? ; 
+  'iden', namechar+ ; 
+  'if', (nc-not-f, namechar*)? ; 
+  'iff', namechar+ ; 
+  'im', (nc-not-p, namechar*)? ; 
+  'imp', (nc-not-l, namechar*)? ; 
+  'impl', (nc-not-i, namechar*)? ; 
+  'impli', (nc-not-e, namechar*)? ; 
+  'implie', (nc-not-s, namechar*)? ; 
+  'implies', namechar+ ; 
+  'in', namechar+ ; 
+  'I', (nc-not-n, namechar*)? ; 
+  'In', (nc-not-t, namechar*)? ; 
+  'Int', namechar+ ; 
+  'l', (nc-not-eo, namechar*)? ; 
+  'le', (nc-not-t, namechar*)? ; 
+  'let', namechar+ ; 
+  'lo', (nc-not-n, namechar*)? ; 
+  'lon', (nc-not-e, namechar*)? ; 
+  'lone', namechar+ ; 
+  'm', (nc-not-o, namechar*)? ; 
+  'mo', (nc-not-d, namechar*)? ; 
+  'mod', (nc-not-u, namechar*)? ; 
+  'modu', (nc-not-l, namechar*)? ; 
+  'modul', (nc-not-e, namechar*)? ; 
+  'module', namechar+ ; 
+  'n', (nc-not-o, namechar*)? ; 
+  'no', nc-not-nt, namechar* ; 
+  'non', (nc-not-e, namechar*)? ; 
+  'none', namechar+ ; 
+  'not', namechar+ ; 
+  'o', (nc-not-npr, namechar*)? ; 
+  'on', (nc-not-e, namechar*)? ; 
+  'one', namechar+ ; 
+  'op', (nc-not-e, namechar*)? ; 
+  'ope', (nc-not-n, namechar*)? ; 
+  'open', namechar+ ; 
+  'or', namechar+ ; 
+  'p', (nc-not-r, namechar*)? ; 
+  'pr', (nc-not-e, namechar*)? ; 
+  'pre', (nc-not-d, namechar*)? ; 
+  'pred', namechar+ ; 
+  'r', (nc-not-u, namechar*)? ; 
+  'ru', (nc-not-n, namechar*)? ; 
+  'run', namechar+ ; 
+  's', (nc-not-eiou, namechar*)? ; 
+  'se', (nc-not-t, namechar*)? ; 
+  'set', namechar+ ; 
+  'si', (nc-not-g, namechar*)? ; 
+  'sig', namechar+ ; 
+  'so', (nc-not-m, namechar*)? ; 
+  'som', (nc-not-e, namechar*)? ; 
+  'some', namechar+ ; 
+  'su', (nc-not-m, namechar*)? ; 
+  'sum', namechar+ ; 
+  'u', (nc-not-n, namechar*)? ; 
+  'un', (nc-not-i, namechar*)? ; 
+  'uni', (nc-not-v, namechar*)? ; 
+  'univ', namechar+ .
+
+name: -name-minus-reserved-words
+    ; "none"
+    ; "univ"
+    ; "iden".

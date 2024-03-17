@@ -1,0 +1,14 @@
+digraph slashstar {
+  rankdir=LR;
+  
+  lfs [label="looking\n\for\nstar"];
+  fs [label="found\nstar"];
+  end [label="end of\ncomment"; peripheries=2];
+  
+  start -> lfs [label="\"/*\""];
+  lfs -> lfs [label="~['*']"];
+  lfs -> fs [label="\"*\""];
+  fs -> lfs [label="~['*/']"];
+  fs -> fs [label="\"*\""];
+  fs -> end [label="\"/\""];
+}
