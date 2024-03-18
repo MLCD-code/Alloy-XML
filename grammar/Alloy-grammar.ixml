@@ -167,7 +167,7 @@ rr-rel: expr16.
 rr-set: expr17.
 
 -expr17: box-join; expr18.
-box-join: expr17, "[", s, (selector ++ comma, s)?, "]".
+box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
 selector: expr10.
 
 -expr18: dot-join; expr19.

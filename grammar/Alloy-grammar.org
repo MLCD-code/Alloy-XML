@@ -809,10 +809,11 @@ rr-set: expr17.
 *** Box join (/expr17/)
 It is not clear what kind of expressions should be allowed within the
 box.  I've put /expr10/ on the theory that they should be
-relation-valued.
+relation-valued.  White space is allowed before the left square
+bracket, because the examples show it being used.
 #+BEGIN_SRC ixml :tangle yes
 -expr17: box-join; expr18.
-box-join: expr17, "[", s, (selector ++ comma, s)?, "]".
+box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
 selector: expr10.
 #+END_SRC
 
