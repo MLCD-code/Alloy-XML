@@ -493,9 +493,8 @@ expr ::= quant decl,+    blockOrBar.
 #+BEGIN_SRC ixml :tangle yes
 { expr02:  disjunctions }
 -expr02:  disjunction; expr03.
-disjunction:  expr02, 
-              s, (-"||"; -"or"), s, 
-              expr03.
+disjunction:  expr02, OR, expr03.
+OR: s, -"||", s; S, -"or", S.
 #+END_SRC
 
 In /J/ and /G/, disjunctions are the first of many instances of
@@ -510,9 +509,8 @@ Bi-implication is another binary operator.
 #+BEGIN_SRC ixml :tangle yes
 { expr03:  bi-implication }
 -expr03:  bi-implication; expr04.
-bi-implication:  expr03, 
-                 s, (-"<=>"; -"iff"), s, 
-                 expr04.
+bi-implication:  expr03, IFF, expr04.
+IFF: s, -"<=>", s; S, -"iff", S.
 #+END_SRC
 
 *** Implications (/expr04/)
@@ -522,7 +520,7 @@ implication can appear within either sub-clause.
 Note that implications may be formulas or just expressions.
 A first cut would be:
 #+BEGIN_SRC ixml :tangle no
-{ expr04:  implication }
+{ expr04:  implication -- dummy first cut }
 -expr04:  implication; expr05.
 implication:  expr04, s, 
               ("=>"; "implies"), s, expr04, s, 
@@ -583,18 +581,16 @@ levels of precedence.
 { expr04:  implication }
 -expr04:  if-then; expr04-bis.
 -expr04-bis: if-then-else; expr05.
-if-then:  condition,
-          s, (-"=>"; -"implies"), s, 
-          consequent.
+if-then:  condition, IMPLIES, consequent.
 if-then-else:  condition, 
-               s, (-"=>"; -"implies"), s, 
-               then-clause,
-               s, "else", s, 
+               IMPLIES, 
+               then-clause, S, 
                else-clause.
+IMPLIES: s, -"=>", s; S, -"implies", S.
 condition: expr05.
 consequent: expr04.
 then-clause: expr04-bis.
-else-clause: expr04.
+else-clause: -"else", S, expr04.
 #+END_SRC
 We give the then-clause two different names in order to
 capture the required difference in allowed content.
@@ -604,9 +600,8 @@ capture the required difference in allowed content.
 #+BEGIN_SRC ixml :tangle yes
 { expr05:  conjunction }
 -expr05:  conjunction; expr06.
-conjunction:  expr05, 
-              s, ("&&"; "and"), s, 
-              expr06.
+conjunction:  expr05, AND, expr06.
+AND: s, "&&", s; S, "and", S.
 #+END_SRC
 
 *** Negated expressions (/expr06/)
@@ -618,8 +613,8 @@ a double negation requires parentheses.
 #+BEGIN_SRC ixml :tangle yes
 { expr06:  negated expressions }
 -expr06:  negation; expr07.
-negation:  NOT, s, expr06.
-NOT: "!"; "not".
+negation:  NOT, expr06.
+NOT: "!", s; "not", S.
 #+END_SRC
 
 In /J/ and /G/, negation is just an instance of /unOp/:
@@ -645,12 +640,12 @@ lt:  expr07, s, "<",  s, expr08.
 gt:  expr07, s, ">",  s, expr08.
 le:  expr07, s, "=<", s, expr08.
 ge:  expr07, s, ">=", s, expr08.
-not-in:  expr07, S, NOT, s, "in", S, expr08.
-not-eq:  expr07, s, NOT, s, "=",  s, expr08.
-not-lt:  expr07, s, NOT, s, "<",  s, expr08.
-not-gt:  expr07, s, NOT, s, ">",  s, expr08.
-not-le:  expr07, s, NOT, s, "=<", s, expr08.
-not-ge:  expr07, s, NOT, s, ">=", s, expr08.
+not-in:  expr07, S, NOT, "in", S, expr08.
+not-eq:  expr07, s, NOT, "=",  s, expr08.
+not-lt:  expr07, s, NOT, "<",  s, expr08.
+not-gt:  expr07, s, NOT, ">",  s, expr08.
+not-le:  expr07, s, NOT, "=<", s, expr08.
+not-ge:  expr07, s, NOT, ">=", s, expr08.
 #+END_SRC
 
 /J/ and /G/ have:
@@ -751,7 +746,7 @@ a little complex because they can specify multiplicity
 on each side of the operator.
 #+BEGIN_SRC ixml :tangle yes
 -expr14: arrow-expr; expr15.
-arrow-expr: expr14, s, (left-mult, s)?, -"->", s, (right-mult, s)?, expr15.
+arrow-expr: expr14, (S, left-mult)?, s, -"->", s, (right-mult, S)?, expr15.
 left-mult:  -mult; "set".
 right-mult:  -mult; "set".
 #+END_SRC

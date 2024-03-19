@@ -74,42 +74,37 @@ sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
 
 { expr02:  disjunctions }
 -expr02:  disjunction; expr03.
-disjunction:  expr02, 
-              s, (-"||"; -"or"), s, 
-              expr03.
+disjunction:  expr02, OR, expr03.
+OR: s, -"||", s; S, -"or", S.
 
 { expr03:  bi-implication }
 -expr03:  bi-implication; expr04.
-bi-implication:  expr03, 
-                 s, (-"<=>"; -"iff"), s, 
-                 expr04.
+bi-implication:  expr03, IFF, expr04.
+IFF: s, -"<=>", s; S, -"iff", S.
 
 { expr04:  implication }
 -expr04:  if-then; expr04-bis.
 -expr04-bis: if-then-else; expr05.
-if-then:  condition,
-          s, (-"=>"; -"implies"), s, 
-          consequent.
+if-then:  condition, IMPLIES, consequent.
 if-then-else:  condition, 
-               s, (-"=>"; -"implies"), s, 
-               then-clause,
-               s, "else", s, 
+               IMPLIES, 
+               then-clause, S, 
                else-clause.
+IMPLIES: s, -"=>", s; S, -"implies", S.
 condition: expr05.
 consequent: expr04.
 then-clause: expr04-bis.
-else-clause: expr04.
+else-clause: -"else", S, expr04.
 
 { expr05:  conjunction }
 -expr05:  conjunction; expr06.
-conjunction:  expr05, 
-              s, ("&&"; "and"), s, 
-              expr06.
+conjunction:  expr05, AND, expr06.
+AND: s, "&&", s; S, "and", S.
 
 { expr06:  negated expressions }
 -expr06:  negation; expr07.
-negation:  NOT, s, expr06.
-NOT: "!"; "not".
+negation:  NOT, expr06.
+NOT: "!", s; "not", S.
 
 { expr07: comparisons } 
 -expr07:  comparison; expr08.
@@ -121,12 +116,12 @@ lt:  expr07, s, "<",  s, expr08.
 gt:  expr07, s, ">",  s, expr08.
 le:  expr07, s, "=<", s, expr08.
 ge:  expr07, s, ">=", s, expr08.
-not-in:  expr07, S, NOT, s, "in", S, expr08.
-not-eq:  expr07, s, NOT, s, "=",  s, expr08.
-not-lt:  expr07, s, NOT, s, "<",  s, expr08.
-not-gt:  expr07, s, NOT, s, ">",  s, expr08.
-not-le:  expr07, s, NOT, s, "=<", s, expr08.
-not-ge:  expr07, s, NOT, s, ">=", s, expr08.
+not-in:  expr07, S, NOT, "in", S, expr08.
+not-eq:  expr07, s, NOT, "=",  s, expr08.
+not-lt:  expr07, s, NOT, "<",  s, expr08.
+not-gt:  expr07, s, NOT, ">",  s, expr08.
+not-le:  expr07, s, NOT, "=<", s, expr08.
+not-ge:  expr07, s, NOT, ">=", s, expr08.
 
 -expr08: quantified-expression; 
          expr09.
@@ -161,7 +156,7 @@ overlay: expr13.
 intersection:  expr13, s, "&", s, expr14.
 
 -expr14: arrow-expr; expr15.
-arrow-expr: expr14, s, (left-mult, s)?, -"->", s, (right-mult, s)?, expr15.
+arrow-expr: expr14, (S, left-mult)?, s, -"->", s, (right-mult, S)?, expr15.
 left-mult:  -mult; "set".
 right-mult:  -mult; "set".
 
