@@ -445,7 +445,7 @@ This multi-leveled definition of /expr/ comes close to describing the
 sentences accepted by the Alloy Analyzer and producing appropriate
 trees, but there are some cases where this grammar requires
 parentheses in inputs accepts without parentheses by the Analyzer; see
-the discussion of [[BOP-POP][unary and binary operators and their interaction]]
+the discussion of [[#BOP-POP][unary and binary operators and their interaction]]
 below.
 
 *** /Let/ expressions, quantified expressions (/expr01/)
@@ -1577,6 +1577,9 @@ name: -name-minus-reserved-words
 #+end_src
 
 ** Operator precedence and interactions of binary and unary operators
+:PROPERTIES:
+:CUSTOM_ID: BOP-POP
+:END:
 
 For the most part, the multi-level grammar for expressions given [[#expressions][above]]
 accepts the same language as the Alloy Analyzer and produces the same
