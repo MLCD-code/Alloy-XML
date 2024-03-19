@@ -116,9 +116,9 @@ qualified by a prepended path) and may specify a series of
 signature parameters given in square brackets.
 
 #+BEGIN_SRC ixml :tangle yes
-  -module-decl: -"module", s, module-name, (s, parameters)?.
-  module-name: OQName.
-  parameters:  "[", s, name++comma, s, "]".
+-module-decl: -"module", s, module-name, (s, parameters)?.
+module-name: OQName.
+parameters:  -"[", s, name++comma, s, -"]".
 #+END_SRC
 
 /J/:
@@ -158,9 +158,9 @@ consisting of the qualified name of a signature.  The module can also
 be given an alias.
 
 #+BEGIN_SRC ixml :tangle yes
-import: (private, s)?, -"open", s, OQName, s,
+import: (private, S)?, -"open", s, OQName, s,
         (module-arguments, s)?,
-        ("as", s, alias)?.
+        (-"as", s, alias)?.
 module-arguments: "[", s, ref++comma, s, "]".
 alias: -name.
 #+END_SRC
@@ -202,14 +202,14 @@ they participate (as the left-most member), and may optionally impose
 constraints on them.
 
 #+BEGIN_SRC ixml :tangle yes
-sig-decl: ("private", s)?, ("abstract", s)?, (mult, s)?, 
-          -"sig", S, name++comma, s,
+sig-decl: (private, S)?, (abstract, S)?, (@mult, S)?, 
+          -"sig", S, name++comma, S,
           (sig-ext, s)?,
           sig-body, 
           (s, sig-constraints)?.
-sig-ext: extends; superset.
+sig-ext: extends; subset-of.
 extends: -"extends", S, ref.
-superset: -"in", S, ref++plus.
+subset-of: -"in", S, ref++plus.
 sig-body: -"{", s, (decl++comma, s)?, -"}".
 sig-constraints: -block.
 #+END_SRC
@@ -230,13 +230,13 @@ sigExt ::= "in" ref ["+" ref]*
 
 * Functions and predicates
 #+BEGIN_SRC ixml :tangle yes
-fun-decl: (private, s)?, 
-          "fun", s, (ref, ".")?, name, s, (args, s)?, ":", s, 
+fun-decl: (private, S)?, 
+          -"fun", S, (ref, ".")?, name, s, (args, s)?, ":", s, 
           expr, s, block.
-pred-decl: (private, s)?, 
-           "pred", s, (ref, ".")?, name, s, (args, s)?, block.
-args:  "(", s, decl**comma, s, ")"
-    |  "[", s, decl**comma, s, "]".
+pred-decl: (private, S)?, 
+           -"pred", S, (ref, ".")?, name, s, (args, s)?, block.
+args:  -"(", s, decl**comma, s, -")"
+    |  -"[", s, decl**comma, s, -"]".
 #+END_SRC
 
 /J/:
@@ -261,8 +261,8 @@ funDecl ::= ["private"] "pred" [ref "."] name                block
 Facts and assertions are statements about the universe.
 Assertions may or may not be true; facts are true by fiat.
 #+BEGIN_SRC ixml :tangle yes
-fact-decl: "fact", s, (name, s)?, block.
-assert-decl: "assert", s, (name, s)?, block.
+fact-decl: -"fact", S, (name, s)?, block.
+assert-decl: -"assert", S, (name, s)?, block.
 #+END_SRC
 
 /J/:
@@ -283,13 +283,18 @@ states of affairs within instances with a given maximum size (scope):
 seek instances of a predicate, seek counter-examples to an assertion.
 
 #+BEGIN_SRC ixml :tangle yes
-cmd-decl: (name, s, ":", s)?, ("run"|"check"), S, (name|block), (S, scope)?.
+cmd-decl: (@name, s, -":", s)?, @verb, S, (name|block), (S, scope)?.
+verb: "run"|"check".
 scope: expectation
-       | "for", S, numbers, S, expectation?.
--numbers: number, (s, "but", s, typescope++comma)?
+       | typescopes.
+typescopes: -"for", S, numbers, (S, expectation)?.
+-numbers: number, (s, exceptions)?
        | typescope++comma.
-expectation:  "expect", s, ("0" | "1").
-typescope: ("exactly", s)?, number, s, (name|"int"|"seq")?.
+expectation:  -"expect", s, ("0" | "1").
+typescope: exact-scope; max-scope.
+exact-scope: -"exactly", s, -max-scope.
+max-scope: number, s, (name|"int"|"seq").
+exceptions: "but", s, typescope++comma.
 #+END_SRC
 
 /J/:
@@ -308,7 +313,9 @@ scope ::= "for"              typescope,+ ["expect" (0|1)]
 scope ::=                                ["expect" (0|1)]
 typescope ::= ["exactly"] number [name|"int"|"seq"]
 #+END_SRC
-
+/G/'s definition of /typescope/ introduces an ambiguity;
+I'm going to go with /J/, which requires an identifier of
+some kind.
 * Common constructs
 ** Declarations
 
@@ -317,7 +324,10 @@ own section here rather than putting them with just one of
 their possible contexts.
 
 #+BEGIN_SRC ixml :tangle yes
-decl: (private, s)?, ("disj", s)?, name++comma, s, ":", s, ("disj", s)?, expr.
+decl: (private, s)?, (disj, S)?, variable++comma, s, -":", s, bounds.
+disj: -"disj".
+variable: -name.
+bounds: (disj, S)?, expr.
 #+END_SRC
 
 /J/:
@@ -331,6 +341,9 @@ decl ::= ["private"] ["disj"] name,+ ":" ["disj"] expr
 #+END_SRC
 
 ** Expressions
+:PROPERTIES:
+:CUSTOM_ID: expressions
+:END:
 
 Like many grammars involving multiple operators, both /J/ and /G/ use
 a single highly ambiguous production rule for expressions (/expr/),
@@ -428,37 +441,12 @@ seem implausible.  If we ever need needing logical expressions as
 function arguments, we'll need parentheses.  (Or maybe we should just
 use /expr/.)
 
-There is a complication that needs to be described briefly here.  I
-have not found any very clear explicit statement about this in
-discussions of operator precedence parsing (e.g. in Grune and Jacobs),
-but the behavior of parsers (e.g. in Alloy and SWI Prolog) and
-discussions on the web suggest that unary operators which bind loosely
-can appear without parentheses in the operands of binary operators
-which bind tightly, since they don't give rise to ambiguity.
-
-For example, consider a language with binary operator BOP, unary
-prefix operator POP, and unary suffix operator SOP.  In the pattern /a
-SOP BOP POP b/, there is no possible ambiguity, regardless of
-positions in the precedence hierarchy: SOP can only govern /a/, POP
-can only govern /b/.  The precedence comes into place only in a
-pattern like /POP a BOP b SOP/, in which the precedence hierarchy
-determines whether this is parsed as (POP (a BOP (b SOP))) or ((POP (a
-BOP b)) SOP), or one of the other possible structures shown below.
-
-[[file:images/PBS.dot.png]]
-
-Concretely, Alloy accepts without demur an expression like /p and some
-x : Doc | q[x]/, with an unparenthesized level-1 quantified formula as
-the right operand of a level-5 conjunction.
-
-To model this behavior, we need the right-hand side of any binary
-operator to allow expressions rooted in prefix unary operators (let,
-all, some, ... in level 1; negation at level 6; quantified expressions
-at level 8; cardinality (#) at level 11) even if they bind less
-tightly.  The same should at least in  principle be true of the sole
-suffix operator (box-join):  if operator precedence applies only when
-necessary to resolve ambiguity, then /a[b].c/ should clearly be
-parsed as /(a[b]).c/ and resolved ultimately to /(b.a).c/.
+This multi-leveled definition of /expr/ comes close to describing the
+sentences accepted by the Alloy Analyzer and producing appropriate
+trees, but there are some cases where this grammar requires
+parentheses in inputs accepts without parentheses by the Analyzer; see
+the discussion of [[BOP-POP][unary and binary operators and their interaction]]
+below.
 
 *** /Let/ expressions, quantified expressions (/expr01/)
 :PROPERTIES:
@@ -473,8 +461,9 @@ parsed as /(a[b]).c/ and resolved ultimately to /(b.a).c/.
          all-ex01; none-ex01; some-ex01; lone-ex01; one-ex01; sum-ex01; 
          expr02.
 
-let-expr:  "let", s, let-decl++comma, s, block-or-bar.
-let-decl: name, s, "=", s, expr.
+let-expr:  -"let", s, let-decl++comma, s, block-or-bar.
+let-decl: variable, s, "=", s, value.
+value: expr.
 
 { quantified expressions }
 all-ex01:  "all",  S, decl++comma, s, block-or-bar.
@@ -483,12 +472,6 @@ some-ex01: "some", S, decl++comma, s, block-or-bar.
 lone-ex01: "lone", S, decl++comma, s, block-or-bar.
 one-ex01:  "one",  S, decl++comma, s, block-or-bar.
 sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
-
-{ level-1 prefix expressions }
-
-prefix-ex01: let-expr; all-ex01; none-ex01; 
-             some-ex01; lone-ex01; one-ex01; 
-             sum-ex01.
 #+END_SRC
 
 For now /block-or-bar/ is defined as containg /expr/.  I think that that
@@ -511,8 +494,8 @@ expr ::= quant decl,+    blockOrBar.
 { expr02:  disjunctions }
 -expr02:  disjunction; expr03.
 disjunction:  expr02, 
-              s, ("||"; "or"), s, 
-              (expr03; prefix-ex01).
+              s, (-"||"; -"or"), s, 
+              expr03.
 #+END_SRC
 
 In /J/ and /G/, disjunctions are the first of many instances of
@@ -528,8 +511,8 @@ Bi-implication is another binary operator.
 { expr03:  bi-implication }
 -expr03:  bi-implication; expr04.
 bi-implication:  expr03, 
-                 s, ("<=>"; "iff"), s, 
-                 (expr04; prefix-ex01).
+                 s, (-"<=>"; -"iff"), s, 
+                 expr04.
 #+END_SRC
 
 *** Implications (/expr04/)
@@ -600,15 +583,21 @@ levels of precedence.
 { expr04:  implication }
 -expr04:  if-then; expr04-bis.
 -expr04-bis: if-then-else; expr05.
-if-then:  expr05, 
-          s, ("=>"; "implies"), s, 
-          (expr04; prefix-ex01).
-if-then-else:  expr05, 
-               s, ("=>"; "implies"), s, 
-               expr04-bis, 
+if-then:  condition,
+          s, (-"=>"; -"implies"), s, 
+          consequent.
+if-then-else:  condition, 
+               s, (-"=>"; -"implies"), s, 
+               then-clause,
                s, "else", s, 
-               (expr04; prefix-ex01).
+               else-clause.
+condition: expr05.
+consequent: expr04.
+then-clause: expr04-bis.
+else-clause: expr04.
 #+END_SRC
+We give the then-clause two different names in order to
+capture the required difference in allowed content.
 
 *** Conjunctions (/expr05/)
 
@@ -617,7 +606,7 @@ if-then-else:  expr05,
 -expr05:  conjunction; expr06.
 conjunction:  expr05, 
               s, ("&&"; "and"), s, 
-              (expr06; prefix-ex01).
+              expr06.
 #+END_SRC
 
 *** Negated expressions (/expr06/)
@@ -625,17 +614,13 @@ conjunction:  expr05,
 Jackson appears not to say explicitly that negation is
 right-associative, but it cannot be left-associative
 and I think it's probably a bad idea to try to say that
-a double negation requires parentheses.
+a double negation requires parentheses. 
 #+BEGIN_SRC ixml :tangle yes
 { expr06:  negated expressions }
 -expr06:  negation; expr07.
-negation:  NOT, s, (expr06; prefix-ex01).
+negation:  NOT, s, expr06.
 NOT: "!"; "not".
 #+END_SRC
-
-Including /prefix-ex01/ allows expressions like /not all a : Addr |
-some n : Name | a->n in address/ without parentheses around everything
-following the /not/.
 
 In /J/ and /G/, negation is just an instance of /unOp/:
 #+BEGIN_SRC ebnf4 :tangle no
@@ -672,11 +657,6 @@ not-ge:  expr07, s, NOT, s, ">=", s, expr08.
 #+begin_src ebnf4 :tangle no
 expr ::= expr ["!"|"not"] compareOp expr.
 #+end_src
-
-Since these comparison operators expect integer operands,
-there is no need to allow /prefix-ex01/ expressions on their
-right-hand sides.
-
 *** Expression quantifiers and multiplicities (/expr08/)
 Quantifiers may be used not only on formulas (see [[#expr01][above]])
 but also on expressions.  Here, the quantifiers are classed
@@ -691,7 +671,8 @@ no-ex08: "no", S, expr07.
 some-ex08: "some", S, expr07.
 lone-ex08: "lone", S, expr07.
 one-ex08: "one", S, expr07. 
-set-ex08: "set", S, expr07.
+set-ex08: -"set", S, member-type.
+member-type: expr07.
 seq-ex08: "seq", S, expr07.
 #+END_SRC
 
@@ -712,8 +693,7 @@ expr ::= unOp expr.
 
 The grammar file defines operators "<<", ">>", and ">>>" at precedence
 level 9.  These are not documented in Jackson's book¸but in the
-[[http://alloytools.org/quickguide/a4.html][supplementary
-documentation of Alloy 4] on the Alloy Tools web site, they are
+[[http://alloytools.org/quickguide/a4.html][supplementary documentation of Alloy 4]] on the Alloy Tools web site, they are
 identified as left shift ("~<<~"), sign-extended right shift ("~>>~"),
 and zero-extended right shift ("~>>>~").  The Alloy.cup grammar of
 Alloy 6 assigns them the names SHL, SHA, and SHR, respectively.
@@ -734,8 +714,10 @@ SHA-expr: expr09, s, ">>", s, expr10.
 #+BEGIN_SRC ixml :tangle yes 
 -expr10:  union; set-diff; expr11.
 union: expr10, s, "+", s, expr11.
-set-diff: expr10, s, "-", s, expr11.
+set-diff: expr10, s, "-", careful-ws, expr11.
 #+END_SRC
+
+Note that whitespace is required after the 
 
 *** Cardinality (#) (/expr11/)
 
@@ -821,15 +803,44 @@ selector: expr10.
 #+begin_src ebnf4
 expr ::= expr "[" expr,* "]".
 #+end_src
+
+It should be noted that box join is syntactically identical
+to function or predicate application.  Some discussion may be
+helpful, since the relation may not be intuitively obvious.
+Functions are treated in Alloy as relations (following the model
+of Z), so a function declared
+#+begin_src Alloy
+fun f [x : A] : B { ... }
+#+end_src
+is effectively a set of (/A/, /B/) pairs.  The expression ~f[a]~
+is defined as equivalent to ~a.f~, and returns the atoms in set /B/
+which are the images of ~a~ in the functional relation /f/.
+
+If the function has more than one argument, its name denotes a
+relation of appropriate arity.  Suppose /f/ has the signature /A/ ×
+/B/ × /C/ × /D/, and ~a~, ~b~, ~c~ are atoms in sets /A/, /B/, /C/
+respectively.  The expression ~f[a,b,c]~ is equivalent (see p. 279) to
+~f[a][b][c]~ and thus to ~(a.f)[b][c]~, ~(b.(a.f))[c]~,
+~(c.(b.(a.f))~.  The type of /f/ is /A/ × /B/ × /C/ × /D/, so the type
+of ~a.f~ is /B/ × /C/ × /D/, the type of ~b.(a.f)~ is /C/ × /D/, and
+the type of the entire expression is /D/.
+
+Predicates could perhaps be regarded as a tuple formed from the
+arguments with an added Boolean value at the end, but since Alloy does
+not have a Boolean type, that view is necessrily metalinguistic and
+cannot be expressed in Alloy.  
+
 *** Dot join (/expr18/)
 #+BEGIN_SRC ixml :tangle yes
 -expr18: dot-join; expr19.
-dot-join: expr18, s, ".", s, expr19.
+dot-join: expr17, s, ".", s, expr19.
 #+END_SRC
 
 Note that we define /dot-join/ as accepting /expr17/ on its
 left side, in order to allow box-join in the left operand.
-(Still looking for an example in the book.)
+(In chapter 6, the assertion /PasteNotAffectHidden/ [p. 213]
+includes the subexpression ~xs'.catalogState[c].hidden~,
+which in context.)
 *** Tightly binding unary operators (/expr19/)
 It's not completely clear whether Alloy 4 intends these three unary
 operators to be right-associative or non-associative.  The Alloy 6
@@ -1087,9 +1098,9 @@ In /G/, constants are not separately identified.
 ** Separators
 
 #+BEGIN_SRC ixml :tangle yes
--comma: s, ",", s.
-slash: s, "/", s.
-plus:  s, "+", s.
+-comma: s, -",", s.
+slash: s, -"/", s.
+plus:  s, -"+", s.
 #+END_SRC
 
 ** Whitespace
@@ -1106,14 +1117,20 @@ CR: #D. }
 #+END_SRC
 
 ** Comments
-There are two kinds of comments: from "//" or "--" to the
-end of the line, and from "~/*~" to "~*/~".  The first is
-fairly straightforward.
+There are two kinds of comments: from "//" or "--" to the end of the
+line, and from "~/*~" to "~*/~".  The one-liners are fairly
+straightforward.  We distinguish them in order to specify that
+following the set-difference operator "-" no double-hyphen comment may
+immediately follow.  (The example on page 300 of /SA/ is otherwise
+ambiguous because of the comment reading "~------------- bug! (see
+page 306)~".)
 
 #+BEGIN_SRC ixml :tangle yes
-comment:  one-liner; slash-star.
--one-liner:  (-"--" | -"//"), ~[#A; #D]*, NL.
+comment:  double-slash; double-hyphen; slash-star.
+-double-slash:  -"//", ~[#A; #D]*, NL.
+-double-hyphen: -"--", ~[#A; #D]*, NL.
 -NL: -#D?, -#A.
+careful-ws: ((ws_char; double-slash; slash-star), s)?.
 #+END_SRC
 
 Slash-star comments don't nest and /slash-star/ thus defines
@@ -1205,6 +1222,7 @@ UNIV: "univ".
 INT: "Int".
 SEQINT: "seq/Int".
 private: "private".
+abstract: "abstract".
 #+END_SRC
 
 * Miscellaneous
@@ -1563,3 +1581,101 @@ name: -name-minus-reserved-words
     ; "iden".
 #+end_src
 
+** Operator precedence and interactions of binary and unary operators
+
+For the most part, the multi-level grammar for expressions given [[#expressions][above]]
+accepts the same language as the Alloy Analyzer and produces the same
+(or acceptably similar) parse trees.  But there are exceptions which
+arise from the interaction of binary infix operators and unary prefix
+(or suffix) operators.
+
+When an operator-precedence table is used (as in the definition of
+Alloy) to specify the binding strengths of operators, there appear to
+be two ways to interpret the ordering.  One is to say that in any
+abstract syntax tree produced from unparenthesized input, parent/child
+relations will hold between operators of different binding strengths
+only when the parent binds less tightly than the child. Thus in a
+language with two left-associative binary operators Bop and BOP, in
+which BOP binds tighter than Bop, the input
+#+begin_example
+a Bop b BOP c
+#+end_example
+will be parsed as a Bop expression whose left-hand operand is /a/ and
+whose right-hand argument is a BOP.  To use the notation of Prolog
+structures: Bop(a, BOP(b, c)). Since BOP is left-associative, then the
+input
+#+begin_example
+a BOP b BOP c
+#+end_example
+will produce BOP(BOP(a, b), c).
+
+Another way to interpret the precedence table is to say that when the
+sentence would otherwise be ambiguous, the precedence table shows
+which parse tree to prefer.  On the examples just given, it produces
+the same results.  When an operand (in these examples, /b/) has an
+operator on each side, the precedence table shows which operator
+governs it most directly.
+
+The two views differ, however, when the language also has unary
+operators (prefix or suffix), an in particular when some unary
+operators bind less tightly than some binary operators.
+
+If our imaginary language also has a unary prefix operator Pop, which
+binds less tightly than Bop or BOP, then both views agree that the
+input
+#+begin_example
+Pop a BOP b
+#+end_example
+will produce Pop(BOP(a, b)).  But what about the input
+#+begin_example
+a BOP Pop b
+#+end_example
+in which the prefix operator and the binary operator are adjacent?
+
+On the first view, there is an operator priority clash: BOP and Pop
+both might govern operand /b/, and Pop is closer, but BOP binds more
+tightly. Parsing this input as BOP(a, Pop(b)) would violate the rule
+that unparenthesized input never produces a syntax tree with a
+loose-binding operator (Pop) as a child of a tight-binding operator
+(BOP).  This is the behavior of the operator-precedence parser built
+into Prolog systems.
+
+On the second view, the relative priority of the operators is not
+relevant to the case.  There is only one candidate tree, and no need
+to consult the precedence table in order to decide which tree to
+accept.  This is the behavior observable in parsers built using yacc
+and similar tools built to work like yacc.  Concretely, those parsers
+use the precedence table to resolve shift/reduce conflicts.  Since
+there is no shift-reduce conflict in the input "a BOP Pop b", the
+positions of BOP and Pop in the precedence table are immaterial.
+
+Concretely, Alloy accepts without demur an expression like /p and some
+x : Doc | q[x]/, with an unparenthesized level-1 quantified formula as
+the right operand of a level-5 conjunction.
+
+We could attempt to model this behavior by making the right-hand side
+of any binary operator allow expressions rooted in prefix unary
+operators (let, all, some, ... in level 1; negation at level 6;
+quantified expressions at level 8; cardinality (#) at level 11) even
+if they bind less tightly.
+
+But this change to the grammar has the unfortunate side effect that an
+input of the form
+#+begin_example
+a BOP Pop b BOP c
+#+end_example
+is ambiguous between BOP(a, Pop(BOP(b, c))) and BOP(BOP(a, Pop(b)),
+c).  Yacc-style parsers (and the Analyzer) will prefer the former.  An
+ixml processor will simply choose one and inform the user that there
+were others.
+
+Similar considerations apply in the case of the suffix operator
+box-join.  The Alloy Analyzer accepts the input "a.b[c].d", which a
+strictly leveled grammar would reject.  (Such expressions do occur in
+the sample models, so I would like to accept them if possible.)  For
+reasons I am not sure I understand, allowing the left-hand side of the
+dot-join operator to include box joins does not seem to lead to
+adverse consequences.  It may possibly introduce an ambiguity; if so,
+the ambiguity may be harmless.
+
+Further investigation is needed.
