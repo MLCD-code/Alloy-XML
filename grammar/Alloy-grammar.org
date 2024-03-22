@@ -293,7 +293,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -"exactly", s, -max-scope.
-max-scope: number, s, (name|"int"|"seq").
+max-scope: number, s, (OQName|"int"|"seq").
 exceptions: "but", s, typescope++comma.
 #+END_SRC
 
@@ -839,13 +839,17 @@ which in context.)
 *** Tightly binding unary operators (/expr19/)
 It's not completely clear whether Alloy 4 intends these three unary
 operators to be right-associative or non-associative.  The Alloy 6
-CUP grammar declares them non-associative, so that's how they are
-defined here.
+CUP grammar declares them non-associative, so that's how they were
+initially defined here.
+
+But the sample model in ~examples/algorithms/opt_spantree.als~
+includes the expression ~Process in Root.*~(s.parent)~, where they
+are clearly meant to be right-associative.
 #+BEGIN_SRC ixml :tangle yes
 -expr19: inverse; t-closure; rt-closure; expr20.
-inverse: "~", s, expr20.
-t-closure: "^", s, expr20.
-rt-closure: "*", s, expr20.
+inverse: "~", s, expr19.
+t-closure: "^", s, expr19.
+rt-closure: "*", s, expr19.
 #+END_SRC
 
 *** Base expressions
@@ -929,24 +933,24 @@ The nonterminals /qualName/ and /name/ are typically serialized,
 unless a more informative nonterminal name is provided.
 
 #+BEGIN_SRC ixml :tangle yes
-  ref: OQName | UNIV | INT | SEQINT.
+ref: OQName | UNIV | INT | SEQINT.
 
-  -OQName:  qual-name; name.
+-OQName:  qual-name; name.
 
-  { qualName: ("this", "/")?, name++slash. }
-  { qual-name: THIS, "/", name++slash
-             | name, "/", name++slash. }
-  qual-name: THIS, -"/", (qual, -"/")*, name
-           | (qual, -"/")+, name.
-  qual: ID.
+{ qualName: ("this", "/")?, name++slash. }
+{ qual-name: THIS, "/", name++slash
+           | name, "/", name++slash. }
+qual-name: THIS, -"/", (qual, -"/")*, name
+         | (qual, -"/")+, name.
+qual: ID.
 
-  number: ['1'-'9'], digit*.
-  -digit: ['0'-'9'].
+number: ['1'-'9'], digit*.
+-digit: ['0'-'9'].
 
-  -ID: letter, (letter; digit; '_'; sq; dq)*.
-  -letter: ['a'-'z'; 'A'-'Z'].
-  -sq: "'" { single quote ' }.
-  -dq: '"' { double quote " }.
+-ID: letter, (letter; digit; '_'; sq; dq)*.
+-letter: ['a'-'z'; 'A'-'Z'].
+-sq: "'" { single quote ' }.
+-dq: '"' { double quote " }.
 #+END_SRC
 
 For reasons which will become clear later, we want the definition of /name/ in a separate code block.
@@ -1128,14 +1132,15 @@ comment:  double-slash; double-hyphen; slash-star.
 careful-ws: ((ws_char; double-slash; slash-star), s)?.
 #+END_SRC
 
-Slash-star comments don't nest and /slash-star/ thus defines
-a regular language.  For reasons which may be pragmatic or
-merely quixotic, I'd like to define the non-terminal with a
-single production rule with a regular expression on the
-right-hand side.  But experience shows that getting the
-regular expression correct can be tricky.  (Put it this way:
-it took the XML working group at least two weeks to get the
-definition of XML comments correct.)
+Slash-star comments don't nest and /slash-star/ thus defines a regular
+language.  For reasons which may be pragmatic or merely quixotic, I'd
+like to define the non-terminal with a single production rule with a
+regular expression on the right-hand side.  But experience shows that
+getting the regular expression correct can be tricky.  (Put it this
+way: it took the XML working group at least two weeks to get the
+definition of XML comments correct.  And we did so by abandoning
+conventional regular-expression syntax and introducing the
+set-difference operator.)
 
 But it is not hard to describe the desired language with a
 finite state automaton which is simple enough to inspire some
@@ -1504,6 +1509,7 @@ name-minus-reserved-words =
   'implie', (nc-not-s, namechar*)? ; 
   'implies', namechar+ ; 
   'in', namechar+ ; 
+  'int', namechar+ ; 
   'I', (nc-not-n, namechar*)? ; 
   'In', (nc-not-t, namechar*)? ; 
   'Int', namechar+ ; 
@@ -1567,13 +1573,17 @@ name: -name-minus-reserved-words.
 #+end_src
 
 But that's not quite right: the predefined names "none", "univ", and
-"iden" need to be included.
+"iden" need to be included.  Also "Int" and "int", which appear in
+scopes.
 
 #+begin_src ixml :tangle yes
 name: -name-minus-reserved-words
+    ; "iden"
+    ; "int"
+    ; "Int"
     ; "none"
     ; "univ"
-    ; "iden".
+    .
 #+end_src
 
 ** Operator precedence and interactions of binary and unary operators

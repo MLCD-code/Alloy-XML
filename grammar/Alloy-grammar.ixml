@@ -45,7 +45,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -"exactly", s, -max-scope.
-max-scope: number, s, (name|"int"|"seq").
+max-scope: number, s, (OQName|"int"|"seq").
 exceptions: "but", s, typescope++comma.
 
 decl: (private, s)?, (disj, S)?, variable++comma, s, -":", s, bounds.
@@ -177,9 +177,9 @@ selector: expr10.
 dot-join: expr17, s, ".", s, expr19.
 
 -expr19: inverse; t-closure; rt-closure; expr20.
-inverse: "~", s, expr20.
-t-closure: "^", s, expr20.
-rt-closure: "*", s, expr20.
+inverse: "~", s, expr19.
+t-closure: "^", s, expr19.
+rt-closure: "*", s, expr19.
 
 -expr20:  OQName;
           "@", s, name;
