@@ -1,0 +1,59 @@
+digraph bop {
+  // two trees over the same frontier
+
+  subgraph {
+  rank = same;
+  a; 
+  bop1 [label="BOP"];
+  b; 
+  bop2 [label="BOP"];
+  pop  [label="POP"];
+  c; 
+  bop3 [label="BOP"];
+  d;
+  }
+
+  be1 [label="bop-expr"];
+
+  node [color=navy fontcolor=navy;]
+
+  be2b [label="bop-expr"];
+  be3b [label="bop-expr"];
+  peb  [label="pop-expr"];
+
+  node [color=red fontcolor=red;]
+
+  be2r [label="bop-expr"];
+  be3r [label="bop-expr"];
+  per  [label="pop-expr"];
+
+  be1 -> a;
+  be1 -> bop1;
+  be1 -> b;
+
+  edge [ color=navy ];
+
+  be2b -> be1;
+  be2b -> bop2;
+  be2b -> peb;
+
+  peb -> pop;
+  peb -> c;
+  
+  be3b -> be2b;  
+  be3b -> bop3;  
+  be3b -> d;  
+
+  edge [ color=red ];
+
+  be2r -> be1;
+  be2r -> bop2;
+  be2r -> per;
+
+  per -> pop;
+  per -> be3r;
+
+  be3r -> c;
+  be3r -> bop3;
+  be3r -> d;
+}

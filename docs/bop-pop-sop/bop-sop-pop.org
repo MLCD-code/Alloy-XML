@@ -1,0 +1,873 @@
+#+title: Operator precedence test cases
+#+author: CMSMcQ 
+#+date: 21 March 2024
+
+This document describes some experiments with rendering
+operator-precedence grammars into ixml.
+
+The topic arose in connection with work on an ixml grammar for the
+modeling language Alloy.  The language of Alloy models is defined
+independently of any particular piece of software, but de facto the
+tool most people will use to work with Alloy models is the parser
+built in to the Alloy Analyzer.  Like a lot of people specifying
+programming languages and the like, the Alloy developers give an
+ambiguous definition for expressions, and rely on operator precedence
+and associativity declarations to eliminate ambiguity.  I think that's
+common for users of yacc and CUP and similar tools.
+
+Now, if I understand things correctly, I think the usual thinking is
+that operator precedence parsing makes the grammar more compact, but
+does not extend the expressive power of the formalism -- which if true
+would mean that given any ambiguous context-free grammar G
+supplemented by operator precedence declarations that resolve
+ambiguities, there must be a way to write a pure context-free grammar
+to recognize the same language, L(/G/).  Actually, what I need is
+something a bit more: I would like an /unambiguous/ grammar that
+recognizes /L(G)/ and also /produces the same ASTs/.
+
+I am beginning to think that there are cases where such a grammar is
+beyond our grasp.  So for practical reasons, perhaps I could settle
+for an ambiguous grammar which accepts /L(G)/ and produces the
+appropriate output trees with the help of Coffeepot's ~--choose~
+option.
+
+* The sample grammar
+
+Consider a language with a left-associative binary infix operator BOP, a
+right-associative unary prefix operator POP, and a non-associative unary
+suffix operator SOP, with precedence BOP, SOP, POP (tightest-binding
+first), and the following grammar:
+#+begin_src ixml :tangle grammars/BSP.ambiguous.ixml :noweb tangle
+  expression = s, expr, s.
+  expr = basic
+       ; expr, s, BOP, s, expr
+       ; POP, s, expr
+       ; expr, s, SOP
+       ; '(', s, expr, s, ')'.
+
+  { Low-level definitions }
+  <<Basics>>
+#+end_src
+
+Some nonterminals we are going to use several times, so we put them
+in a separate block:
+#+begin_src ixml :noweb-ref Basics
+  basic = ['abcde'].
+  BOP = -'BOP'.
+  POP = -'POP'.
+  SOP = -'SOP'.
+  -s = -[#9;#A;#D;#20]*.
+#+end_src
+
+First, let's consider some relatively unproblematic cases.
+
+The input "~a~" should turn into suitable XML.
+#+name: run_G0_a
+#+begin_src sh :results output verbatim :exports both
+/usr/bin/java \
+    -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp \
+    "a"; echo
+#+end_src
+
+#+results: run_G0_a
+: <expression>
+:    <expr>
+:       <basic>a</basic>
+:    </expr>
+: </expression>
+
+The input "~a BOP b~" should work, too.
+
+#+name: run_G0_aBOPb
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java \
+    -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp \
+    "a BOP b"; echo
+#+end_src
+
+#+results: run_G0_aBOPb
+#+begin_example
+<expression>
+   <expr>
+      <expr>
+         <basic>a</basic>
+      </expr>
+      <BOP/>
+      <expr>
+         <basic>b</basic>
+      </expr>
+   </expr>
+</expression>
+#+end_example
+
+The input "~a BOP b BOP c~", on the other hand, will be ambiguous,
+because the grammar says nothing about whether it's left or right
+associative.
+
+#+name: run_G0c
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp --parse-count 4\
+    "a BOP b BOP c"; echo
+#+end_src
+
+#+results: run_G0c
+#+begin_example
+<ixml parses="2" totalParses="2">
+<expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <expr>
+            <basic>a</basic>
+         </expr>
+         <BOP/>
+         <expr>
+            <basic>b</basic>
+         </expr>
+      </expr>
+      <BOP/>
+      <expr>
+         <basic>c</basic>
+      </expr>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <basic>a</basic>
+      </expr>
+      <BOP/>
+      <expr>
+         <expr>
+            <basic>b</basic>
+         </expr>
+         <BOP/>
+         <expr>
+            <basic>c</basic>
+         </expr>
+      </expr>
+   </expr>
+</expression></ixml>
+#+end_example
+
+And interactions between operators will also produce
+ambiguity:
+
+#+name: run_G0d
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp --parse-count 8\
+    "POP a BOP b SOP"; echo
+#+end_src
+
+#+RESULTS: run_G0d
+#+begin_example
+<ixml parses="5" totalParses="5">
+<expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <POP/>
+         <expr>
+            <basic>a</basic>
+         </expr>
+      </expr>
+      <BOP/>
+      <expr>
+         <expr>
+            <basic>b</basic>
+         </expr>
+         <SOP/>
+      </expr>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <expr>
+            <POP/>
+            <expr>
+               <basic>a</basic>
+            </expr>
+         </expr>
+         <BOP/>
+         <expr>
+            <basic>b</basic>
+         </expr>
+      </expr>
+      <SOP/>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <POP/>
+         <expr>
+            <expr>
+               <basic>a</basic>
+            </expr>
+            <BOP/>
+            <expr>
+               <basic>b</basic>
+            </expr>
+         </expr>
+      </expr>
+      <SOP/>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <POP/>
+      <expr>
+         <expr>
+            <expr>
+               <basic>a</basic>
+            </expr>
+            <BOP/>
+            <expr>
+               <basic>b</basic>
+            </expr>
+         </expr>
+         <SOP/>
+      </expr>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <POP/>
+      <expr>
+         <expr>
+            <basic>a</basic>
+         </expr>
+         <BOP/>
+         <expr>
+            <expr>
+               <basic>b</basic>
+            </expr>
+            <SOP/>
+         </expr>
+      </expr>
+   </expr>
+</expression></ixml>
+
+#+end_example
+
+The five parse trees here can be summarized more compactly as labeled
+trees:
+- BOP(POP(a), SOP(b))
+- SOP(BOP(POP(a), b))
+- SOP(POP(BOP(a, b)))
+- POP(SOP(BOP(a, b)))
+- POP(BOP(a, SOP(b)))
+
+
+* A leveled grammar
+
+We can (or so thought I) describe the same language without operator
+precedence rules by building them into the grammar in the style of
+XPath: just split /expr/ into different levels for each operator:
+
+#+begin_src ixml :tangle no
+  expr = expr-1.
+  expr-1 = expr-2; POP, expr-1.
+  expr-2 = expr-3; expr-3, SOP.
+  expr-3 = expr-4; expr-3, BOP, expr-4.
+  expr-4 = basic; '(', s, expr, s, ')'.
+#+end_src
+
+Or -- this is ixml, let's give ourselves useful names for the elements
+we are going to get:
+
+#+begin_src ixml :tangle grammars/BSP.leveled.ixml :noweb tangle
+  expression = s, expr, s.
+       -expr = expr-1.
+     -expr-1 = pop-expr; expr-2.
+    pop-expr = POP, s, expr-1.
+     -expr-2 = sop-expr; expr-3.
+    sop-expr = expr-3, s, SOP.
+     -expr-3 = bop-expr; expr-4.
+    bop-expr = expr-3, s, BOP, s, expr-4.
+     -expr-4 = basic; '(', s, expr, s, ')'.
+
+    <<Basics>>
+#+end_src
+
+Now it's clear how "POP a BOP b SOP" is parsed: as (POP ((a BOP b)
+SOP)).  Hurrah.
+
+#+name: run_G1A
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.leveled.ixml \
+    -pp --parse-count 4\
+    "POP a BOP b SOP"; echo
+#+end_src
+
+#+RESULTS: run_G1A
+#+begin_example
+<expression>
+   <pop-expr>
+      <POP/>
+      <sop-expr>
+         <bop-expr>
+            <basic>a</basic>
+            <BOP/>
+            <basic>b</basic>
+         </bop-expr>
+         <SOP/>
+      </sop-expr>
+   </pop-expr>
+</expression>
+#+end_example
+
+Since we now have names for /pop-expr/, /bop-expr/ and /sop-expr/, the
+rules for /BOP/ etc. could be hidden, but I won't bother with that.
+
+In the leveled grammar, BOP is clearly left-associative:
+#+name: run_G1b
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.leveled.ixml \
+    -pp --parse-count 8\
+    "a BOP b BOP c"; echo
+#+end_src
+
+#+RESULTS: run_G1b
+#+begin_example
+<expression>
+   <bop-expr>
+      <bop-expr>
+         <basic>a</basic>
+         <BOP/>
+         <basic>b</basic>
+      </bop-expr>
+      <BOP/>
+      <basic>c</basic>
+   </bop-expr>
+</expression>
+#+end_example
+
+
+* A discrepancy between the grammars
+
+There is, however, a catch.  Consider the input:
+
+#+begin_src bop :tangle tests/a.bop.b.bop.pop.c.txt
+a BOP b BOP POP c
+#+end_src
+
+This is constructed to parallel a real-world example in Alloy which
+the author had clearly intended, and the Alloy parser clearly parsed,
+as equivalent to
+
+#+begin_src bop :tangle tests/a.bop.b.bop.pop.c.bis.txt
+  (a BOP b) BOP (POP c)
+#+end_src
+
+But the leveled grammar simply doesn't accept the input; it requires
+parentheses around (POP c) because the right-hand operand of BOP
+contains only an /expr-4/, and ~POP c~ is an /expr-1/.
+
+#+name: run_G1c
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.leveled.ixml \
+    -pp --parse-count 1\
+    "a BOP b BOP POP c"; echo
+#+end_src
+
+#+RESULTS: run_G1c
+: <fail xmlns:ixml='http://invisiblexml.org/NS' ixml:state='failed'>
+:    <line>1</line>
+:    <column>14</column>
+:    <pos>13</pos>
+:    <unexpected>P</unexpected>
+:    <permitted>'(', [#9; #A; #D; ' '], [#9; #A; #D; ' '], ['abcde']</permitted>
+: </fail>
+
+Of course, it parses without trouble if we wrap the pop-expression in
+parentheses as "~a BOP b BOP (POP c)~".
+#+name: run_G1d
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.leveled.ixml \
+    -pp --parse-count 1\
+    "a BOP b BOP (POP c)"; echo
+#+end_src
+
+#+RESULTS: run_G1d
+#+begin_example
+<expression>
+   <bop-expr>
+      <bop-expr>
+         <basic>a</basic>
+         <BOP/>
+         <basic>b</basic>
+      </bop-expr>
+      <BOP/>(
+      <pop-expr>
+         <POP/>
+         <basic>c</basic>
+      </pop-expr>)</bop-expr>
+</expression>
+#+end_example
+
+But in that case, I have not defined quite the same language as the
+operator-precedence grammar: I'm requiring parens in a case where it
+does not.
+
+* What does the operator precedence table mean in this case?
+
+I have not found any very clear or persuasive discussion of the issue,
+but how to deal with or understand the interaction of unary operators
+and binary operators and their relative precedences does occasionally
+get discussed on the web, and the closest thing I've found to a coherent
+position is the view that operator precedence and associativity
+declarations only matter when you have to appeal to them to resolve an
+ambiguity.  When there is only one possible parse tree, they don't
+matter.  Imagine putting parens in, tightest bindings first.  BOP
+associates left, so we do the first BOP first:
+#+begin_src txt
+  (a BOP b) BOP POP c
+#+end_src
+
+For the second BOP operator, the left operand clearly must be the first
+bop-expressoin, and the right operand is also obvious:  it
+can't be just "~POP~", and it cannot be just "~c~" (what would
+we then do with the POP?), so it has to be "~POP c~".  So:
+#+begin_src txt
+  ((a BOP b) BOP (POP c))
+#+end_src
+
+And just to confirm that there is no other way to interpret this
+input, let's try parsing it against the original ambiguous grammar.
+We get (/drum roll, please ... !/) two parses, because the original
+grammar does not specify left- or right-associativity for BOP.  Oops.
+
+#+name: run_G0e
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp --parse-count 8\
+    "a BOP b BOP POP c"; echo
+#+end_src
+
+#+RESULTS: run_G0e
+#+begin_example
+<ixml parses="2" totalParses="2">
+<expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <expr>
+            <basic>a</basic>
+         </expr>
+         <BOP/>
+         <expr>
+            <basic>b</basic>
+         </expr>
+      </expr>
+      <BOP/>
+      <expr>
+         <POP/>
+         <expr>
+            <basic>c</basic>
+         </expr>
+      </expr>
+   </expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <expr>
+      <expr>
+         <basic>a</basic>
+      </expr>
+      <BOP/>
+      <expr>
+         <expr>
+            <basic>b</basic>
+         </expr>
+         <BOP/>
+         <expr>
+            <POP/>
+            <expr>
+               <basic>c</basic>
+            </expr>
+         </expr>
+      </expr>
+   </expr>
+</expression></ixml>
+
+#+end_example
+
+If we simplify the input to "~a BOP POP b~", the input is unambiguous
+against the original grammar.
+
+#+name: run_G0f
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.ambiguous.ixml \
+    -pp --parse-count 8\
+    "a BOP POP b"; echo
+#+end_src
+
+#+RESULTS: run_G0f
+#+begin_example
+<expression>
+   <expr>
+      <expr>
+         <basic>a</basic>
+      </expr>
+      <BOP/>
+      <expr>
+         <POP/>
+         <expr>
+            <basic>b</basic>
+         </expr>
+      </expr>
+   </expr>
+</expression>
+#+end_example
+
+That confirms the intuition that a parser which consults the
+precedence table only to resolve ambiguities can plausibly accept a
+POP expression as the right-hand operand to a BOP expression, even if
+the precedence table says that BOP binds tighter than POP.  Against
+the original grammar, this sentence is not ambiguous.
+
+It should be noted, on the other hand, that the operator-precedence
+parser in Prolog does /not/ accept this input, given appropriate
+declarations of the operators:
+#+begin_example
+?- op(610, yfx, bop), op(620, yf, sop), op(630, fy, pop).
+true.
+
+?- write_canonical( a bop b bop c ).
+bop(bop(a,b),c)
+true.
+
+?- write_canonical( pop a bop b sop ).
+pop(sop(bop(a,b)))
+true.
+
+?- write_canonical( a bop pop b ).
+ERROR: Syntax error: Operator priority clash
+ERROR: write_canonical( a bo
+ERROR: ** here **
+ERROR: p pop b ) . 
+?- 
+#+end_example
+
+That is, the Prolog parser's implementation of operator-precedence
+parsing makes it a rule that in parsing unparenthesized input, an
+operator /P/ can have an operator /Q/ as an operand if and only if the
+precedence value declared for /P/ is greater than or equal to the
+precedence value declared for /Q/.  (If the operand in question is
+declared with /x/, the operand's value must be strictly less than that
+of the parent; if it's declared /y/, the operand's value can equal
+that of the parent.)
+
+That interpretation of the operator precedence table is the one
+implicit in the leveled grammar.
+
+* An augmented leveled grammar
+
+Perhaps there is a solution.
+
+If any expression using a prefix-operator can occur on the right-hand
+side of a binary operator, then perhaps we should just say so.  Add
+pop-expr to the rule for the right-hand operand of BOP.  And similarly
+add sop-expr to the rule for its left-hand operand.  (N.B. In more
+complicated cases, you only do this for prefix and suffix operators of
+weaker binding power; otherwise, it introduces an unnecessary and
+pointless ambiguity.)
+
+#+begin_src ixml :tangle grammars/BSP.level-plus.ixml :noweb tangle
+  expression = s, expr, s.
+       -expr = expr-1.
+     -expr-1 = pop-expr; expr-2.
+    pop-expr = POP, s, expr-1.
+     -expr-2 = sop-expr; expr-3.
+    sop-expr = expr-3, s, SOP.
+     -expr-3 = bop-expr; expr-4.
+    bop-expr = (expr-3; sop-expr), 
+               s, BOP, s, 
+               (expr-4; pop-expr).
+     -expr-4 = basic; '(', s, expr, s, ')'.
+
+    <<Basics>>
+#+end_src
+
+Call this grammar the 'leveled-plus' approach: a leveled grammar plus
+special rules for the left and right operands of binary operators, to
+allow them to handle suitable prefix and suffix operators as operands.
+
+Now the grammar accepts the input "~a BOP b BOP POP c~" and gives it
+the desired structure.
+
+#+name: run_G2a
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.level-plus.ixml \
+    -pp \
+    "a BOP b BOP POP c"
+#+end_src
+
+#+RESULTS: run_G2a
+#+begin_example
+<expression>
+   <bop-expr>
+      <bop-expr>
+         <basic>a</basic>
+         <BOP/>
+         <basic>b</basic>
+      </bop-expr>
+      <BOP/>
+      <pop-expr>
+         <POP/>
+         <basic>c</basic>
+      </pop-expr>
+   </bop-expr>
+</expression>
+#+end_example
+
+Tada!
+
+* An ambiguity
+
+Unfortunately, there is another catch.
+
+Actually, the real-world example I mentioned before is a little more
+complicated:  in reality the example had the equivalent of 
+#+begin_src txt
+  a BOP b BOP POP c BOP d
+#+end_src
+with the same structure as
+#+begin_src txt
+  (a BOP b) BOP (POP (c BOP d))
+#+end_src
+
+When I ran the input against my leveled-plus grammar, what I got was a
+notice that the input was ambiguous.  Because the leveled-plus grammar
+allows two parses for the input:  the desired one shown above, and
+#+begin_src txt
+  ((a BOP b) BOP (POP c)) BOP d
+#+end_src
+
+In the real-world Alloy model, the clear intent was that the POP
+operator govern the binary operator to its right. That's what the
+Alloy parser does, and that's what yacc-style parsers do with such
+input, given the original grammar and precedence table.  But in the
+level-plus grammar,
+
+#+name: run_G2b
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.level-plus.ixml \
+    -pp --parse-count 2\
+    "a BOP b BOP POP c BOP d"
+#+end_src
+
+#+RESULTS: run_G2b
+#+begin_example
+<ixml parses="2" totalParses="2">
+<expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <bop-expr>
+      <bop-expr>
+         <bop-expr>
+            <basic>a</basic>
+            <BOP/>
+            <basic>b</basic>
+         </bop-expr>
+         <BOP/>
+         <pop-expr>
+            <POP/>
+            <basic>c</basic>
+         </pop-expr>
+      </bop-expr>
+      <BOP/>
+      <basic>d</basic>
+   </bop-expr>
+</expression><expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+   <bop-expr>
+      <bop-expr>
+         <basic>a</basic>
+         <BOP/>
+         <basic>b</basic>
+      </bop-expr>
+      <BOP/>
+      <pop-expr>
+         <POP/>
+         <bop-expr>
+            <basic>c</basic>
+            <BOP/>
+            <basic>d</basic>
+         </bop-expr>
+      </pop-expr>
+   </bop-expr>
+</expression></ixml>
+#+end_example
+
+
+
+* What now?
+
+I can think of a couple paths forward, neither of them very appealing.
+
+- Go back to the leveled grammar; require some parentheses.  It's not
+  the worst thing in the world.
+
+- Add a post-processor to look for an detect the structure
+
+  + bop-expr
+    - bop-expr
+      + whatever 1
+      + pop-expr
+        - whatever 2
+    - whatever 3
+    
+  and rewrite it appropriately as
+
+  + bop-expr
+    - whatever 1
+    - pop-expr
+      + bop-expr
+        - whatever 2
+        - whatever 3
+
+  Hmm.  To make this work, I have to make the parse tree retain parens,
+  so I can distinguish between "a BOP b BOP POP c BOP d" and "(a BOP b
+  BOP POP c) BOP d" and not screw up the latter.
+
+Is there any other way forward?
+
+Now that I re-read their section on operator-precedence parsing, I see
+that Grune and Jacob give a hint that maybe the usual thinking is not
+quite correct, and that operator-precedence parsers may in fact affect
+expressive power, at least in the sense of not necessarily producing the
+same trees.  First, they make a point that OP parsing does not produce
+full trees, only 'skeleton trees' without full labeling.  And second
+they say "In some sense [operator precedence] is even stronger than the
+more famous LR techniques:  operator precedence can easily handle
+ambiguous grammars, as long as the ambiguity remains restricted to the
+labeling of the tree. ... It achieves its partial superiority over LR by
+not fulfilling the complete task of parsing:  getting a completely
+labeled parse tree."
+
+Of course, in this case there is a structural difference between the two
+parses for "a BOP b BOP POP c BOP d", not just a labeling difference.
+And I am not sure I will ever really understand what G/J say about OP
+parsing unless I try to implement it, because my eyes just glaze right
+over.
+
+* Accepting ambiguity and choosing the correct tree
+
+Since writing the above, it has been called (again) to my attention
+that Coffeepot has a way to express a preference in cases of
+ambiguity.  Let's try it.  And more generally, let's consider the
+question: what kind of provisions for choosing among alternative
+parses would suffice to allow the correct choice to be made here? That
+is, what kinds of pragmas or extensions would an ixml processor need
+to offer, to allow us to tell it a reliable rule for choosing among
+the trees?
+
+Before we can attempt to answer that, though, we should try to answer
+the logically prior question: what exactly /is/ the rule here?  My
+best efforts at describing the two interpretations of
+operator-precedence tables can perhaps be summarized as follows.  I'll
+give them short names: Rule P (for the Prolog rule), Rule Y (for the
+yacc / CUP / LR parser rule).
+
+Some basic assumptions are true in both cases:
+
+- Every operator has a precedence value; following Prolog, we will
+  assign low values to tight-binding operators, high values to
+  loose-binding operators.
+
+- Basic operator-free expressions and parenthesized expressions
+  are taken to have precedence value 0.
+
+- Every operator is declared non-associative, left-associative, or
+  right-associative.
+
+- No production rule has a right-hand side containing more than one
+  operator, so no node in the parse tree has more than one operator as
+  a child.  Production rules (or equivalently: right-hand sides) are
+  assigned the precedence value of their operator if any.
+
+- We imagine an abstract syntax tree in which nodes immediately
+  dominating an operator will be annotated with that operator, so we
+  can talk about a BOP-node or a POP-node, or more generally an
+  op-node with a given precedence value.
+
+- Every unary op-node has one child identified as its operand; every
+  binary op-node has identifiable left and right operands.
+
+We can now formulate the two rules:
+
+- *Rule P:* Given unparenthesized input, every operand op-node has a
+  precedence value less than or equal to that of its parent.  For the
+  operand of a non-associative operator, the left operand of a
+  right-associative operator, or the right operand of a
+  left-associative operator, the operand's precedence value is strictly
+  less than that of its parent.
+
+  In the case of "~a BOP b BOP POP c BOP d~", this rule forbids any
+  tree in which a BOP-node has a POP-node as a child.
+
+  This is (unless I am mistaken) the rule implemented by the leveled
+  grammar.
+
+- *Rule Y:* Whenever there is a shift-reduce conflict between shifting
+  for an operator with precedence value /s/ and reducing for a rule
+  with precedence value /r/, then
+
+    + if /s/ < /r/, the shift is chosen; otherwise
+    + if /r/ < /s/, the reduction is chosen; otherwise
+    + the ambiguity cannot be resolved.
+
+  In the case of "~a BOP b BOP POP c BOP d~", this rule specifies that
+  given the choice between reducing the input string "~POP c~" by the
+  rule for POP expressions and shifting the third BOP token onto the
+  stack, the parser will choose the shift.  The reduction choice would
+  in this case ultimately make the POP an operand of the preceding BOP
+  and a descendant of the following BOP.  The shift choice will lead
+  ultimately to a reduction against the rule for BOP expressions and
+  then against the rule for POP expressions, and thus will have the
+  effect of parsing the BOP as a child or descendant of the POP).
+
+  This is the rule we need to follow if we wish to produce the same
+  abstract syntax trees as the Alloy Analyzer.
+
+It will not have escapted the reader's attention that Rule Y is
+thoroughly procedural and relies not on properties of the grammar
+rules or the possible parse trees but on situations that arise when
+using one particular parsing algorithm.  It would be nice to find some
+description of the rule that relies only on a description of the
+grammar, or of the parse trees.
+
+The grammar(s) are given above.  It may help to spend some time
+looking at the trees.
+
+** The two trees
+Ignoring whitespace, the two trees for "~a BOP b BOP POP c BOP d~" are
+shown in this diagram: one red, one navy-blue.  The material in black
+is common to both trees.
+
+[[file:images/a.bop.b.bop.pop.c.bop.d.dot.svg]]
+
+** The parse-forest grammar
+Another way to look at the trees produced for an ambiguous sentence is
+the parse forest grammar.  In this case, it's in [[file:grammars/pfg.ixml][a separate file]].
+
+With luck, maybe I can also persuade org-mode to show it here in-line.
+(Hmm.  No luck yet.  I'll come back to this.)
+
+#+name: pfg :export results :results verbatim
+[[file:grammars/pfg.ixml]]
+
+#+name: run_G2c
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.level-plus.ixml \
+    -pp \
+    --choose
+    "a BOP b BOP POP c BOP d"
+#+end_src

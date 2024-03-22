@@ -1,0 +1,17 @@
+expression = s, expr, s.
+     -expr = expr-1.
+   -expr-1 = pop-expr; expr-2.
+  pop-expr = POP, s, expr-1.
+   -expr-2 = sop-expr; expr-3.
+  sop-expr = expr-3, s, SOP.
+   -expr-3 = bop-expr; expr-4.
+  bop-expr = (expr-3; sop-expr), 
+             s, BOP, s, 
+             (expr-4; pop-expr).
+   -expr-4 = basic; '(', s, expr, s, ')'.
+
+  basic = ['abcde'].
+  BOP = -'BOP'.
+  POP = -'POP'.
+  SOP = -'SOP'.
+  -s = -[#9;#A;#D;#20]*.

@@ -1,0 +1,13 @@
+expression = s, expr, s.
+expr = basic
+     ; expr, s, BOP, s, expr
+     ; POP, s, expr
+     ; expr, s, SOP
+     ; '(', s, expr, s, ')'.
+
+{ Low-level definitions }
+basic = ['abcde'].
+BOP = -'BOP'.
+POP = -'POP'.
+SOP = -'SOP'.
+-s = -[#9;#A;#D;#20]*.

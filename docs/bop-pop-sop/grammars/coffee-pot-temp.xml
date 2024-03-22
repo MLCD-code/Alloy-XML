@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- a BOP b BOP POP c BOP d -->
+<!-- ....|....1....|....2... -->
+<symbol name="bop-expr" id="N147" mark="^" start="1" end="23" length="23">
+  <parent ref="N149">expr-3</parent>
+  <children id="C124">
+    <state id="N141" start="1" end="22" length="22">
+      <children id="C119">
+        <state id="N131" start="1" end="21" length="21">
+          <children id="C110">
+            <state id="N122" start="1" end="18" length="18">
+              <!-- "a BOP b BOP POP c " -->
+              <children id="C104">
+                <symbol name="$1_alt" ref="N107" start="1" end="17" length="17"/>
+                <symbol name="s" ref="N118" start="18" end="18" length="1"/>
+              </children>
+            </state>
+            <symbol name="BOP" ref="N129" start="19" end="21" length="3"/>
+            <!-- "BOP" -->
+          </children>
+        </state>
+        <symbol name="s" ref="N139" start="22" end="22" length="1"/>
+      </children>
+    </state>
+    <symbol name="$2_alt" ref="N145" start="23" end="23" length="1"/>
+  </children>
+  <children id="C139">
+    <state id="N77" start="1" end="12" length="12">
+      <!-- "a BOP b BOP " -->
+      <children id="C65">
+        <state id="N69" start="1" end="11" length="11">
+          <children id="C58">
+            <state id="N61" start="1" end="8" length="8">
+              <children id="C53">
+                <symbol name="$1_alt" ref="N46" start="1" end="7" length="7"/>
+                <symbol name="s" ref="N59" start="8" end="8" length="1"/>
+              </children>
+            </state>
+            <symbol name="BOP" ref="N68" start="9" end="11" length="3"/>
+          </children>
+        </state>
+        <symbol name="s" ref="N76" start="12" end="12" length="1"/>
+      </children>
+    </state>
+    <symbol name="$2_alt" ref="N158" start="13" end="23" length="11"/>
+  </children>
+</symbol>
+

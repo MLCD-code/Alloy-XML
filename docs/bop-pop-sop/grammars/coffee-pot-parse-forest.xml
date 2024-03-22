@@ -1,0 +1,54 @@
+<!-- a BOP b BOP POP c BOP d -->
+<!-- ....|....1....|....2... -->
+<ixml parses="2" totalParses="2">
+  <expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous'>
+    <bop-expr from="1" to="23">
+      <bop-expr from="1" to="17">
+        <bop-expr loc="1-7">
+          <basic loc="1">a</basic>
+          <s loc="2"> </s>
+          <BOP loc="3-5"/>
+          <s loc="6"> </s>
+          <basic loc="7">b</basic>
+        </bop-expr>
+        <s loc="8"> </s>
+        <BOP loc="9-11"/>
+        <s loc="12"> </s>
+        <pop-expr loc="13-17">
+          <POP loc="13-15"/>
+          <s loc="16"> </s>
+          <basic loc="17">c</basic>
+        </pop-expr>
+      </bop-expr>
+      <s loc="18"> </s>
+      <BOP loc="19-21"/>
+      <s loc="22"> </s>
+      <basic loc="23 23">d</basic>
+    </bop-expr>
+  </expression>
+  <expression xmlns:ixml='http://invisiblexml.org/NS' ixml:state='ambiguous' loc="1-23">
+    <bop-expr loc="1-23">
+      <bop-expr loc="1-7">
+        <basic loc="1">a</basic>
+        <s loc="2"> </s>
+        <BOP loc="3-5"/>
+        <s loc="6"> </s>
+        <basic loc="7">b</basic>
+      </bop-expr>
+      <s loc="8"> </s>
+      <BOP loc="9-11"/>
+      <s loc="12"> </s>
+      <pop-expr loc="13-23">
+        <POP loc="13-15"/>
+        <s loc="16"> </s>
+        <bop-expr loc="17-23">
+          <basic loc="17">c</basic>
+          <s loc="18"> </s>
+          <BOP loc="19-21"/>
+          <s loc="22"> </s>
+          <basic loc="23">d</basic>
+        </bop-expr>
+      </pop-expr>
+    </bop-expr>
+  </expression>
+</ixml>
