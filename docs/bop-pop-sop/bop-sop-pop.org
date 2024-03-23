@@ -761,16 +761,43 @@ over.
 
 Since writing the above, it has been called (again) to my attention
 that Coffeepot has a way to express a preference in cases of
-ambiguity.  Let's try it.  And more generally, let's consider the
-question: what kind of provisions for choosing among alternative
-parses would suffice to allow the correct choice to be made here? That
-is, what kinds of pragmas or extensions would an ixml processor need
-to offer, to allow us to tell it a reliable rule for choosing among
-the trees?
+ambiguity.  Let's try it.
+
+[Pause.]  My effort to try it failed, for now. The Coffeepot
+~--choose~ option does allow the user to write an XPath expression
+specifying which tree to choose, and the XPath expression can use some
+parser-internal information provided in the form of an XML document,
+but the point of reference is the point at which the tree constructor
+in Coffeepot becomes aware of an ambiguity, and the information
+available is limited, to avoid overwhelming the user and the
+interface.  This works very neatly and simply when the ambiguity is,
+say, whether a given portion of the input is recognized as a /name/ or
+as a particular reserved word.
+
+But I was not able to formulate a rule that would work both for the
+immediate case and other similar cases.
+
+#+name: run_G2c
+#+begin_src sh :results output verbatim :exports results
+/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
+    --grammar grammars/BSP.level-plus.ixml \
+    -pp \
+    --choose
+    "a BOP b BOP POP c BOP d"
+#+end_src
+
+More generally, it is worth considering what kind of provisions for
+choosing among alternative parses would suffice to allow the correct
+choice to be made here. That is, what kinds of pragmas or extensions
+would an ixml processor need to offer, to allow us to tell it a
+reliable rule for choosing among the trees?
 
 Before we can attempt to answer that, though, we should try to answer
-the logically prior question: what exactly /is/ the rule here?  My
-best efforts at describing the two interpretations of
+the logically prior question: what exactly /is/ the rule here?
+
+** Two rules for interpreting operator precedence rules
+
+My best efforts at describing the two interpretations of
 operator-precedence tables can perhaps be summarized as follows.  I'll
 give them short names: Rule P (for the Prolog rule), Rule Y (for the
 yacc / CUP / LR parser rule).
@@ -863,11 +890,124 @@ With luck, maybe I can also persuade org-mode to show it here in-line.
 #+name: pfg :export results :results verbatim
 [[file:grammars/pfg.ixml]]
 
-#+name: run_G2c
-#+begin_src sh :results output verbatim :exports results
-/usr/bin/java -jar /home/sw/coffeepot-3.2.6/coffeepot-3.2.6.jar \
-    --grammar grammars/BSP.level-plus.ixml \
-    -pp \
-    --choose
-    "a BOP b BOP POP c BOP d"
-#+end_src
+** Attempting a declarative formulation of Rule Y
+
+So far, almost all my attempts to explain how to choose the correct
+tree, in the case of "~a BOP b BOP POP c BOP d~", have turned into
+surprisingly complicated descriptions of two tree configurations with
+the instruction to prefer one.
+
+From the fact that the ambiguity concerns whether the final BOP is
+governed by the POP or not, one might be tempted to say simply: when
+one tree has a POP expression with a BOP expression as its child, and
+another tree reverses the dominance relation, choose the one with POP
+dominating BOP.  But that assumes we can somehow identify POP and BOP
+expressions in one tree with corresponding expression /of different
+size/ in the other tree, which looks easy enough here, where there is
+only one POP in the input, but which is not possible in the general
+case from the kind of XML results shown above.  It becomes feasible if
+(a) the /POP/ and /BOP/ nonterminals are retained instead of being
+discarded, and (b) the nodes in the parse tree are associated with
+specific locations in the input, so that we have a firm ground for
+identifying the /POP/ node in one tree with a /POP/ node in the other.
+
+Also, the rule proposed is wrong, or at least confusingly vague: the
+/pop-expr/ in one tree has the rightmost /bop-expr/ as a child, but
+the other tree does not simply reverse the parent/child relation: in
+the second tree, the /pop-expr/ is not the child but the grandchild of
+the rightmost /bop-expr/.  
+
+A second attempt might say something like this:
+
+#+begin_quote
+If we have variables $p, $b1, $b2, such that
+  - $p is a pop-expr
+  - $b1 and $b2 are each a bop-expr
+  - $b2 is the left-hand operand of $b1
+  - $p is the right-hand operand of $b2
+
+Then reject the tree.
+
+It is asserted that one of the competing trees will have three
+variables $P, $B1, $B2 such that
+
+  - $P is a pop-expr
+  - $B1 and $B2 are each a bop-expr
+  - $P is the right-hand operand of $B1
+  - $B2 is the hand operand of $P
+
+and crucially
+  
+  - $b1 governs the same set of terminals (the same frontier) as $B1.
+
+I think it will also be true that
+  - The left operand of $B1 and $b2 is the same.
+  - The operand of $p is the left operand of $B2.
+  - The right operand of $b1 is the right operand of $B2.
+#+end_quote
+
+The detailed description of the pattern helps avoid having this rule
+fire on inappropriate cases, but it seems unlikely to fire on many
+cases other than the exact case it was formulated for.  Any rule for
+resolving ambiguities that requires a new clause for each case is
+failing to capture any useful generalizations.
+
+A third attempt uses Prolog-like structures and unification:
+
+#+begin_quote
+For any expressions /A/, /B/, /C/, /D/, given (sub-)trees
+
+  bop(bop(bop(/A/, /B/), pop(/C/)), /D/)
+
+and
+
+  bop(bop(/A/, /B/), pop(bop(/C/, /D/)))
+
+choose the second.
+#+end_quote
+
+That is more compact, but it is not any more general than the previous
+attempt.
+
+A fourth attempt might assume that the parse tree preserves the
+operators and their locations, and say:
+#+begin_quote
+For any given /POP/ operator in the input, identify the corresponding
+/pop-expr/ nodes in the competing trees.  If they differ in length,
+take the tree in which the /pop-expr/ is longest.
+#+end_quote
+
+This choice can be made on the basis of the parse-forest grammar
+pointed to above.  The POP operator in positions 13-15 is governed in
+one tree by /pop-expr.13.17/ and in the other by /pop-expr.13.24/.
+Ascending from each of these in the parse trees until we reach their
+nearest common ancestor /A/, we will find that /A/ has more than one
+right-hand side.  The right-hand side(s) reached from the longest
+/pop-expr/ should be retained, the other(s) deleted.  (If there are
+more than two trees, this pruning must be performed at each node which
+is the nearest commmon ancestor of any two or more /pop-expr/ nodes.)
+
+The simple rule to take the longest /pop-expr/ works in this case,
+because POP is the loosest-binding operator in the language.  A prefix
+operator of intermediate binding strength might require a more complex
+rule.  But perhaps all that is needed is to weed the parse forest
+operator by operator, starting with the loosest-binding operators and
+progressing to the weakest-binding operators.
+
+Some questions for consideration:
+- Can it be shown that such a loose-to-tight pruning would always
+  provide the same results as yacc?
+- Would it suffice to eliminate all ambiguity?  Or at least, all
+  ambiguity caused by disregarding or partially disregarding the
+  operator declarations during parsing?
+- Can the ambiguities in a grammar suitable for operator-precedence
+  parsing be characterized?
+- Can the phrase "grammar suitable for operator-precedence parsing" be
+  given a crisp definition?  Can it be given a coherent declarative
+  definition, or is it inextricably tied to a particular parsing
+  algorithm?
+
+
+
+
+

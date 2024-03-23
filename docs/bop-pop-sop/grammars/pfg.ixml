@@ -2,7 +2,7 @@
 expression.1.23 = bop-expr.1.23.
   bop-expr.1.23 = bop-expr.1.17, s.18.18, BOP.19.21, s.22.22, basic.23.23
                 | bop-expr.1.7, s.8.8, BOP.9.11, s.12.12, pop-expr.13.23
-                .
+`                .
   bop-expr.1.17 = bop-expr.1.7, s.8.8, BOP.9.11, s.12.12, pop-expr.13.17.
    bop-expr.1.7 = basic.1.1, s.2.2, BOP.3.5, s.6.6, basic.7.7.
       basic.1.1 = 'a'.
