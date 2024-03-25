@@ -11,7 +11,7 @@ This document gives a grammar for Alloy in invisible XML (ixml) form,
 embedded in expository prose.
 
 The reader is assumed to have some familiarity with Alloy and
-context-free grammars.
+context-free grammars.  Details of ixml syntax will not be explained.
 
 *** Revision history
 
@@ -26,6 +26,10 @@ Revisions:
 - 2024-02-23 : CMSMcQ : resume work.
 - 2021-05-06 : CMSMcQ : made ixml grammar.  Not finished.
 
+*** To do
+**** TODO Clean up /name/ handling (again) - issue #5
+https://github.com/MLCD-code/Alloy-XML/issues/5
+
 * Preliminary notes
 :PROPERTIES:
 :CUSTOM_ID: notes
@@ -33,14 +37,17 @@ Revisions:
 
 The grammar started as a fairly literal transcription from the
 Alloy 4 grammar on the Alloy Tools web site, but in its current
-form it is a manually constructed mixture of
+form it is a manually constructed mixture of three grammars:
 
 - the grammar in Appendix B of Daniel Jackson's /Software abstractions/ 2d edition.
-- the grammar at http://alloytools.org/download/alloy4-grammar.txt
-- the grammar at https://github.com/AlloyTools/org.alloytools.alloy/blob/master/org.alloytools.alloy.core/parser/Alloy.cup
-
+- the grammar at http://alloytools.org/download/alloy4-grammar.txt.
+- the grammar at https://github.com/AlloyTools/org.alloytools.alloy/blob/master/org.alloytools.alloy.core/parser/Alloy.cup.
+  
 In what follows, these may be referred to respectively as /J/, /G/,
-and /C/ (for /Jackson/, /grammar/, and /CUP/ grammar).
+and /C/ (for /Jackson/, /grammar/, and /CUP/ grammar).  /C/ has been
+consulted only for clarification of specific points; in particular,
+the grammar here does not include the new keywords and constructions
+which are part of the extension to temporal logic in Alloy 6.
 
 *Differences from /J/ and /G/:* In the grammar given here, I have
 - rewritten the rule for expressions so that operator precedence
@@ -85,6 +92,16 @@ navigate than shallower trees would be.  In the XML form of the
 abstract syntax tree, I have where possible tried to eliminate either
 the child node or the parent node; sometimes this has entailed
 restructuring a production.
+
+*Differences in the language accepted:* In consequence of some of the
+grammatical differences given above, the language accepted by this
+grammar deviates from that accepted by the Alloy Analyzer in some ways.
+At the time this was written, the known deviations were these:
+- Whitespace will be required in some locations where the Analyzer
+  does not require it.
+- Parentheses will be required around /let/-expressions and quantified
+  formulas when they appear as operands of any other operator; the
+  Analyzer does not always require parentheses in these cases.
 
 * Top level:  modules
 :PROPERTIES:
@@ -860,8 +877,9 @@ define them here.
 #+BEGIN_SRC ixml :tangle yes
 -expr20:  OQName;
           "@", s, name;
-          { "none"; "iden"; "univ"; } { named sets, parse as name }
-          { "Int"; "seq/Int" } { ditto }        
+          THIS;
+          NONE; IDEN; UNIV; { named sets, parse as name }
+          INT; SEQINT; 
           number; 
           "-", number;
           "(", s, expr, s, ")";
@@ -942,9 +960,10 @@ ref: OQName | UNIV | INT | SEQINT.
            | name, "/", name++slash. }
 qual-name: THIS, -"/", (qual, -"/")*, name
          | (qual, -"/")+, name.
-qual: ID.
+{ qual: ID. }
+qual: name-minus-reserved-words.
 
-number: ['1'-'9'], digit*.
+number: '0'; ['1'-'9'], digit*.
 -digit: ['0'-'9'].
 
 -ID: letter, (letter; digit; '_'; sq; dq)*.
@@ -953,8 +972,11 @@ number: ['1'-'9'], digit*.
 -dq: '"' { double quote " }.
 #+END_SRC
 
-For reasons which will become clear later, we want the definition of /name/ in a separate code block.
+For reasons which will become clear later, we want the definition of
+/name/ in a separate code block.
 
+It would be simple to define /name/ as just an /ID/, but that does not
+work.
 #+begin_src ixml :tangle no
 name: ID.
 #+end_src
@@ -977,6 +999,11 @@ because any reserved word (e.g. "and" or "else") also parses as an
 problems (a more complicated definition that excludes the
 reserved words) is given [[#names-minus][below]].
 
+Note that Jackson specified (p. 260) that "A numeric constant consists
+of a sequence of digits between 0 and 9, whose first digit is not zero."
+But the Analyzer accepts "~0~" as a numeric constant (e.g. in
+~/examples/algorithms/stable_ringlead.als~).  So the definition of
+/number/ above has been modified to include "0".
 
 ** Multiplicities and quantifiers
 
@@ -1221,6 +1248,8 @@ PRIVATE:  "private".
 UNIV: "univ".
 INT: "Int".
 SEQINT: "seq/Int".
+NONE: "none".
+IDEN: "iden".
 private: "private".
 abstract: "abstract".
 #+END_SRC
@@ -1281,7 +1310,6 @@ completely clear.)
 Alloy 6 may also have the spellings "disjoint" and "<=".  At first
 glance I thought it also added the keyword "trace", but I now think
 that that was just a gloss on ";", the trace-sequence operator.
-
 
 If we had a set subtraction operator, we could write:
 #+begin_src ixml :tangle no
@@ -1435,14 +1463,14 @@ We also want a nonterminal defining the set of letters (possible
 name-initial characters) which do not begin any keyword.
 
 #+begin_src ixml :tangle yes
-letter-no-abcdefiIlmnoprsu: ["ghjkqtvwxyz"; "A"-"H"; "J"-"Z"].
+letter-no-abcdefiIlmnoprstu: ["ghjkqvwxyz"; "A"-"H"; "J"-"Z"].
 #+end_src
 
 And now we can define the nonterminal we want:
 
 #+begin_src ixml :tangle yes
 name-minus-reserved-words = 
-  -letter-no-abcdefiIlmnoprsu, namechar*;
+  -letter-no-abcdefiIlmnoprstu, namechar*;
 
   'a', (nc-not-blns, namechar*)? ; 
   'ab', (nc-not-s, namechar*)? ; 
@@ -1508,7 +1536,7 @@ name-minus-reserved-words =
   'impli', (nc-not-e, namechar*)? ; 
   'implie', (nc-not-s, namechar*)? ; 
   'implies', namechar+ ; 
-  'in', namechar+ ; 
+  'in', nc-not-t, namechar* ; 
   'int', namechar+ ; 
   'I', (nc-not-n, namechar*)? ; 
   'In', (nc-not-t, namechar*)? ; 
@@ -1553,7 +1581,11 @@ name-minus-reserved-words =
   'som', (nc-not-e, namechar*)? ; 
   'some', namechar+ ; 
   'su', (nc-not-m, namechar*)? ; 
-  'sum', namechar+ ; 
+  'sum', namechar+ ;
+  't', (nc-not-h, namechar*)? ;
+  'th', (nc-not-i, namechar*)? ;
+  'thi', (nc-not-s, namechar*)? ;
+  'this', namechar+ ;
   'u', (nc-not-n, namechar*)? ; 
   'un', (nc-not-i, namechar*)? ; 
   'uni', (nc-not-v, namechar*)? ; 
@@ -1568,15 +1600,32 @@ definition, and similarly for each of the other nonterminals).
 
 Now we can define /name/ as any ID other than a reserved word:
 
-#+begin_src ixml :tangle no
+#+begin_src ixml :tangle yes
 name: -name-minus-reserved-words.          
 #+end_src
 
-But that's not quite right: the predefined names "none", "univ", and
-"iden" need to be included.  Also "Int" and "int", which appear in
-scopes.
+Note that there are places where some or all of the predefined names
+also need to be included.  
+- "~none~"
+- "~univ~"
+- "~iden~"
+- "~Int~"
+- "~int~" 
 
-#+begin_src ixml :tangle yes
+In some cases, this is accomplished by using the nonterminal /ref/
+instead of /name/ or /OQName/, to accept "~univ~", "~Int~", and
+"~seq/Int~". In other cases, some or all predefined names are
+mentioned explicitly.  In /expr20/ for example all of the above are
+included explicitly (except "~int~", which may need adding); in
+scopes, "~Int~" and "~seq/Int~" are handled specially.
+
+The definition of name qualifiers calls out "~this~" specially;
+it's not listed as a reserved word, but as far as I can tell
+it functions as one.
+
+An alternative approach would be to define them all as names; I tried
+this, in the form shown below, but it did not work very well.
+#+begin_src ixml :tangle no
 name: -name-minus-reserved-words
     ; "iden"
     ; "int"
@@ -1687,3 +1736,94 @@ adverse consequences.  It may possibly introduce an ambiguity; if so,
 the ambiguity may be harmless.
 
 Further investigation is needed.
+
+** Testing
+There is not currently a systematic test suite for this grammar; one
+could be constructed by
+- generating test cases from the grammar in the usual way, and
+- running those tests against the Alloy Analyzer to establish a
+  baseline set of results, then
+- running those tests against the grammar given here.
+
+In the meantime, a less thorough but useful set of test cases is given
+by the set of Alloy models distributed with the Alloy Analyzer.  These
+include models given in Jackson's book, a directory of examples, and a
+directory of utility models.  All are intended as acceptable models, so
+running them as a test set just involves parsing them all and checking
+the results for /ixml:state/ attributes identifying problems.
+
+*** Current results
+As of noon, 25 March 2024, these produce the following results.
+Because of the discrepances between the language accepted by this
+grammar and that accepted by the Alloy Analyzer which were discussed
+at the beginning of this document, some are expected.
+
+Some illustrate the issue with unparenthesized quantification in
+operands of tighter-binding operators:
+
+- book/chapter6/hotel4.als fails to parse (unparenthesized quantified
+  formula within disjunction).
+- book/chapter6/mediaAssets.als fails to parse (unparenthesized
+  /let/-expression within conditional).
+- book/chapter6/ringElection2.als fails to parse (unparenthesized
+  quantified formula within conditional).
+
+Some reflect the grammar's current restriction to Alloy 4:
+- examples/temporal/buffer.als.xml fails to parse (unrecognized ~var~ keyword).
+- examples/temporal/leader.als.xml fails to parse (unrecognized ~var~ keyword).
+- examples/temporal/leader_events.als.xml fails to parse (unrecognized ~var~ keyword).
+- examples/temporal/trash.als.xml fails to parse (unrecognized ~var~ keyword).
+
+Others are not expected and reflect issues:
+
+- ~examples/algorithms/stable_ringlead.als~ fails to parse.  There is
+  a conditional within the argument of box join.  That establishes
+  pretty well that it was an error to restrict the argument to
+  /expr10/.  Should be easy to fix.
+
+- ~examples/case_studies/com.als~ is ambiguous.  The ambiguity appears
+  to be in the definition of /name-minus-reserved-words/, between two
+  different right-hand sides, namely "~'in', namechar+~" and "~'int',
+  namechar+~".  I inserted the second by hand to exclude "~int~" from
+  the definition of the nonterminal and failed to change the first.
+
+Others have not yet been analyzed.
+- examples/puzzles/handshake.als.xml is ambiguous.  May also be
+  /int/-related.
+- examples/systems/views.als.xml is ambiguous.  Ambiguity involving
+  keyword "~this~".
+
+*** Operator clashes (currently wont-fix)
+
+Model ~book/chapter6/hotel4.als~ contains the following fact:
+#+begin_example
+fact NoIntervening {
+	all c: Checkin |
+		c.post = last
+		or some e: Entry {
+			e.pre = c.post
+			e.room = c.room
+			e.guest = c.guest
+		}
+	}
+#+end_example
+Under the grammar given here, this requires parentheses around the
+quantified formula over /e/: "~some e: ... c.guest~".
+
+In ~book/chapter6/mediaAssets.als~ the issue is a /let/-expression
+in the consequent-clause of a conditional.
+#+begin_example
+assert PasteNotAffectHidden {
+	all xs, xs": ApplicationState |
+		(appInv [xs] and paste [xs, xs"]) => 
+			let c = xs.currentCatalog | xs".catalogState[c].hidden = xs.catalogState[c].hidden
+	}
+#+end_example
+
+*** Temporal keywords
+Currently, any model using temporal logic fails on an unrecognized
+~var~ keyword.  Model ~examples/temporal/trash.als~, for example fails
+on line 1:
+#+begin_example
+var sig File {}
+#+end_example

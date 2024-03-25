@@ -183,8 +183,9 @@ rt-closure: "*", s, expr19.
 
 -expr20:  OQName;
           "@", s, name;
-          { "none"; "iden"; "univ"; } { named sets, parse as name }
-          { "Int"; "seq/Int" } { ditto }        
+          THIS;
+          NONE; IDEN; UNIV; { named sets, parse as name }
+          INT; SEQINT; 
           number; 
           "-", number;
           "(", s, expr, s, ")";
@@ -204,9 +205,10 @@ ref: OQName | UNIV | INT | SEQINT.
            | name, "/", name++slash. }
 qual-name: THIS, -"/", (qual, -"/")*, name
          | (qual, -"/")+, name.
-qual: ID.
+{ qual: ID. }
+qual: name-minus-reserved-words.
 
-number: ['1'-'9'], digit*.
+number: '0'; ['1'-'9'], digit*.
 -digit: ['0'-'9'].
 
 -ID: letter, (letter; digit; '_'; sq; dq)*.
@@ -253,6 +255,8 @@ PRIVATE:  "private".
 UNIV: "univ".
 INT: "Int".
 SEQINT: "seq/Int".
+NONE: "none".
+IDEN: "iden".
 private: "private".
 abstract: "abstract".
 
@@ -307,10 +311,10 @@ enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
 -nc-not-nt: ["a"-"m"; "o"-"s"; "u"-"z";
              "A"-"Z"; "0"-"9"; "_"; #27; #22].
 
-letter-no-abcdefiIlmnoprsu: ["ghjkqtvwxyz"; "A"-"H"; "J"-"Z"].
+letter-no-abcdefiIlmnoprstu: ["ghjkqvwxyz"; "A"-"H"; "J"-"Z"].
 
 name-minus-reserved-words = 
-  -letter-no-abcdefiIlmnoprsu, namechar*;
+  -letter-no-abcdefiIlmnoprstu, namechar*;
 
   'a', (nc-not-blns, namechar*)? ; 
   'ab', (nc-not-s, namechar*)? ; 
@@ -376,7 +380,8 @@ name-minus-reserved-words =
   'impli', (nc-not-e, namechar*)? ; 
   'implie', (nc-not-s, namechar*)? ; 
   'implies', namechar+ ; 
-  'in', namechar+ ; 
+  'in', nc-not-t, namechar* ; 
+  'int', namechar+ ; 
   'I', (nc-not-n, namechar*)? ; 
   'In', (nc-not-t, namechar*)? ; 
   'Int', namechar+ ; 
@@ -420,13 +425,14 @@ name-minus-reserved-words =
   'som', (nc-not-e, namechar*)? ; 
   'some', namechar+ ; 
   'su', (nc-not-m, namechar*)? ; 
-  'sum', namechar+ ; 
+  'sum', namechar+ ;
+  't', (nc-not-h, namechar*)? ;
+  'th', (nc-not-i, namechar*)? ;
+  'thi', (nc-not-s, namechar*)? ;
+  'this', namechar+ ;
   'u', (nc-not-n, namechar*)? ; 
   'un', (nc-not-i, namechar*)? ; 
   'uni', (nc-not-v, namechar*)? ; 
   'univ', namechar+ .
 
-name: -name-minus-reserved-words
-    ; "none"
-    ; "univ"
-    ; "iden".
+name: -name-minus-reserved-words.
