@@ -17,6 +17,10 @@ context-free grammars.  Details of ixml syntax will not be explained.
 
 Revisions:
 
+- 2024-03-26 : CMSMcQ : suppress a number of literals and nonterminals
+- 2024-03-26 : CMSMcQ : parse MLCD models, find and fix some errors
+- 2024-03-26 : CMSMcQ : resolve or accept all failures to parse
+                        examples that ship with Alloy
 - 2024-03-15 : CMSMcQ : find and fix some bugs; change some s to S.
 - 2024-03-14 : CMSMcQ : better names (without reserved words)
 - 2024-03-10/13 : CMSMcQ : pushing through
@@ -27,7 +31,8 @@ Revisions:
 - 2021-05-06 : CMSMcQ : made ixml grammar.  Not finished.
 
 *** To do
-**** TODO Clean up /name/ handling (again) - issue #5
+**** DONE Clean up /name/ handling (again) - issue #5
+CLOSED: [2024-03-26 Tue 15:28]
 https://github.com/MLCD-code/Alloy-XML/issues/5
 **** TODO Check grammar against quick guide to Alloy 4
 http://alloytools.org/quickguide/
@@ -335,7 +340,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
-max-scope: number, s, (OQName|"int"|"seq").
+max-scope: number, s, (OQName|"int"|"Int"|"seq").
 exceptions: "but", s, typescope++comma.
 #+END_SRC
 
@@ -508,12 +513,12 @@ let-decl: variable, s, "=", s, value.
 value: expr.
 
 { quantified expressions }
-all-ex01:  "all",  S, decl++comma, s, block-or-bar.
-none-ex01: "no",   S, decl++comma, s, block-or-bar.
-some-ex01: "some", S, decl++comma, s, block-or-bar.
-lone-ex01: "lone", S, decl++comma, s, block-or-bar.
-one-ex01:  "one",  S, decl++comma, s, block-or-bar.
-sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
+all-ex01:  -"all",  S, decl++comma, s, block-or-bar.
+none-ex01: -"no",   S, decl++comma, s, block-or-bar.
+some-ex01: -"some", S, decl++comma, s, block-or-bar.
+lone-ex01: -"lone", S, decl++comma, s, block-or-bar.
+one-ex01:  -"one",  S, decl++comma, s, block-or-bar.
+sum-ex01:  -"sum",  S, decl++comma, s, block-or-bar.
 #+END_SRC
 
 For now /block-or-bar/ is defined as containg /expr/.  I think that that
@@ -676,18 +681,18 @@ other binary operators.
 -expr07:  comparison; expr08.
 -comparison: in; eq; lt; gt; le; ge;
              not-in; not-eq; not-lt; not-gt; not-le; not-ge.
-in:  expr07, S, "in", S, expr08.
-eq:  expr07, s, "=",  s, expr08.
-lt:  expr07, s, "<",  s, expr08.
-gt:  expr07, s, ">",  s, expr08.
-le:  expr07, s, "=<", s, expr08.
-ge:  expr07, s, ">=", s, expr08.
-not-in:  expr07, S, NOT, "in", S, expr08.
-not-eq:  expr07, s, NOT, "=",  s, expr08.
-not-lt:  expr07, s, NOT, "<",  s, expr08.
-not-gt:  expr07, s, NOT, ">",  s, expr08.
-not-le:  expr07, s, NOT, "=<", s, expr08.
-not-ge:  expr07, s, NOT, ">=", s, expr08.
+in:  expr07, S, -"in", S, expr08.
+eq:  expr07, s, -"=",  s, expr08.
+lt:  expr07, s, -"<",  s, expr08.
+gt:  expr07, s, -">",  s, expr08.
+le:  expr07, s, -"=<", s, expr08.
+ge:  expr07, s, -">=", s, expr08.
+not-in:  expr07, S, NOT, -"in", S, expr08.
+not-eq:  expr07, s, NOT, -"=",  s, expr08.
+not-lt:  expr07, s, NOT, -"<",  s, expr08.
+not-gt:  expr07, s, NOT, -">",  s, expr08.
+not-le:  expr07, s, NOT, -"=<", s, expr08.
+not-ge:  expr07, s, NOT, -">=", s, expr08.
 #+END_SRC
 
 /J/ and /G/ have:
@@ -704,13 +709,13 @@ as unary operators.
          expr09.
 -quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
          set-ex08; seq-ex08.
-no-ex08: "no", S, expr07.
-some-ex08: "some", S, expr07.
-lone-ex08: "lone", S, expr07.
-one-ex08: "one", S, expr07. 
+no-ex08: -"no", S, expr09.
+some-ex08: -"some", S, expr09.
+lone-ex08: -"lone", S, expr09.
+one-ex08: -"one", S, expr09. 
 set-ex08: -"set", S, member-type.
-member-type: expr07.
-seq-ex08: "seq", S, expr07.
+-member-type: expr09.
+seq-ex08: -"seq", S, expr09.
 #+END_SRC
 
 The names chosen are awkward; it is hoped that some experimentation
@@ -834,8 +839,11 @@ White space is allowed before the left square
 bracket, because the examples show it being used.
 #+BEGIN_SRC ixml :tangle yes
 -expr17: box-join; expr18.
-box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
+box-join: box-left, s, -"[", s, (selector ++ comma, s)?, -"]".
+box-left: expr17; sum; integer-cast.
 selector: expr10; if-then-else.
+sum: -"sum".
+integer-cast: -"int".
 #+END_SRC
 
 /J/ and /G/ have:
@@ -908,10 +916,14 @@ define them here.
           NONE; IDEN; UNIV; { named sets, parse as name }
           INT; SEQINT; 
           number; 
-          "-", number;
-          "(", s, expr, s, ")";
-          "{", s, decl ++ comma, s, block-or-bar, s, "}";
-          block.          
+          negative-number;
+          -"(", s, expr, s, -")";
+          declarations-block;
+          block.
+negative-number: "-", -number.
+declarations-block: -"{", s, 
+                    decl ++ comma, s, 
+                    block-or-bar, s, -"}";
 #+END_SRC
 
 The keywords "none", "iden", "univ", "Int", and "seq/Int" are
@@ -936,9 +948,9 @@ brace-delimited block.  That idiom is expressed in the grammar by the
 nonterminal /block-or-bar/.
 
 #+BEGIN_SRC ixml :tangle yes
-block: "{", s, (expr++S, s)?, "}".
+block: -"{", s, (expr++S, s)?, -"}".
 block-or-bar: block;
-              "|", s, expr.
+              -"|", s, expr.
 #+END_SRC
 
 /J/:
@@ -988,7 +1000,7 @@ ref: OQName | UNIV | INT | SEQINT.
 qual-name: THIS, -"/", (qual, -"/")*, name
          | (qual, -"/")+, name.
 { qual: ID. }
-qual: name-minus-reserved-words.
+qual: -name-minus-reserved-words.
 
 number: '0'; ['1'-'9'], digit*.
 -digit: ['0'-'9'].
@@ -1485,6 +1497,8 @@ must be careful about the letters "b" (as in "~abstract~"), "l" (as in
              "A"-"Z"; "0"-"9"; "_"; #27; #22].
 -nc-not-nt: ["a"-"m"; "o"-"s"; "u"-"z";
              "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-qt: ["a"-"p"; "r"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
 #+end_src
 
 We also want a nonterminal defining the set of letters (possible
@@ -1497,7 +1511,7 @@ letter-no-abcdefiIlmnoprstu: ["ghjkqvwxyz"; "A"-"H"; "J"-"Z"].
 And now we can define the nonterminal we want:
 
 #+begin_src ixml :tangle yes
-name-minus-reserved-words = 
+-name-minus-reserved-words = 
   -letter-no-abcdefiIlmnoprstu, namechar*;
 
   'a', (nc-not-blns, namechar*)? ; 
@@ -1601,7 +1615,8 @@ name-minus-reserved-words =
   'ru', (nc-not-n, namechar*)? ; 
   'run', namechar+ ; 
   's', (nc-not-eiou, namechar*)? ; 
-  'se', (nc-not-t, namechar*)? ; 
+  'se', (nc-not-qt, namechar*)? ; 
+  'seq', namechar+ ; 
   'set', namechar+ ; 
   'si', (nc-not-g, namechar*)? ; 
   'sig', namechar+ ; 

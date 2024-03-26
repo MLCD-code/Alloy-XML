@@ -45,7 +45,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
-max-scope: number, s, (OQName|"int"|"seq").
+max-scope: number, s, (OQName|"int"|"Int"|"seq").
 exceptions: "but", s, typescope++comma.
 
 decl: (private, s)?, (disj, S)?, variable++comma, s, -":", s, bounds.
@@ -65,12 +65,12 @@ let-decl: variable, s, "=", s, value.
 value: expr.
 
 { quantified expressions }
-all-ex01:  "all",  S, decl++comma, s, block-or-bar.
-none-ex01: "no",   S, decl++comma, s, block-or-bar.
-some-ex01: "some", S, decl++comma, s, block-or-bar.
-lone-ex01: "lone", S, decl++comma, s, block-or-bar.
-one-ex01:  "one",  S, decl++comma, s, block-or-bar.
-sum-ex01:  "sum",  S, decl++comma, s, block-or-bar.
+all-ex01:  -"all",  S, decl++comma, s, block-or-bar.
+none-ex01: -"no",   S, decl++comma, s, block-or-bar.
+some-ex01: -"some", S, decl++comma, s, block-or-bar.
+lone-ex01: -"lone", S, decl++comma, s, block-or-bar.
+one-ex01:  -"one",  S, decl++comma, s, block-or-bar.
+sum-ex01:  -"sum",  S, decl++comma, s, block-or-bar.
 
 { expr02:  disjunctions }
 -expr02:  disjunction; expr03.
@@ -110,30 +110,30 @@ NOT: "!", s; "not", S.
 -expr07:  comparison; expr08.
 -comparison: in; eq; lt; gt; le; ge;
              not-in; not-eq; not-lt; not-gt; not-le; not-ge.
-in:  expr07, S, "in", S, expr08.
-eq:  expr07, s, "=",  s, expr08.
-lt:  expr07, s, "<",  s, expr08.
-gt:  expr07, s, ">",  s, expr08.
-le:  expr07, s, "=<", s, expr08.
-ge:  expr07, s, ">=", s, expr08.
-not-in:  expr07, S, NOT, "in", S, expr08.
-not-eq:  expr07, s, NOT, "=",  s, expr08.
-not-lt:  expr07, s, NOT, "<",  s, expr08.
-not-gt:  expr07, s, NOT, ">",  s, expr08.
-not-le:  expr07, s, NOT, "=<", s, expr08.
-not-ge:  expr07, s, NOT, ">=", s, expr08.
+in:  expr07, S, -"in", S, expr08.
+eq:  expr07, s, -"=",  s, expr08.
+lt:  expr07, s, -"<",  s, expr08.
+gt:  expr07, s, -">",  s, expr08.
+le:  expr07, s, -"=<", s, expr08.
+ge:  expr07, s, -">=", s, expr08.
+not-in:  expr07, S, NOT, -"in", S, expr08.
+not-eq:  expr07, s, NOT, -"=",  s, expr08.
+not-lt:  expr07, s, NOT, -"<",  s, expr08.
+not-gt:  expr07, s, NOT, -">",  s, expr08.
+not-le:  expr07, s, NOT, -"=<", s, expr08.
+not-ge:  expr07, s, NOT, -">=", s, expr08.
 
 -expr08: quantified-expression; 
          expr09.
 -quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
          set-ex08; seq-ex08.
-no-ex08: "no", S, expr07.
-some-ex08: "some", S, expr07.
-lone-ex08: "lone", S, expr07.
-one-ex08: "one", S, expr07. 
+no-ex08: -"no", S, expr09.
+some-ex08: -"some", S, expr09.
+lone-ex08: -"lone", S, expr09.
+one-ex08: -"one", S, expr09. 
 set-ex08: -"set", S, member-type.
-member-type: expr07.
-seq-ex08: "seq", S, expr07.
+-member-type: expr09.
+seq-ex08: -"seq", S, expr09.
 
 -expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
 SHL-expr: expr09, s, "<<", s, expr10.
@@ -170,8 +170,11 @@ rr-rel: expr16.
 rr-set: expr17.
 
 -expr17: box-join; expr18.
-box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
+box-join: box-left, s, -"[", s, (selector ++ comma, s)?, -"]".
+box-left: expr17; sum; integer-cast.
 selector: expr10; if-then-else.
+sum: -"sum".
+integer-cast: -"int".
 
 -expr18: dot-join; expr19.
 dot-join: expr17, s, ".", s, expr19.
@@ -187,14 +190,18 @@ rt-closure: "*", s, expr19.
           NONE; IDEN; UNIV; { named sets, parse as name }
           INT; SEQINT; 
           number; 
-          "-", number;
-          "(", s, expr, s, ")";
-          "{", s, decl ++ comma, s, block-or-bar, s, "}";
+          negative-number;
+          -"(", s, expr, s, -")";
+          declarations-block;
           block.
+negative-number: "-", -number.
+declarations-block: -"{", s, 
+                    decl ++ comma, s, 
+                    block-or-bar, s, -"}";
 
-block: "{", s, (expr++S, s)?, "}".
+block: -"{", s, (expr++S, s)?, -"}".
 block-or-bar: block;
-              "|", s, expr.
+              -"|", s, expr.
 
 ref: OQName | UNIV | INT | SEQINT.
 
@@ -206,7 +213,7 @@ ref: OQName | UNIV | INT | SEQINT.
 qual-name: THIS, -"/", (qual, -"/")*, name
          | (qual, -"/")+, name.
 { qual: ID. }
-qual: name-minus-reserved-words.
+qual: -name-minus-reserved-words.
 
 number: '0'; ['1'-'9'], digit*.
 -digit: ['0'-'9'].
@@ -311,10 +318,12 @@ enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
              "A"-"Z"; "0"-"9"; "_"; #27; #22].
 -nc-not-nt: ["a"-"m"; "o"-"s"; "u"-"z";
              "A"-"Z"; "0"-"9"; "_"; #27; #22].
+-nc-not-qt: ["a"-"p"; "r"-"s"; "u"-"z";
+             "A"-"Z"; "0"-"9"; "_"; #27; #22].
 
 letter-no-abcdefiIlmnoprstu: ["ghjkqvwxyz"; "A"-"H"; "J"-"Z"].
 
-name-minus-reserved-words = 
+-name-minus-reserved-words = 
   -letter-no-abcdefiIlmnoprstu, namechar*;
 
   'a', (nc-not-blns, namechar*)? ; 
@@ -418,7 +427,8 @@ name-minus-reserved-words =
   'ru', (nc-not-n, namechar*)? ; 
   'run', namechar+ ; 
   's', (nc-not-eiou, namechar*)? ; 
-  'se', (nc-not-t, namechar*)? ; 
+  'se', (nc-not-qt, namechar*)? ; 
+  'seq', namechar+ ; 
   'set', namechar+ ; 
   'si', (nc-not-g, namechar*)? ; 
   'sig', namechar+ ; 
