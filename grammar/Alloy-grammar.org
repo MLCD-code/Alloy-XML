@@ -911,7 +911,7 @@ define them here.
 
 #+BEGIN_SRC ixml :tangle yes
 -expr20:  OQName;
-          "@", s, name;
+          unexpanded;
           THIS;
           NONE; IDEN; UNIV; { named sets, parse as name }
           INT; SEQINT; 
@@ -920,10 +920,11 @@ define them here.
           -"(", s, expr, s, -")";
           declarations-block;
           block.
+unexpanded: -"@", s, name.
 negative-number: "-", -number.
 declarations-block: -"{", s, 
                     decl ++ comma, s, 
-                    block-or-bar, s, -"}";
+                    block-or-bar, s, -"}".
 #+END_SRC
 
 The keywords "none", "iden", "univ", "Int", and "seq/Int" are

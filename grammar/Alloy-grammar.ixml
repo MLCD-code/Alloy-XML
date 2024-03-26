@@ -185,7 +185,7 @@ t-closure: "^", s, expr19.
 rt-closure: "*", s, expr19.
 
 -expr20:  OQName;
-          "@", s, name;
+          unexpanded;
           THIS;
           NONE; IDEN; UNIV; { named sets, parse as name }
           INT; SEQINT; 
@@ -194,10 +194,11 @@ rt-closure: "*", s, expr19.
           -"(", s, expr, s, -")";
           declarations-block;
           block.
+unexpanded: -"@", s, name.
 negative-number: "-", -number.
 declarations-block: -"{", s, 
                     decl ++ comma, s, 
-                    block-or-bar, s, -"}";
+                    block-or-bar, s, -"}".
 
 block: -"{", s, (expr++S, s)?, -"}".
 block-or-bar: block;
