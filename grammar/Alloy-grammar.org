@@ -29,6 +29,15 @@ Revisions:
 *** To do
 **** TODO Clean up /name/ handling (again) - issue #5
 https://github.com/MLCD-code/Alloy-XML/issues/5
+**** TODO Check grammar against quick guide to Alloy 4
+http://alloytools.org/quickguide/
+- "~seq~" as reserved word
+- "~private~" as reserved word
+- meta-facility
+**** Support macros as described in quick guide?
+http://alloytools.org/quickguide/macro.html
+**** Support grammar of 6.0?
+http://alloytools.org/spec.html
 
 * Preliminary notes
 :PROPERTIES:
@@ -48,6 +57,15 @@ and /C/ (for /Jackson/, /grammar/, and /CUP/ grammar).  /C/ has been
 consulted only for clarification of specific points; in particular,
 the grammar here does not include the new keywords and constructions
 which are part of the extension to temporal logic in Alloy 6.
+
+*Goal(s):* The obvious goal for an ixml grammar of Alloy is to make a
+grammar that comes as close as feasible to accepting the same language
+as the Alloy 6.0 Analyzer.  A second less ambitious goal is to match
+an earlier version of the language (4.0, or 5.1).  But the core goal
+is to handle the subset of Alloy used in the models made by the MLCD
+project; anything else is supererogatory.  We would derive a certain
+amount of satisfaction from supporting the entire 6.0 language, but it
+is not part of the minimum required to declare victory.
 
 *Differences from /J/ and /G/:* In the grammar given here, I have
 - rewritten the rule for expressions so that operator precedence
@@ -135,20 +153,27 @@ signature parameters given in square brackets.
 #+BEGIN_SRC ixml :tangle yes
 -module-decl: -"module", s, module-name, (s, parameters)?.
 module-name: OQName.
-parameters:  -"[", s, name++comma, s, -"]".
+parameters:  -"[", s, ((EXACTLY, s)?, name)++comma, s, -"]".
 #+END_SRC
 
-/J/:
+In /J/, the signature parameters are just a sequence of
+comma-separated names:
 #+BEGIN_SRC Jebnf :tangle no
 moduleDecl ::= "module" qualName  [ "[" name,+ "]" ]
 #+END_SRC
+But the /ordering/ utility model uses "exactly" as a modifier, which
+appears to be a later elaboration of the grammar.
 
-/G/:
+In /G/, by contrast, the comma-separated parameter sequence begins
+with one name, followed by zero or more numbers.
 #+BEGIN_SRC ebnf4 :tangle no
 module ::= "module" name  [ "["  ["exactly"] name  ("," ["exactly"] num)*    "]" ]
 #+END_SRC
 
-*Q* What does "exactly" do here?
+*Q* What does "exactly" do here? *A* It specifies that the
+signature bound to the parameter in the external module
+should have exactly the same cardinality as the signature
+named in the argument.
 
 /J/ and /G/ differ in their treatment of names, in a way that needs to
 be mentioned.  /J/ distinguishes
@@ -175,9 +200,9 @@ consisting of the qualified name of a signature.  The module can also
 be given an alias.
 
 #+BEGIN_SRC ixml :tangle yes
-import: (private, S)?, -"open", s, OQName, s,
-        (module-arguments, s)?,
-        (-"as", s, alias)?.
+import: (private, S)?, -"open", s, OQName,
+        (s, module-arguments)?,
+        (s, -"as", s, alias)?.
 module-arguments: "[", s, ref++comma, s, "]".
 alias: -name.
 #+END_SRC
@@ -309,7 +334,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
        | typescope++comma.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
-exact-scope: -"exactly", s, -max-scope.
+exact-scope: -EXACTLY, s, -max-scope.
 max-scope: number, s, (OQName|"int"|"seq").
 exceptions: "but", s, typescope++comma.
 #+END_SRC
@@ -802,13 +827,15 @@ rr-set: expr17.
 
 *** Box join (/expr17/)
 It is not clear what kind of expressions should be allowed within the
-box.  I've put /expr10/ on the theory that they should be
-relation-valued.  White space is allowed before the left square
+box.  I've put /expr10/ on the theory that they will normally be
+relation-valued, and added /if-then-else/ because I have observed
+that they can be (and are in some examples) relation-valued conditionals.
+White space is allowed before the left square
 bracket, because the examples show it being used.
 #+BEGIN_SRC ixml :tangle yes
 -expr17: box-join; expr18.
 box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
-selector: expr10.
+selector: expr10; if-then-else.
 #+END_SRC
 
 /J/ and /G/ have:
@@ -1252,6 +1279,7 @@ NONE: "none".
 IDEN: "iden".
 private: "private".
 abstract: "abstract".
+EXACTLY: "exactly".
 #+END_SRC
 
 * Miscellaneous
@@ -1738,6 +1766,7 @@ the ambiguity may be harmless.
 Further investigation is needed.
 
 ** Testing
+
 There is not currently a systematic test suite for this grammar; one
 could be constructed by
 - generating test cases from the grammar in the usual way, and
@@ -1752,50 +1781,27 @@ directory of utility models.  All are intended as acceptable models, so
 running them as a test set just involves parsing them all and checking
 the results for /ixml:state/ attributes identifying problems.
 
-*** Current results
-As of noon, 25 March 2024, these produce the following results.
+As of noon, 25 March 2024, the models distributed with Alloy 6
+produced the results shown below.  (As of the next day some of the
+unexpected discrepancies have been fixed, others not.)
+
+*** Expected discrepancies
 Because of the discrepances between the language accepted by this
 grammar and that accepted by the Alloy Analyzer which were discussed
-at the beginning of this document, some are expected.
+at the beginning of this document, some discrepant results are
+expected.
 
 Some illustrate the issue with unparenthesized quantification in
 operands of tighter-binding operators:
 
-- book/chapter6/hotel4.als fails to parse (unparenthesized quantified
+- ~book/chapter6/hotel4.als~ fails to parse (unparenthesized quantified
   formula within disjunction).
-- book/chapter6/mediaAssets.als fails to parse (unparenthesized
+- ~book/chapter6/mediaAssets.als~ fails to parse (unparenthesized
   /let/-expression within conditional).
-- book/chapter6/ringElection2.als fails to parse (unparenthesized
+- ~book/chapter6/ringElection2.als~ fails to parse (unparenthesized
   quantified formula within conditional).
 
-Some reflect the grammar's current restriction to Alloy 4:
-- examples/temporal/buffer.als.xml fails to parse (unrecognized ~var~ keyword).
-- examples/temporal/leader.als.xml fails to parse (unrecognized ~var~ keyword).
-- examples/temporal/leader_events.als.xml fails to parse (unrecognized ~var~ keyword).
-- examples/temporal/trash.als.xml fails to parse (unrecognized ~var~ keyword).
-
-Others are not expected and reflect issues:
-
-- ~examples/algorithms/stable_ringlead.als~ fails to parse.  There is
-  a conditional within the argument of box join.  That establishes
-  pretty well that it was an error to restrict the argument to
-  /expr10/.  Should be easy to fix.
-
-- ~examples/case_studies/com.als~ is ambiguous.  The ambiguity appears
-  to be in the definition of /name-minus-reserved-words/, between two
-  different right-hand sides, namely "~'in', namechar+~" and "~'int',
-  namechar+~".  I inserted the second by hand to exclude "~int~" from
-  the definition of the nonterminal and failed to change the first.
-
-Others have not yet been analyzed.
-- examples/puzzles/handshake.als.xml is ambiguous.  May also be
-  /int/-related.
-- examples/systems/views.als.xml is ambiguous.  Ambiguity involving
-  keyword "~this~".
-
-*** Operator clashes (currently wont-fix)
-
-Model ~book/chapter6/hotel4.als~ contains the following fact:
+For example, model ~book/chapter6/hotel4.als~ contains the following fact:
 #+begin_example
 fact NoIntervening {
 	all c: Checkin |
@@ -1819,11 +1825,104 @@ assert PasteNotAffectHidden {
 			let c = xs.currentCatalog | xs".catalogState[c].hidden = xs.catalogState[c].hidden
 	}
 #+end_example
+The others listed are similar.
 
-*** Temporal keywords
-Currently, any model using temporal logic fails on an unrecognized
-~var~ keyword.  Model ~examples/temporal/trash.als~, for example fails
-on line 1:
+Some reflect the grammar's current restriction to Alloy 4, which
+does not have keywords or syntax for temporal logic:
+- ~examples/temporal/buffer.als~ fails to parse (unrecognized ~var~ keyword).
+- ~examples/temporal/leader.als~ fails to parse (unrecognized ~var~ keyword).
+- ~examples/temporal/leader_events.als~ fails to parse (unrecognized ~var~ keyword).
+- ~examples/temporal/trash.als~ fails to parse (unrecognized ~var~ keyword).
+
+Currently, these all fail on an unrecognized ~var~ keyword.  Model
+~examples/temporal/trash.als~, for example fails on line 1:
 #+begin_example
 var sig File {}
 #+end_example
+  
+Two cases may reflect either an undocumented extension to the grammar, or
+perhaps a relic of earlier syntactic rules.
+
+- ~util/integer.als~ failed to parse.  The string "~fun/add~" and
+  similar are apparently taken as qualified names, but "fun" is a
+  reserved word, so the grammar does not accept them.
+
+  Perhaps the prefix "~fun/~" is a signal to the Analyzer to call a
+  built-in function implemented in the underlying Java?  The parse
+  trees shown by the 6.0 Analyzer seem to make this plausible.  For
+  the declaration "~fun plus [n1, n2: Int] : Int { n1 fun/add n2 }~",
+  the parse tree shows a function body whose structure is:
+  + body (Int)
+    - int->int (Int)
+      + @+ (Int)
+        - int->int (Int)
+          + variable n1 (Int)
+        - int->int (Int)
+          + variable n2 (Int)
+
+  Since the construction "~fun~" + "~/~" + /name/ does not occur in
+  any other model seen so far, it seems unlikely to be allowed in
+  user-written models, so I don't now plan to change the gramar to
+  accept it.
+
+- ~util/ordering.als~ failed to parse.  (Tripped over "~module
+  util/ordering[exactly elem]~" at "~elem~".  Added "exactly"
+  to the rule for module declarations.  Now fails on a field name
+  given as "pred/totalOrder".)  
+ 
+Two cases involve what appear to be casts to "~int~".  Casts are not
+present in the grammar at the moment, because they are not present in
+/J/ or /G/, from which the grammar was derived.  (It looks like they
+are present in /C/, but I don't find the grammatical rules of /C/ easy
+to read.
+
+- ~examples/algorithms/stable_ringlead.als~ fails to parse.  There is
+  a conditional within the argument of box join.  That establishes
+  pretty well that it was an error to restrict the argument to
+  /expr10/.  Have changed to allow /if-then-else/ as well.
+
+  Further parsing errors on expressions like "~int x = int y~".
+  The quick guide to Alloy 4 says casting expressions must use
+  brackets, so "~int[x] = int[y]~" and suggests implicitly that
+  "~int x~" is Alloy 3 syntax.  That moves this to a won't-fix.
+
+- ~util/sequniv.als~ failed to parse ("0" as numeric constant).
+  Fixed.  Now fails on a call to "~int[i"]~", which the grammar
+  currently does not accept because "int" is reserved.  To allow
+  casting expressions of this kind, the grammar would need to
+  add a rule for them.
+
+One case involves macros -- a feature described in the documentation
+but not in the grammars I'm working from.
+
+- ~util/time.als~ fails to parse because the module uses macros,
+  which are not currently part of the grammar.
+
+Temporal keywords, casts, and macros all appear to be part of the
+Alloy language and it would be nice to support them, if this grammar
+were ever to be used to build general purpose Alloy tools.  But the
+MLCD models don't use them, and sufficient unto the day is the evil
+thereof.
+
+*** Unexpected discrepancies (to be fixed)
+This category initially had a number of members, but some of the
+reasons for failure to parse or ambiguity have now been cleared up.
+Others have now been classified for the moment as won't-fix
+discrepancies.
+  
+*** Unexpected discrepancies now fixed
+Others have now have been fixed.
+
+- ~examples/case_studies/com.als~ is ambiguous.  The ambiguity appears
+  to be in the definition of /name-minus-reserved-words/, between two
+  different right-hand sides, namely "~'in', namechar+~" and "~'int',
+  namechar+~".  I inserted the second by hand to exclude "~int~" from
+  the definition of the nonterminal and failed to change the first.
+- ~examples/puzzles/handshake.als~ was ambiguous.  Also /int/-related.
+- ~examples/systems/views.als~ was ambiguous; the ambiguity involved
+  the keyword "~this~".  Fixed by adding "~this~" to the list of non-name
+  tokens.
+- ~util/seqrel.als~ is ambiguous (rule for /import/ allowed trailing
+  whitespace; now fixed).
+  
+

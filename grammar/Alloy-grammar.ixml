@@ -2,11 +2,11 @@ Alloy-module: s, (module-decl, s)?, (import++s, s)?, (paragraph++s, s)?.
 
 -module-decl: -"module", s, module-name, (s, parameters)?.
 module-name: OQName.
-parameters:  -"[", s, name++comma, s, -"]".
+parameters:  -"[", s, ((EXACTLY, s)?, name)++comma, s, -"]".
 
-import: (private, S)?, -"open", s, OQName, s,
-        (module-arguments, s)?,
-        (-"as", s, alias)?.
+import: (private, S)?, -"open", s, OQName,
+        (s, module-arguments)?,
+        (s, -"as", s, alias)?.
 module-arguments: "[", s, ref++comma, s, "]".
 alias: -name.
 
@@ -44,7 +44,7 @@ typescopes: -"for", S, numbers, (S, expectation)?.
        | typescope++comma.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
-exact-scope: -"exactly", s, -max-scope.
+exact-scope: -EXACTLY, s, -max-scope.
 max-scope: number, s, (OQName|"int"|"seq").
 exceptions: "but", s, typescope++comma.
 
@@ -171,7 +171,7 @@ rr-set: expr17.
 
 -expr17: box-join; expr18.
 box-join: expr17, s, "[", s, (selector ++ comma, s)?, "]".
-selector: expr10.
+selector: expr10; if-then-else.
 
 -expr18: dot-join; expr19.
 dot-join: expr17, s, ".", s, expr19.
@@ -259,6 +259,7 @@ NONE: "none".
 IDEN: "iden".
 private: "private".
 abstract: "abstract".
+EXACTLY: "exactly".
 
 enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
 
