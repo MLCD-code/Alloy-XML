@@ -303,7 +303,7 @@
          <nonterminal name="block"/>
       </alt>
    </rule>
-   <rule mark="@" name="function-bounds" alias="bounds">&gt;
+   <rule name="function-bounds" alias="bounds">
       <alt>
          <nonterminal name="expr"/>
       </alt>
@@ -1077,6 +1077,7 @@
          <nonterminal name="expr08"/>
       </alt>
    </rule>
+   <comment> expr08: quantified expressions </comment>
    <rule mark="-" name="expr08">
       <alt>
          <nonterminal name="quantified-expression"/>
@@ -1152,6 +1153,7 @@
          <nonterminal name="expr09"/>
       </alt>
    </rule>
+   <comment> expr09: bit-shifting expressions </comment>
    <rule mark="-" name="expr09">
       <alt>
          <nonterminal name="SHL-expr"/>
@@ -1193,6 +1195,7 @@
          <nonterminal name="expr10"/>
       </alt>
    </rule>
+   <comment> expr10: union, set difference </comment>
    <rule mark="-" name="expr10">
       <alt>
          <nonterminal name="union"/>
@@ -1222,6 +1225,7 @@
          <nonterminal name="expr11"/>
       </alt>
    </rule>
+   <comment> expr11: cardinality </comment>
    <rule mark="-" name="expr11">
       <alt>
          <nonterminal name="cardinality"/>
@@ -1237,6 +1241,7 @@
          <nonterminal name="expr12"/>
       </alt>
    </rule>
+   <comment> expr12: override expressions </comment>
    <rule mark="-" name="expr12">
       <alt>
          <nonterminal name="override"/>
@@ -1264,6 +1269,7 @@
          <nonterminal name="expr13"/>
       </alt>
    </rule>
+   <comment> expr13: intersection </comment>
    <rule mark="-" name="expr13">
       <alt>
          <nonterminal name="intersection"/>
@@ -1281,6 +1287,7 @@
          <nonterminal name="expr14"/>
       </alt>
    </rule>
+   <comment> expr14: arrow expressions </comment>
    <rule mark="-" name="expr14">
       <alt>
          <nonterminal name="arrow-expr"/>
@@ -1330,6 +1337,7 @@
          <literal string="set"/>
       </alt>
    </rule>
+   <comment> expr15, 16: left and right restriction </comment>
    <rule mark="-" name="expr15">
       <alt>
          <nonterminal name="left-restriction"/>
@@ -1384,6 +1392,7 @@
          <nonterminal name="expr17"/>
       </alt>
    </rule>
+   <comment> expr17: box joins </comment>
    <rule mark="-" name="expr17">
       <alt>
          <nonterminal name="box-join"/>
@@ -1443,6 +1452,7 @@
          <literal tmark="-" string="int"/>
       </alt>
    </rule>
+   <comment> expr18: dot joins </comment>
    <rule mark="-" name="expr18">
       <alt>
          <nonterminal name="dot-join"/>
@@ -1460,6 +1470,7 @@
          <nonterminal name="expr19"/>
       </alt>
    </rule>
+   <comment> expr19: inverse, closures </comment>
    <rule mark="-" name="expr19">
       <alt>
          <nonterminal name="inverse"/>
@@ -1495,6 +1506,7 @@
          <nonterminal name="expr19"/>
       </alt>
    </rule>
+   <comment> expr20: base expressions </comment>
    <rule mark="-" name="expr20">
       <alt>
          <nonterminal name="OQName"/>

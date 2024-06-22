@@ -5,7 +5,7 @@ namespace rng = "http://relaxng.org/ns/structure/1.0"
 
 ra:documentation [
   "This Relax NG schema was generated from an invisible-XML grammar\x{a}" ~
-  " by ixml-to-rng.xsl, on 2024-06-20."
+  " by ixml-to-rng.xsl, on 2024-06-22."
 ]
 start = Alloy-module
 [
@@ -273,17 +273,16 @@ e.fun-decl =
   db:refname [ "function-bounds" ]
   ra:documentation [ "Default rule for nonterminal 'function-bounds'" ]
 ]
-function-bounds = a.function-bounds
+function-bounds = e.function-bounds
 [
-  db:refname [ "a.function-bounds" ]
+  db:refname [ "e.function-bounds" ]
   ra:documentation [
-    "Nonterminal 'function-bounds', serialized as attribute"
+    "Nonterminal 'function-bounds', serialized as element"
   ]
 ]
-a.function-bounds =
-  attribute function-bounds {
-    # No annotations found, falling back to 'text'.
-    text
+e.function-bounds =
+  element function-bounds {
+    extension-attributes, (extension-elements & expr)
   }
 [
   db:refname [ "pred-decl" ]

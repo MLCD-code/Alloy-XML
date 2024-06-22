@@ -27,7 +27,7 @@ sig-constraints: -block.
 fun-decl: (private, S)?, 
           -"fun", S, (ref, -".")?, name, s, (args, s)?, -":", s, 
           function-bounds, s, block.
-@function-bounds > bounds: expr.
+function-bounds > bounds: expr.
 pred-decl: (private, S)?, 
            -"pred", S, (ref, -".")?, name, s, (args, s)?, block.
 args:  -"(", s, decl**comma, s, -")"
@@ -124,6 +124,7 @@ not-gt:  expr07, s, NOT, -">",  s, expr08.
 not-le:  expr07, s, NOT, -"=<", s, expr08.
 not-ge:  expr07, s, NOT, -">=", s, expr08.
 
+{ expr08: quantified expressions } 
 -expr08: quantified-expression; 
          expr09.
 -quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
@@ -136,31 +137,38 @@ set-ex08: -"set", S, member-type.
 -member-type: expr09.
 seq-ex08: -"seq", S, expr09.
 
+{ expr09: bit-shifting expressions } 
 -expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
 SHL-expr: expr09, s, -"<<", s, expr10.
 SHR-expr: expr09, s, -">>>", s, expr10.
 SHA-expr: expr09, s, -">>", s, expr10.
 
+{ expr10: union, set difference }
 -expr10:  union; set-diff; expr11.
 union: expr10, s, -"+", s, expr11.
 set-diff: expr10, s, -"-", careful-ws, expr11.
 
+{ expr11: cardinality }
 -expr11:  cardinality; expr12.
 cardinality: -"#", s, expr12.
 
+{ expr12: override expressions }
 -expr12: override; expr13.
 override: base, s, -"++", s, overlay.
 base: expr12.
 overlay: expr13.
 
+{ expr13: intersection }
 -expr13:  intersection; expr14.
 intersection:  expr13, s, -"&", s, expr14.
 
+{ expr14: arrow expressions }
 -expr14: arrow-expr; expr15.
 arrow-expr: expr14, (S, left-mult)?, s, -"->", s, (right-mult, S)?, expr15.
 left-mult:  -mult; "set".
 right-mult:  -mult; "set".
 
+{ expr15, 16: left and right restriction }
 -expr15: left-restriction; expr16.
 -expr16: right-restriction; expr17.
 left-restriction: lr-set, s, -"<:", s, lr-rel.
@@ -170,6 +178,7 @@ lr-rel: expr16.
 rr-rel: expr16.
 rr-set: expr17.
 
+{ expr17: box joins }
 -expr17: box-join; expr18.
 box-join: box-left, s, -"[", s, (selector ++ comma, s)?, -"]".
 box-left: expr17; sum; integer-cast.
@@ -177,14 +186,17 @@ selector: expr10; if-then-else.
 sum: -"sum".
 integer-cast: -"int".
 
+{ expr18: dot joins }
 -expr18: dot-join; expr19.
 dot-join: expr17, s, -".", s, expr19.
 
+{ expr19: inverse, closures }
 -expr19: inverse; t-closure; rt-closure; expr20.
 inverse: -"~", s, expr19.
 t-closure: -"^", s, expr19.
 rt-closure: -"*", s, expr19.
 
+{ expr20: base expressions }
 -expr20:  OQName;
           unexpanded;
           THIS;

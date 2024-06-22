@@ -280,7 +280,7 @@ sigExt ::= "in" ref ["+" ref]*
 fun-decl: (private, S)?, 
           -"fun", S, (ref, -".")?, name, s, (args, s)?, -":", s, 
           function-bounds, s, block.
-@function-bounds > bounds: expr.
+function-bounds > bounds: expr.
 pred-decl: (private, S)?, 
            -"pred", S, (ref, -".")?, name, s, (args, s)?, block.
 args:  -"(", s, decl**comma, s, -")"
