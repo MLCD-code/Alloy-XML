@@ -7,7 +7,7 @@ parameters:  -"[", s, ((EXACTLY, s)?, name)++comma, s, -"]".
 import: (private, S)?, -"open", s, OQName,
         (s, module-arguments)?,
         (s, -"as", s, alias)?.
-module-arguments: "[", s, ref++comma, s, "]".
+module-arguments: -"[", s, ref++comma, s, -"]".
 alias: -name.
 
 paragraph: fact-decl | assert-decl | fun-decl | pred-decl 
@@ -25,10 +25,11 @@ sig-body: -"{", s, (decl++comma, s)?, -"}".
 sig-constraints: -block.
 
 fun-decl: (private, S)?, 
-          -"fun", S, (ref, ".")?, name, s, (args, s)?, ":", s, 
-          expr, s, block.
+          -"fun", S, (ref, -".")?, name, s, (args, s)?, -":", s, 
+          function-bounds, s, block.
+@function-bounds > bounds: expr.
 pred-decl: (private, S)?, 
-           -"pred", S, (ref, ".")?, name, s, (args, s)?, block.
+           -"pred", S, (ref, -".")?, name, s, (args, s)?, block.
 args:  -"(", s, decl**comma, s, -")"
     |  -"[", s, decl**comma, s, -"]".
 
@@ -46,7 +47,7 @@ expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
 max-scope: number, s, (OQName|"int"|"Int"|"seq").
-exceptions: "but", s, typescope++comma.
+exceptions: -"but", s, typescope++comma.
 
 decl: (private, s)?, (disj, S)?, variable++comma, s, -":", s, bounds.
 disj: -"disj".
@@ -61,7 +62,7 @@ bounds: (disj, S)?, expr.
          expr02.
 
 let-expr:  -"let", s, let-decl++comma, s, block-or-bar.
-let-decl: variable, s, "=", s, value.
+let-decl: variable, s, -"=", s, value.
 value: expr.
 
 { quantified expressions }
@@ -99,12 +100,12 @@ else-clause: -"else", S, expr04.
 { expr05:  conjunction }
 -expr05:  conjunction; expr06.
 conjunction:  expr05, AND, expr06.
-AND: s, "&&", s; S, "and", S.
+-AND: s, -"&&", s; S, -"and", S.
 
 { expr06:  negated expressions }
 -expr06:  negation; expr07.
 negation:  NOT, expr06.
-NOT: "!", s; "not", S.
+NOT: -"!", s; -"not", S.
 
 { expr07: comparisons } 
 -expr07:  comparison; expr08.
@@ -136,24 +137,24 @@ set-ex08: -"set", S, member-type.
 seq-ex08: -"seq", S, expr09.
 
 -expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
-SHL-expr: expr09, s, "<<", s, expr10.
-SHR-expr: expr09, s, ">>>", s, expr10.
-SHA-expr: expr09, s, ">>", s, expr10.
+SHL-expr: expr09, s, -"<<", s, expr10.
+SHR-expr: expr09, s, -">>>", s, expr10.
+SHA-expr: expr09, s, -">>", s, expr10.
 
 -expr10:  union; set-diff; expr11.
-union: expr10, s, "+", s, expr11.
-set-diff: expr10, s, "-", careful-ws, expr11.
+union: expr10, s, -"+", s, expr11.
+set-diff: expr10, s, -"-", careful-ws, expr11.
 
 -expr11:  cardinality; expr12.
-cardinality: "#", s, expr12.
+cardinality: -"#", s, expr12.
 
 -expr12: override; expr13.
-override: base, s, "++", s, overlay.
+override: base, s, -"++", s, overlay.
 base: expr12.
 overlay: expr13.
 
 -expr13:  intersection; expr14.
-intersection:  expr13, s, "&", s, expr14.
+intersection:  expr13, s, -"&", s, expr14.
 
 -expr14: arrow-expr; expr15.
 arrow-expr: expr14, (S, left-mult)?, s, -"->", s, (right-mult, S)?, expr15.
@@ -162,8 +163,8 @@ right-mult:  -mult; "set".
 
 -expr15: left-restriction; expr16.
 -expr16: right-restriction; expr17.
-left-restriction: lr-set, s, "<:", s, lr-rel.
-right-restriction: rr-rel, s, ":>", s, rr-set.
+left-restriction: lr-set, s, -"<:", s, lr-rel.
+right-restriction: rr-rel, s, -":>", s, rr-set.
 lr-set: expr15.
 lr-rel: expr16.
 rr-rel: expr16.
@@ -177,12 +178,12 @@ sum: -"sum".
 integer-cast: -"int".
 
 -expr18: dot-join; expr19.
-dot-join: expr17, s, ".", s, expr19.
+dot-join: expr17, s, -".", s, expr19.
 
 -expr19: inverse; t-closure; rt-closure; expr20.
-inverse: "~", s, expr19.
-t-closure: "^", s, expr19.
-rt-closure: "*", s, expr19.
+inverse: -"~", s, expr19.
+t-closure: -"^", s, expr19.
+rt-closure: -"*", s, expr19.
 
 -expr20:  OQName;
           unexpanded;
@@ -195,7 +196,7 @@ rt-closure: "*", s, expr19.
           declarations-block;
           block.
 unexpanded: -"@", s, name.
-negative-number: "-", -number.
+negative-number: -"-", -number.
 declarations-block: -"{", s, 
                     decl ++ comma, s, 
                     block-or-bar, s, -"}".
@@ -227,15 +228,6 @@ number: '0'; ['1'-'9'], digit*.
 quant: "all" | "no" | -mult | "sum".
 mult: "some" | "lone" | "one".
 
-binOp: "||" | "or" | "&&" | "and" | "&" | "<=>" | "iff"
-        | "=>" | "implies" | "+" | "-" | "++" | "<:" | ":>" | "." | "<<" | ">>" | ">>>".
-
-arrowOp: ("some"|"one"|"lone"|"set")?, "->", ("some"|"one"|"lone"|"set")?.
-
-compareOp: "=" | "in" | "<" | ">" | "=<" | ">=".
-
-unOp: "!" | "not" | "no" | "some" | "lone" | "one" | "set" | "seq" | "#" | "~" | "*" | "^".
-
 -comma: s, -",", s.
 slash: s, -"/", s.
 plus:  s, -"+", s.
@@ -256,7 +248,7 @@ comment:  double-slash; double-hyphen; slash-star.
 -NL: -#D?, -#A.
 careful-ws: ((ws_char; double-slash; slash-star), s)?.
 
--slash-star: -"/*", ~["*"]*, "*", ((~["/"; "*"], ~["*"]*)?, "*")*, "/".
+-slash-star: -"/*", (~["*"] | "*"+, ~["/"; "*"])*, "*"*, -"*/".
 
 THIS: "this".
 PRIVATE:  "private".
@@ -269,7 +261,7 @@ private: "private".
 abstract: "abstract".
 EXACTLY: "exactly".
 
-enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
+enum-decl: -"enum", s, name, s, -"{", s, name++comma, s, -"}".
 
 { name characters:  possible continuations for a name }
 -namechar: ["a"-"z";          "A"-"Z"; "0"-"9"; "_"; #27; #22].

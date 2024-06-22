@@ -1,0 +1,3745 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ixml>
+   <rule name="Alloy-module">
+      <alt>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="module-decl"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <repeat1>
+                     <nonterminal name="import"/>
+                     <sep>
+                        <nonterminal name="s"/>
+                     </sep>
+                  </repeat1>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <repeat1>
+                     <nonterminal name="paragraph"/>
+                     <sep>
+                        <nonterminal name="s"/>
+                     </sep>
+                  </repeat1>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule mark="-" name="module-decl">
+      <alt>
+         <literal tmark="-" string="module"/>
+         <nonterminal name="s"/>
+         <nonterminal name="module-name"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="s"/>
+                  <nonterminal name="parameters"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule name="module-name">
+      <alt>
+         <nonterminal name="OQName"/>
+      </alt>
+   </rule>
+   <rule name="parameters">
+      <alt>
+         <literal tmark="-" string="["/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <alts>
+               <alt>
+                  <option>
+                     <alts>
+                        <alt>
+                           <nonterminal name="EXACTLY"/>
+                           <nonterminal name="s"/>
+                        </alt>
+                     </alts>
+                  </option>
+                  <nonterminal name="name"/>
+               </alt>
+            </alts>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="]"/>
+      </alt>
+   </rule>
+   <rule name="import">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="private"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="open"/>
+         <nonterminal name="s"/>
+         <nonterminal name="OQName"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="s"/>
+                  <nonterminal name="module-arguments"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="s"/>
+                  <literal tmark="-" string="as"/>
+                  <nonterminal name="s"/>
+                  <nonterminal name="alias"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule name="module-arguments">
+      <alt>
+         <literal tmark="-" string="["/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <nonterminal name="ref"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="]"/>
+      </alt>
+   </rule>
+   <rule name="alias">
+      <alt>
+         <nonterminal mark="-" name="name"/>
+      </alt>
+   </rule>
+   <rule name="paragraph">
+      <alt>
+         <nonterminal name="fact-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="assert-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="fun-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="pred-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="cmd-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="enum-decl"/>
+      </alt>
+      <alt>
+         <nonterminal name="sig-decl"/>
+      </alt>
+   </rule>
+   <rule name="sig-decl">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="private"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="abstract"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal mark="@" name="mult"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="sig"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="name"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="S"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="sig-ext"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="sig-body"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="s"/>
+                  <nonterminal name="sig-constraints"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule name="sig-ext">
+      <alt>
+         <nonterminal name="extends"/>
+      </alt>
+      <alt>
+         <nonterminal name="subset-of"/>
+      </alt>
+   </rule>
+   <rule name="extends">
+      <alt>
+         <literal tmark="-" string="extends"/>
+         <nonterminal name="S"/>
+         <nonterminal name="ref"/>
+      </alt>
+   </rule>
+   <rule name="subset-of">
+      <alt>
+         <literal tmark="-" string="in"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="ref"/>
+            <sep>
+               <nonterminal name="plus"/>
+            </sep>
+         </repeat1>
+      </alt>
+   </rule>
+   <rule name="sig-body">
+      <alt>
+         <literal tmark="-" string="{"/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <repeat1>
+                     <nonterminal name="decl"/>
+                     <sep>
+                        <nonterminal name="comma"/>
+                     </sep>
+                  </repeat1>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="}"/>
+      </alt>
+   </rule>
+   <rule name="sig-constraints">
+      <alt>
+         <nonterminal mark="-" name="block"/>
+      </alt>
+   </rule>
+   <rule name="fun-decl">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="private"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="fun"/>
+         <nonterminal name="S"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="ref"/>
+                  <literal tmark="-" string="."/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="name"/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="args"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string=":"/>
+         <nonterminal name="s"/>
+         <nonterminal name="function-bounds"/>
+         <nonterminal name="s"/>
+         <nonterminal name="block"/>
+      </alt>
+   </rule>
+   <rule mark="@" name="function-bounds" alias="bounds">&gt;
+      <alt>
+         <nonterminal name="expr"/>
+      </alt>
+   </rule>
+   <rule name="pred-decl">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="private"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="pred"/>
+         <nonterminal name="S"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="ref"/>
+                  <literal tmark="-" string="."/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="name"/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="args"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="block"/>
+      </alt>
+   </rule>
+   <rule name="args">
+      <alt>
+         <literal tmark="-" string="("/>
+         <nonterminal name="s"/>
+         <repeat0>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat0>
+         <nonterminal name="s"/>
+         <literal tmark="-" string=")"/>
+      </alt>
+      <alt>
+         <literal tmark="-" string="["/>
+         <nonterminal name="s"/>
+         <repeat0>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat0>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="]"/>
+      </alt>
+   </rule>
+   <rule name="fact-decl">
+      <alt>
+         <literal tmark="-" string="fact"/>
+         <nonterminal name="S"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="name"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="block"/>
+      </alt>
+   </rule>
+   <rule name="assert-decl">
+      <alt>
+         <literal tmark="-" string="assert"/>
+         <nonterminal name="S"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="name"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="block"/>
+      </alt>
+   </rule>
+   <rule name="cmd-decl">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal mark="@" name="name"/>
+                  <nonterminal name="s"/>
+                  <literal tmark="-" string=":"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal mark="@" name="verb"/>
+         <nonterminal name="S"/>
+         <alts>
+            <alt>
+               <nonterminal name="name"/>
+            </alt>
+            <alt>
+               <nonterminal name="block"/>
+            </alt>
+         </alts>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="S"/>
+                  <nonterminal name="scope"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule name="verb">
+      <alt>
+         <literal string="run"/>
+      </alt>
+      <alt>
+         <literal string="check"/>
+      </alt>
+   </rule>
+   <rule name="scope">
+      <alt>
+         <nonterminal name="expectation"/>
+      </alt>
+      <alt>
+         <nonterminal name="typescopes"/>
+      </alt>
+   </rule>
+   <rule name="typescopes">
+      <alt>
+         <literal tmark="-" string="for"/>
+         <nonterminal name="S"/>
+         <nonterminal name="numbers"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="S"/>
+                  <nonterminal name="expectation"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule mark="-" name="numbers">
+      <alt>
+         <nonterminal name="number"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="s"/>
+                  <nonterminal name="exceptions"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <repeat1>
+            <nonterminal name="typescope"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+      </alt>
+   </rule>
+   <rule name="expectation">
+      <alt>
+         <literal tmark="-" string="expect"/>
+         <nonterminal name="s"/>
+         <alts>
+            <alt>
+               <literal string="0"/>
+            </alt>
+            <alt>
+               <literal string="1"/>
+            </alt>
+         </alts>
+      </alt>
+   </rule>
+   <rule name="typescope">
+      <alt>
+         <nonterminal name="exact-scope"/>
+      </alt>
+      <alt>
+         <nonterminal name="max-scope"/>
+      </alt>
+   </rule>
+   <rule name="exact-scope">
+      <alt>
+         <nonterminal mark="-" name="EXACTLY"/>
+         <nonterminal name="s"/>
+         <nonterminal mark="-" name="max-scope"/>
+      </alt>
+   </rule>
+   <rule name="max-scope">
+      <alt>
+         <nonterminal name="number"/>
+         <nonterminal name="s"/>
+         <alts>
+            <alt>
+               <nonterminal name="OQName"/>
+            </alt>
+            <alt>
+               <literal string="int"/>
+            </alt>
+            <alt>
+               <literal string="Int"/>
+            </alt>
+            <alt>
+               <literal string="seq"/>
+            </alt>
+         </alts>
+      </alt>
+   </rule>
+   <rule name="exceptions">
+      <alt>
+         <literal tmark="-" string="but"/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <nonterminal name="typescope"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+      </alt>
+   </rule>
+   <rule name="decl">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="private"/>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="disj"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <repeat1>
+            <nonterminal name="variable"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <literal tmark="-" string=":"/>
+         <nonterminal name="s"/>
+         <nonterminal name="bounds"/>
+      </alt>
+   </rule>
+   <rule name="disj">
+      <alt>
+         <literal tmark="-" string="disj"/>
+      </alt>
+   </rule>
+   <rule name="variable">
+      <alt>
+         <nonterminal mark="-" name="name"/>
+      </alt>
+   </rule>
+   <rule name="bounds">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="disj"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="expr"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr">
+      <alt>
+         <nonterminal name="expr01"/>
+      </alt>
+   </rule>
+   <comment> expr01:  Weakest binding:  let, quantified statements </comment>
+   <rule mark="-" name="expr01">
+      <alt>
+         <nonterminal name="let-expr"/>
+      </alt>
+      <alt>
+         <nonterminal name="all-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="none-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="some-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="lone-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="one-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="sum-ex01"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr02"/>
+      </alt>
+   </rule>
+   <rule name="let-expr">
+      <alt>
+         <literal tmark="-" string="let"/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <nonterminal name="let-decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="let-decl">
+      <alt>
+         <nonterminal name="variable"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="="/>
+         <nonterminal name="s"/>
+         <nonterminal name="value"/>
+      </alt>
+   </rule>
+   <rule name="value">
+      <alt>
+         <nonterminal name="expr"/>
+      </alt>
+   </rule>
+   <comment> quantified expressions </comment>
+   <rule name="all-ex01">
+      <alt>
+         <literal tmark="-" string="all"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="none-ex01">
+      <alt>
+         <literal tmark="-" string="no"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="some-ex01">
+      <alt>
+         <literal tmark="-" string="some"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="lone-ex01">
+      <alt>
+         <literal tmark="-" string="lone"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="one-ex01">
+      <alt>
+         <literal tmark="-" string="one"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <rule name="sum-ex01">
+      <alt>
+         <literal tmark="-" string="sum"/>
+         <nonterminal name="S"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+      </alt>
+   </rule>
+   <comment> expr02:  disjunctions </comment>
+   <rule mark="-" name="expr02">
+      <alt>
+         <nonterminal name="disjunction"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr03"/>
+      </alt>
+   </rule>
+   <rule name="disjunction">
+      <alt>
+         <nonterminal name="expr02"/>
+         <nonterminal name="OR"/>
+         <nonterminal name="expr03"/>
+      </alt>
+   </rule>
+   <rule name="OR">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="||"/>
+         <nonterminal name="s"/>
+      </alt>
+      <alt>
+         <nonterminal name="S"/>
+         <literal tmark="-" string="or"/>
+         <nonterminal name="S"/>
+      </alt>
+   </rule>
+   <comment> expr03:  bi-implication </comment>
+   <rule mark="-" name="expr03">
+      <alt>
+         <nonterminal name="bi-implication"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr04"/>
+      </alt>
+   </rule>
+   <rule name="bi-implication">
+      <alt>
+         <nonterminal name="expr03"/>
+         <nonterminal name="IFF"/>
+         <nonterminal name="expr04"/>
+      </alt>
+   </rule>
+   <rule name="IFF">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&lt;=&gt;"/>
+         <nonterminal name="s"/>
+      </alt>
+      <alt>
+         <nonterminal name="S"/>
+         <literal tmark="-" string="iff"/>
+         <nonterminal name="S"/>
+      </alt>
+   </rule>
+   <comment> expr04:  implication </comment>
+   <rule mark="-" name="expr04">
+      <alt>
+         <nonterminal name="if-then"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr04-bis"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr04-bis">
+      <alt>
+         <nonterminal name="if-then-else"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr05"/>
+      </alt>
+   </rule>
+   <rule name="if-then">
+      <alt>
+         <nonterminal name="condition"/>
+         <nonterminal name="IMPLIES"/>
+         <nonterminal name="consequent"/>
+      </alt>
+   </rule>
+   <rule name="if-then-else">
+      <alt>
+         <nonterminal name="condition"/>
+         <nonterminal name="IMPLIES"/>
+         <nonterminal name="then-clause"/>
+         <nonterminal name="S"/>
+         <nonterminal name="else-clause"/>
+      </alt>
+   </rule>
+   <rule name="IMPLIES">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="=&gt;"/>
+         <nonterminal name="s"/>
+      </alt>
+      <alt>
+         <nonterminal name="S"/>
+         <literal tmark="-" string="implies"/>
+         <nonterminal name="S"/>
+      </alt>
+   </rule>
+   <rule name="condition">
+      <alt>
+         <nonterminal name="expr05"/>
+      </alt>
+   </rule>
+   <rule name="consequent">
+      <alt>
+         <nonterminal name="expr04"/>
+      </alt>
+   </rule>
+   <rule name="then-clause">
+      <alt>
+         <nonterminal name="expr04-bis"/>
+      </alt>
+   </rule>
+   <rule name="else-clause">
+      <alt>
+         <literal tmark="-" string="else"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr04"/>
+      </alt>
+   </rule>
+   <comment> expr05:  conjunction </comment>
+   <rule mark="-" name="expr05">
+      <alt>
+         <nonterminal name="conjunction"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr06"/>
+      </alt>
+   </rule>
+   <rule name="conjunction">
+      <alt>
+         <nonterminal name="expr05"/>
+         <nonterminal name="AND"/>
+         <nonterminal name="expr06"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="AND">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&amp;&amp;"/>
+         <nonterminal name="s"/>
+      </alt>
+      <alt>
+         <nonterminal name="S"/>
+         <literal tmark="-" string="and"/>
+         <nonterminal name="S"/>
+      </alt>
+   </rule>
+   <comment> expr06:  negated expressions </comment>
+   <rule mark="-" name="expr06">
+      <alt>
+         <nonterminal name="negation"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr07"/>
+      </alt>
+   </rule>
+   <rule name="negation">
+      <alt>
+         <nonterminal name="NOT"/>
+         <nonterminal name="expr06"/>
+      </alt>
+   </rule>
+   <rule name="NOT">
+      <alt>
+         <literal tmark="-" string="!"/>
+         <nonterminal name="s"/>
+      </alt>
+      <alt>
+         <literal tmark="-" string="not"/>
+         <nonterminal name="S"/>
+      </alt>
+   </rule>
+   <comment> expr07: comparisons </comment>
+   <rule mark="-" name="expr07">
+      <alt>
+         <nonterminal name="comparison"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="comparison">
+      <alt>
+         <nonterminal name="in"/>
+      </alt>
+      <alt>
+         <nonterminal name="eq"/>
+      </alt>
+      <alt>
+         <nonterminal name="lt"/>
+      </alt>
+      <alt>
+         <nonterminal name="gt"/>
+      </alt>
+      <alt>
+         <nonterminal name="le"/>
+      </alt>
+      <alt>
+         <nonterminal name="ge"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-in"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-eq"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-lt"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-gt"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-le"/>
+      </alt>
+      <alt>
+         <nonterminal name="not-ge"/>
+      </alt>
+   </rule>
+   <rule name="in">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="S"/>
+         <literal tmark="-" string="in"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="eq">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="="/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="lt">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&lt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="gt">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&gt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="le">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="=&lt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="ge">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&gt;="/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-in">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="S"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="in"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-eq">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="="/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-lt">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="&lt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-gt">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="&gt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-le">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="=&lt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule name="not-ge">
+      <alt>
+         <nonterminal name="expr07"/>
+         <nonterminal name="s"/>
+         <nonterminal name="NOT"/>
+         <literal tmark="-" string="&gt;="/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr08"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr08">
+      <alt>
+         <nonterminal name="quantified-expression"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="quantified-expression">
+      <alt>
+         <nonterminal name="no-ex08"/>
+      </alt>
+      <alt>
+         <nonterminal name="some-ex08"/>
+      </alt>
+      <alt>
+         <nonterminal name="lone-ex08"/>
+      </alt>
+      <alt>
+         <nonterminal name="one-ex08"/>
+      </alt>
+      <alt>
+         <nonterminal name="set-ex08"/>
+      </alt>
+      <alt>
+         <nonterminal name="seq-ex08"/>
+      </alt>
+   </rule>
+   <rule name="no-ex08">
+      <alt>
+         <literal tmark="-" string="no"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule name="some-ex08">
+      <alt>
+         <literal tmark="-" string="some"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule name="lone-ex08">
+      <alt>
+         <literal tmark="-" string="lone"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule name="one-ex08">
+      <alt>
+         <literal tmark="-" string="one"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule name="set-ex08">
+      <alt>
+         <literal tmark="-" string="set"/>
+         <nonterminal name="S"/>
+         <nonterminal name="member-type"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="member-type">
+      <alt>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule name="seq-ex08">
+      <alt>
+         <literal tmark="-" string="seq"/>
+         <nonterminal name="S"/>
+         <nonterminal name="expr09"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr09">
+      <alt>
+         <nonterminal name="SHL-expr"/>
+      </alt>
+      <alt>
+         <nonterminal name="SHR-expr"/>
+      </alt>
+      <alt>
+         <nonterminal name="SHA-expr"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr10"/>
+      </alt>
+   </rule>
+   <rule name="SHL-expr">
+      <alt>
+         <nonterminal name="expr09"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&lt;&lt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr10"/>
+      </alt>
+   </rule>
+   <rule name="SHR-expr">
+      <alt>
+         <nonterminal name="expr09"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&gt;&gt;&gt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr10"/>
+      </alt>
+   </rule>
+   <rule name="SHA-expr">
+      <alt>
+         <nonterminal name="expr09"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&gt;&gt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr10"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr10">
+      <alt>
+         <nonterminal name="union"/>
+      </alt>
+      <alt>
+         <nonterminal name="set-diff"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr11"/>
+      </alt>
+   </rule>
+   <rule name="union">
+      <alt>
+         <nonterminal name="expr10"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="+"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr11"/>
+      </alt>
+   </rule>
+   <rule name="set-diff">
+      <alt>
+         <nonterminal name="expr10"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="-"/>
+         <nonterminal name="careful-ws"/>
+         <nonterminal name="expr11"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr11">
+      <alt>
+         <nonterminal name="cardinality"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr12"/>
+      </alt>
+   </rule>
+   <rule name="cardinality">
+      <alt>
+         <literal tmark="-" string="#"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr12"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr12">
+      <alt>
+         <nonterminal name="override"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr13"/>
+      </alt>
+   </rule>
+   <rule name="override">
+      <alt>
+         <nonterminal name="base"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="++"/>
+         <nonterminal name="s"/>
+         <nonterminal name="overlay"/>
+      </alt>
+   </rule>
+   <rule name="base">
+      <alt>
+         <nonterminal name="expr12"/>
+      </alt>
+   </rule>
+   <rule name="overlay">
+      <alt>
+         <nonterminal name="expr13"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr13">
+      <alt>
+         <nonterminal name="intersection"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr14"/>
+      </alt>
+   </rule>
+   <rule name="intersection">
+      <alt>
+         <nonterminal name="expr13"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&amp;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr14"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr14">
+      <alt>
+         <nonterminal name="arrow-expr"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr15"/>
+      </alt>
+   </rule>
+   <rule name="arrow-expr">
+      <alt>
+         <nonterminal name="expr14"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="S"/>
+                  <nonterminal name="left-mult"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="-&gt;"/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="right-mult"/>
+                  <nonterminal name="S"/>
+               </alt>
+            </alts>
+         </option>
+         <nonterminal name="expr15"/>
+      </alt>
+   </rule>
+   <rule name="left-mult">
+      <alt>
+         <nonterminal mark="-" name="mult"/>
+      </alt>
+      <alt>
+         <literal string="set"/>
+      </alt>
+   </rule>
+   <rule name="right-mult">
+      <alt>
+         <nonterminal mark="-" name="mult"/>
+      </alt>
+      <alt>
+         <literal string="set"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr15">
+      <alt>
+         <nonterminal name="left-restriction"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr16"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr16">
+      <alt>
+         <nonterminal name="right-restriction"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr17"/>
+      </alt>
+   </rule>
+   <rule name="left-restriction">
+      <alt>
+         <nonterminal name="lr-set"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="&lt;:"/>
+         <nonterminal name="s"/>
+         <nonterminal name="lr-rel"/>
+      </alt>
+   </rule>
+   <rule name="right-restriction">
+      <alt>
+         <nonterminal name="rr-rel"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string=":&gt;"/>
+         <nonterminal name="s"/>
+         <nonterminal name="rr-set"/>
+      </alt>
+   </rule>
+   <rule name="lr-set">
+      <alt>
+         <nonterminal name="expr15"/>
+      </alt>
+   </rule>
+   <rule name="lr-rel">
+      <alt>
+         <nonterminal name="expr16"/>
+      </alt>
+   </rule>
+   <rule name="rr-rel">
+      <alt>
+         <nonterminal name="expr16"/>
+      </alt>
+   </rule>
+   <rule name="rr-set">
+      <alt>
+         <nonterminal name="expr17"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr17">
+      <alt>
+         <nonterminal name="box-join"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr18"/>
+      </alt>
+   </rule>
+   <rule name="box-join">
+      <alt>
+         <nonterminal name="box-left"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="["/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <repeat1>
+                     <nonterminal name="selector"/>
+                     <sep>
+                        <nonterminal name="comma"/>
+                     </sep>
+                  </repeat1>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="]"/>
+      </alt>
+   </rule>
+   <rule name="box-left">
+      <alt>
+         <nonterminal name="expr17"/>
+      </alt>
+      <alt>
+         <nonterminal name="sum"/>
+      </alt>
+      <alt>
+         <nonterminal name="integer-cast"/>
+      </alt>
+   </rule>
+   <rule name="selector">
+      <alt>
+         <nonterminal name="expr10"/>
+      </alt>
+      <alt>
+         <nonterminal name="if-then-else"/>
+      </alt>
+   </rule>
+   <rule name="sum">
+      <alt>
+         <literal tmark="-" string="sum"/>
+      </alt>
+   </rule>
+   <rule name="integer-cast">
+      <alt>
+         <literal tmark="-" string="int"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr18">
+      <alt>
+         <nonterminal name="dot-join"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr19"/>
+      </alt>
+   </rule>
+   <rule name="dot-join">
+      <alt>
+         <nonterminal name="expr17"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="."/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr19"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr19">
+      <alt>
+         <nonterminal name="inverse"/>
+      </alt>
+      <alt>
+         <nonterminal name="t-closure"/>
+      </alt>
+      <alt>
+         <nonterminal name="rt-closure"/>
+      </alt>
+      <alt>
+         <nonterminal name="expr20"/>
+      </alt>
+   </rule>
+   <rule name="inverse">
+      <alt>
+         <literal tmark="-" string="~"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr19"/>
+      </alt>
+   </rule>
+   <rule name="t-closure">
+      <alt>
+         <literal tmark="-" string="^"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr19"/>
+      </alt>
+   </rule>
+   <rule name="rt-closure">
+      <alt>
+         <literal tmark="-" string="*"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr19"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="expr20">
+      <alt>
+         <nonterminal name="OQName"/>
+      </alt>
+      <alt>
+         <nonterminal name="unexpanded"/>
+      </alt>
+      <alt>
+         <nonterminal name="THIS"/>
+      </alt>
+      <alt>
+         <nonterminal name="NONE"/>
+      </alt>
+      <alt>
+         <nonterminal name="IDEN"/>
+      </alt>
+      <alt>
+         <nonterminal name="UNIV"/>
+      </alt>
+      <comment> named sets, parse as name </comment>
+      <alt>
+         <nonterminal name="INT"/>
+      </alt>
+      <alt>
+         <nonterminal name="SEQINT"/>
+      </alt>
+      <alt>
+         <nonterminal name="number"/>
+      </alt>
+      <alt>
+         <nonterminal name="negative-number"/>
+      </alt>
+      <alt>
+         <literal tmark="-" string="("/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string=")"/>
+      </alt>
+      <alt>
+         <nonterminal name="declarations-block"/>
+      </alt>
+      <alt>
+         <nonterminal name="block"/>
+      </alt>
+   </rule>
+   <rule name="unexpanded">
+      <alt>
+         <literal tmark="-" string="@"/>
+         <nonterminal name="s"/>
+         <nonterminal name="name"/>
+      </alt>
+   </rule>
+   <rule name="negative-number">
+      <alt>
+         <literal tmark="-" string="-"/>
+         <nonterminal mark="-" name="number"/>
+      </alt>
+   </rule>
+   <rule name="declarations-block">
+      <alt>
+         <literal tmark="-" string="{"/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <nonterminal name="decl"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <nonterminal name="block-or-bar"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="}"/>
+      </alt>
+   </rule>
+   <rule name="block">
+      <alt>
+         <literal tmark="-" string="{"/>
+         <nonterminal name="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <repeat1>
+                     <nonterminal name="expr"/>
+                     <sep>
+                        <nonterminal name="S"/>
+                     </sep>
+                  </repeat1>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+         <literal tmark="-" string="}"/>
+      </alt>
+   </rule>
+   <rule name="block-or-bar">
+      <alt>
+         <nonterminal name="block"/>
+      </alt>
+      <alt>
+         <literal tmark="-" string="|"/>
+         <nonterminal name="s"/>
+         <nonterminal name="expr"/>
+      </alt>
+   </rule>
+   <rule name="ref">
+      <alt>
+         <nonterminal name="OQName"/>
+      </alt>
+      <alt>
+         <nonterminal name="UNIV"/>
+      </alt>
+      <alt>
+         <nonterminal name="INT"/>
+      </alt>
+      <alt>
+         <nonterminal name="SEQINT"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="OQName">
+      <alt>
+         <nonterminal name="qual-name"/>
+      </alt>
+      <alt>
+         <nonterminal name="name"/>
+      </alt>
+   </rule>
+   <comment> qualName: ("this", "/")?, name++slash. </comment>
+   <comment> qual-name: THIS, "/", name++slash
+           | name, "/", name++slash. </comment>
+   <rule name="qual-name">
+      <alt>
+         <nonterminal name="THIS"/>
+         <literal tmark="-" string="/"/>
+         <repeat0>
+            <alts>
+               <alt>
+                  <nonterminal name="qual"/>
+                  <literal tmark="-" string="/"/>
+               </alt>
+            </alts>
+         </repeat0>
+         <nonterminal name="name"/>
+      </alt>
+      <alt>
+         <repeat1>
+            <alts>
+               <alt>
+                  <nonterminal name="qual"/>
+                  <literal tmark="-" string="/"/>
+               </alt>
+            </alts>
+         </repeat1>
+         <nonterminal name="name"/>
+      </alt>
+   </rule>
+   <comment> qual: ID. </comment>
+   <rule name="qual">
+      <alt>
+         <nonterminal mark="-" name="name-minus-reserved-words"/>
+      </alt>
+   </rule>
+   <rule name="number">
+      <alt>
+         <literal string="0"/>
+      </alt>
+      <alt>
+         <inclusion>
+            <member from="1" to="9"/>
+         </inclusion>
+         <repeat0>
+            <nonterminal name="digit"/>
+         </repeat0>
+      </alt>
+   </rule>
+   <rule mark="-" name="digit">
+      <alt>
+         <inclusion>
+            <member from="0" to="9"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="ID">
+      <alt>
+         <nonterminal name="letter"/>
+         <repeat0>
+            <alts>
+               <alt>
+                  <nonterminal name="letter"/>
+               </alt>
+               <alt>
+                  <nonterminal name="digit"/>
+               </alt>
+               <alt>
+                  <literal string="_"/>
+               </alt>
+               <alt>
+                  <nonterminal name="sq"/>
+               </alt>
+               <alt>
+                  <nonterminal name="dq"/>
+               </alt>
+            </alts>
+         </repeat0>
+      </alt>
+   </rule>
+   <rule mark="-" name="letter">
+      <alt>
+         <inclusion>
+            <member from="a" to="z"/>
+            <member from="A" to="Z"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="sq">
+      <alt>
+         <literal string="'">
+            <comment> single quote ' </comment>
+         </literal>
+      </alt>
+   </rule>
+   <rule mark="-" name="dq">
+      <alt>
+         <literal string="&quot;">
+            <comment> double quote " </comment>
+         </literal>
+      </alt>
+   </rule>
+   <rule name="quant">
+      <alt>
+         <literal string="all"/>
+      </alt>
+      <alt>
+         <literal string="no"/>
+      </alt>
+      <alt>
+         <nonterminal mark="-" name="mult"/>
+      </alt>
+      <alt>
+         <literal string="sum"/>
+      </alt>
+   </rule>
+   <rule name="mult">
+      <alt>
+         <literal string="some"/>
+      </alt>
+      <alt>
+         <literal string="lone"/>
+      </alt>
+      <alt>
+         <literal string="one"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="comma">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string=","/>
+         <nonterminal name="s"/>
+      </alt>
+   </rule>
+   <rule name="slash">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="/"/>
+         <nonterminal name="s"/>
+      </alt>
+   </rule>
+   <rule name="plus">
+      <alt>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="+"/>
+         <nonterminal name="s"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="S">
+      <alt>
+         <repeat1>
+            <alts>
+               <alt>
+                  <nonterminal name="ws_char"/>
+               </alt>
+               <alt>
+                  <nonterminal name="comment"/>
+               </alt>
+            </alts>
+         </repeat1>
+      </alt>
+   </rule>
+   <rule mark="-" name="s">
+      <alt>
+         <option>
+            <nonterminal name="S"/>
+         </option>
+      </alt>
+   </rule>
+   <rule mark="-" name="ws_char">
+      <alt>
+         <inclusion tmark="-">
+            <member hex="20"/>
+            <member hex="9"/>
+            <member hex="A"/>
+            <member hex="D"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <comment> ws_char: SP; TAB; LF; CR.
+SP: #20.
+TAB: #9.
+LF: #A.
+CR: #D. </comment>
+   <rule name="comment">
+      <alt>
+         <nonterminal name="double-slash"/>
+      </alt>
+      <alt>
+         <nonterminal name="double-hyphen"/>
+      </alt>
+      <alt>
+         <nonterminal name="slash-star"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="double-slash">
+      <alt>
+         <literal tmark="-" string="//"/>
+         <repeat0>
+            <exclusion>
+               <member hex="A"/>
+               <member hex="D"/>
+            </exclusion>
+         </repeat0>
+         <nonterminal name="NL"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="double-hyphen">
+      <alt>
+         <literal tmark="-" string="--"/>
+         <repeat0>
+            <exclusion>
+               <member hex="A"/>
+               <member hex="D"/>
+            </exclusion>
+         </repeat0>
+         <nonterminal name="NL"/>
+      </alt>
+   </rule>
+   <rule mark="-" name="NL">
+      <alt>
+         <option>
+            <literal tmark="-" hex="D"/>
+         </option>
+         <literal tmark="-" hex="A"/>
+      </alt>
+   </rule>
+   <rule name="careful-ws">
+      <alt>
+         <option>
+            <alts>
+               <alt>
+                  <alts>
+                     <alt>
+                        <nonterminal name="ws_char"/>
+                     </alt>
+                     <alt>
+                        <nonterminal name="double-slash"/>
+                     </alt>
+                     <alt>
+                        <nonterminal name="slash-star"/>
+                     </alt>
+                  </alts>
+                  <nonterminal name="s"/>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+   </rule>
+   <rule mark="-" name="slash-star">
+      <alt>
+         <literal tmark="-" string="/*"/>
+         <repeat0>
+            <alts>
+               <alt>
+                  <exclusion>
+                     <member string="*"/>
+                  </exclusion>
+               </alt>
+               <alt>
+                  <repeat1>
+                     <literal string="*"/>
+                  </repeat1>
+                  <exclusion>
+                     <member string="/"/>
+                     <member string="*"/>
+                  </exclusion>
+               </alt>
+            </alts>
+         </repeat0>
+         <repeat0>
+            <literal string="*"/>
+         </repeat0>
+         <literal tmark="-" string="*/"/>
+      </alt>
+   </rule>
+   <rule name="THIS">
+      <alt>
+         <literal string="this"/>
+      </alt>
+   </rule>
+   <rule name="PRIVATE">
+      <alt>
+         <literal string="private"/>
+      </alt>
+   </rule>
+   <rule name="UNIV">
+      <alt>
+         <literal string="univ"/>
+      </alt>
+   </rule>
+   <rule name="INT">
+      <alt>
+         <literal string="Int"/>
+      </alt>
+   </rule>
+   <rule name="SEQINT">
+      <alt>
+         <literal string="seq/Int"/>
+      </alt>
+   </rule>
+   <rule name="NONE">
+      <alt>
+         <literal string="none"/>
+      </alt>
+   </rule>
+   <rule name="IDEN">
+      <alt>
+         <literal string="iden"/>
+      </alt>
+   </rule>
+   <rule name="private">
+      <alt>
+         <literal string="private"/>
+      </alt>
+   </rule>
+   <rule name="abstract">
+      <alt>
+         <literal string="abstract"/>
+      </alt>
+   </rule>
+   <rule name="EXACTLY">
+      <alt>
+         <literal string="exactly"/>
+      </alt>
+   </rule>
+   <rule name="enum-decl">
+      <alt>
+         <literal tmark="-" string="enum"/>
+         <nonterminal name="s"/>
+         <nonterminal name="name"/>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="{"/>
+         <nonterminal name="s"/>
+         <repeat1>
+            <nonterminal name="name"/>
+            <sep>
+               <nonterminal name="comma"/>
+            </sep>
+         </repeat1>
+         <nonterminal name="s"/>
+         <literal tmark="-" string="}"/>
+      </alt>
+   </rule>
+   <comment> name characters:  possible continuations for a name </comment>
+   <rule mark="-" name="namechar">
+      <alt>
+         <inclusion>
+            <member from="a" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <comment> The set of name characters, minus individual characters </comment>
+   <rule mark="-" name="nc-not-a">
+      <alt>
+         <inclusion>
+            <member from="b" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-b">
+      <alt>
+         <inclusion>
+            <member string="a"/>
+            <member from="c" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-c">
+      <alt>
+         <inclusion>
+            <member from="a" to="b"/>
+            <member from="d" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-d">
+      <alt>
+         <inclusion>
+            <member from="a" to="c"/>
+            <member from="e" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-e">
+      <alt>
+         <inclusion>
+            <member from="a" to="d"/>
+            <member from="f" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-f">
+      <alt>
+         <inclusion>
+            <member from="a" to="e"/>
+            <member from="g" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-g">
+      <alt>
+         <inclusion>
+            <member from="a" to="f"/>
+            <member from="h" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-h">
+      <alt>
+         <inclusion>
+            <member from="a" to="g"/>
+            <member from="i" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-i">
+      <alt>
+         <inclusion>
+            <member from="a" to="h"/>
+            <member from="j" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-j">
+      <alt>
+         <inclusion>
+            <member from="a" to="i"/>
+            <member from="k" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-k">
+      <alt>
+         <inclusion>
+            <member from="a" to="j"/>
+            <member from="l" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-l">
+      <alt>
+         <inclusion>
+            <member from="a" to="k"/>
+            <member from="m" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-m">
+      <alt>
+         <inclusion>
+            <member from="a" to="l"/>
+            <member from="n" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-n">
+      <alt>
+         <inclusion>
+            <member from="a" to="m"/>
+            <member from="o" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-o">
+      <alt>
+         <inclusion>
+            <member from="a" to="n"/>
+            <member from="p" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-p">
+      <alt>
+         <inclusion>
+            <member from="a" to="o"/>
+            <member from="q" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-r">
+      <alt>
+         <inclusion>
+            <member from="a" to="q"/>
+            <member from="s" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-s">
+      <alt>
+         <inclusion>
+            <member from="a" to="r"/>
+            <member from="t" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-t">
+      <alt>
+         <inclusion>
+            <member from="a" to="s"/>
+            <member from="u" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-u">
+      <alt>
+         <inclusion>
+            <member from="a" to="t"/>
+            <member from="v" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-v">
+      <alt>
+         <inclusion>
+            <member from="a" to="u"/>
+            <member from="w" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-x">
+      <alt>
+         <inclusion>
+            <member from="a" to="w"/>
+            <member from="y" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-y">
+      <alt>
+         <inclusion>
+            <member from="a" to="x"/>
+            <member string="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-I">
+      <alt>
+         <inclusion>
+            <member from="a" to="z"/>
+            <member from="A" to="H"/>
+            <member from="J" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <comment> Some doubles and triples </comment>
+   <rule mark="-" name="nc-not-aou">
+      <alt>
+         <inclusion>
+            <member from="b" to="n"/>
+            <member from="p" to="t"/>
+            <member from="v" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-at">
+      <alt>
+         <inclusion>
+            <member from="b" to="s"/>
+            <member from="u" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-blns">
+      <alt>
+         <inclusion>
+            <member string="a"/>
+            <member from="c" to="k"/>
+            <member string="m"/>
+            <member from="o" to="r"/>
+            <member from="t" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-dfmn">
+      <alt>
+         <inclusion>
+            <member from="a" to="c"/>
+            <member string="e"/>
+            <member from="g" to="l"/>
+            <member from="o" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-eiou">
+      <alt>
+         <inclusion>
+            <member from="a" to="d"/>
+            <member from="f" to="h"/>
+            <member from="j" to="n"/>
+            <member from="p" to="t"/>
+            <member from="v" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-eo">
+      <alt>
+         <inclusion>
+            <member from="a" to="d"/>
+            <member from="f" to="n"/>
+            <member from="p" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-lx">
+      <alt>
+         <inclusion>
+            <member from="a" to="k"/>
+            <member from="m" to="w"/>
+            <member from="y" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-npr">
+      <alt>
+         <inclusion>
+            <member from="a" to="m"/>
+            <member string="o"/>
+            <member string="q"/>
+            <member from="s" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-nt">
+      <alt>
+         <inclusion>
+            <member from="a" to="m"/>
+            <member from="o" to="s"/>
+            <member from="u" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="nc-not-qt">
+      <alt>
+         <inclusion>
+            <member from="a" to="p"/>
+            <member from="r" to="s"/>
+            <member from="u" to="z"/>
+            <member from="A" to="Z"/>
+            <member from="0" to="9"/>
+            <member string="_"/>
+            <member hex="27"/>
+            <member hex="22"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule name="letter-no-abcdefiIlmnoprstu">
+      <alt>
+         <inclusion>
+            <member string="ghjkqvwxyz"/>
+            <member from="A" to="H"/>
+            <member from="J" to="Z"/>
+         </inclusion>
+      </alt>
+   </rule>
+   <rule mark="-" name="name-minus-reserved-words">
+      <alt>
+         <nonterminal mark="-" name="letter-no-abcdefiIlmnoprstu"/>
+         <repeat0>
+            <nonterminal name="namechar"/>
+         </repeat0>
+      </alt>
+      <alt>
+         <literal string="a"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-blns"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="ab"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abs"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abst"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-r"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abstr"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-a"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abstra"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-c"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abstrac"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="abstract"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="al"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-l"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="all"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="an"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-d"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="and"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="as"/>
+         <nonterminal name="nc-not-s"/>
+         <repeat0>
+            <nonterminal name="namechar"/>
+         </repeat0>
+      </alt>
+      <alt>
+         <literal string="ass"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="asse"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-r"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="asser"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="assert"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="b"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-u"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="bu"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="but"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="c"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-h"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="ch"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="che"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-c"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="chec"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-k"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="check"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="d"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-i"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="di"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="dis"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-j"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="disj"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="e"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-lx"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="el"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="els"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="else"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="ex"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-at"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exa"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-c"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exac"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exact"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-l"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exactl"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-y"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exactly"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="ext"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exte"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="exten"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-d"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="extend"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="extends"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="f"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-aou"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="fa"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-c"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="fac"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="fact"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="fo"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-r"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="for"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="fu"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="fun"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="i"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-dfmn"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="id"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="ide"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="iden"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="if"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-f"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="iff"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="im"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-p"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="imp"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-l"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="impl"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-i"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="impli"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="implie"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="implies"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="in"/>
+         <nonterminal name="nc-not-t"/>
+         <repeat0>
+            <nonterminal name="namechar"/>
+         </repeat0>
+      </alt>
+      <alt>
+         <literal string="int"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="I"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="In"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="Int"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="l"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-eo"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="le"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-t"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="let"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="lo"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="lon"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="lone"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="m"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-o"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="mo"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-d"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="mod"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-u"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="modu"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-l"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="modul"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="module"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="n"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-o"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="no"/>
+         <nonterminal name="nc-not-nt"/>
+         <repeat0>
+            <nonterminal name="namechar"/>
+         </repeat0>
+      </alt>
+      <alt>
+         <literal string="non"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="none"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="not"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="o"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-npr"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="on"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="one"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="op"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="ope"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="open"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="or"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="p"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-r"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="pr"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="pre"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-d"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="pred"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="r"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-u"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="ru"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="run"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="s"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-eiou"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="se"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-qt"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="seq"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="set"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="si"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-g"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="sig"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="so"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-m"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="som"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-e"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="some"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="su"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-m"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="sum"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="t"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-h"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="th"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-i"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="thi"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-s"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="this"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+      <alt>
+         <literal string="u"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-n"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="un"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-i"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="uni"/>
+         <option>
+            <alts>
+               <alt>
+                  <nonterminal name="nc-not-v"/>
+                  <repeat0>
+                     <nonterminal name="namechar"/>
+                  </repeat0>
+               </alt>
+            </alts>
+         </option>
+      </alt>
+      <alt>
+         <literal string="univ"/>
+         <repeat1>
+            <nonterminal name="namechar"/>
+         </repeat1>
+      </alt>
+   </rule>
+   <rule name="name">
+      <alt>
+         <nonterminal mark="-" name="name-minus-reserved-words"/>
+      </alt>
+   </rule>
+</ixml>

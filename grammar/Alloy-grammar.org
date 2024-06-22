@@ -208,7 +208,7 @@ be given an alias.
 import: (private, S)?, -"open", s, OQName,
         (s, module-arguments)?,
         (s, -"as", s, alias)?.
-module-arguments: "[", s, ref++comma, s, "]".
+module-arguments: -"[", s, ref++comma, s, -"]".
 alias: -name.
 #+END_SRC
 
@@ -278,10 +278,11 @@ sigExt ::= "in" ref ["+" ref]*
 * Functions and predicates
 #+BEGIN_SRC ixml :tangle yes
 fun-decl: (private, S)?, 
-          -"fun", S, (ref, ".")?, name, s, (args, s)?, ":", s, 
-          expr, s, block.
+          -"fun", S, (ref, -".")?, name, s, (args, s)?, -":", s, 
+          function-bounds, s, block.
+@function-bounds > bounds: expr.
 pred-decl: (private, S)?, 
-           -"pred", S, (ref, ".")?, name, s, (args, s)?, block.
+           -"pred", S, (ref, -".")?, name, s, (args, s)?, block.
 args:  -"(", s, decl**comma, s, -")"
     |  -"[", s, decl**comma, s, -"]".
 #+END_SRC
@@ -341,7 +342,7 @@ expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
 max-scope: number, s, (OQName|"int"|"Int"|"seq").
-exceptions: "but", s, typescope++comma.
+exceptions: -"but", s, typescope++comma.
 #+END_SRC
 
 /J/:
@@ -509,7 +510,7 @@ below.
          expr02.
 
 let-expr:  -"let", s, let-decl++comma, s, block-or-bar.
-let-decl: variable, s, "=", s, value.
+let-decl: variable, s, -"=", s, value.
 value: expr.
 
 { quantified expressions }
@@ -597,9 +598,9 @@ Can we enforce the nearest-then-clause rule grammatically?
 
 Consider the simple case "if a then if b then c else d".  The rule
 says we want the parse tree for this case to be
-[[file:images/ifthenelse-1.dot.png]]
+[[file:../images/ifthenelse-1.dot.png]]
 and not
-[[file:images/ifthenelse-2.dot.png]]
+[[file:../images/ifthenelse-2.dot.png]]
 
 The diagrams distinguish /if-then/ expressions from /if-then-else/
 expressions, and the rule appears to amount to saying that an /if-then/
@@ -648,7 +649,7 @@ capture the required difference in allowed content.
 { expr05:  conjunction }
 -expr05:  conjunction; expr06.
 conjunction:  expr05, AND, expr06.
-AND: s, "&&", s; S, "and", S.
+-AND: s, -"&&", s; S, -"and", S.
 #+END_SRC
 
 *** Negated expressions (/expr06/)
@@ -661,7 +662,7 @@ a double negation requires parentheses.
 { expr06:  negated expressions }
 -expr06:  negation; expr07.
 negation:  NOT, expr06.
-NOT: "!", s; "not", S.
+NOT: -"!", s; -"not", S.
 #+END_SRC
 
 In /J/ and /G/, negation is just an instance of /unOp/:
@@ -705,6 +706,7 @@ but also on expressions.  Here, the quantifiers are classed
 as unary operators.
 
 #+BEGIN_SRC ixml :tangle yes
+{ expr08: quantified expressions } 
 -expr08: quantified-expression; 
          expr09.
 -quantified-expression: no-ex08; some-ex08; lone-ex08; one-ex08; 
@@ -745,18 +747,20 @@ Both operands should be /int/ values.
 pattern for them.
 
 #+BEGIN_SRC ixml :tangle yes
+{ expr09: bit-shifting expressions } 
 -expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
-SHL-expr: expr09, s, "<<", s, expr10.
-SHR-expr: expr09, s, ">>>", s, expr10.
-SHA-expr: expr09, s, ">>", s, expr10.
+SHL-expr: expr09, s, -"<<", s, expr10.
+SHR-expr: expr09, s, -">>>", s, expr10.
+SHA-expr: expr09, s, -">>", s, expr10.
 #+END_SRC
 
 *** Union and difference (/expr10/)
 
 #+BEGIN_SRC ixml :tangle yes 
+{ expr10: union, set difference }
 -expr10:  union; set-diff; expr11.
-union: expr10, s, "+", s, expr11.
-set-diff: expr10, s, "-", careful-ws, expr11.
+union: expr10, s, -"+", s, expr11.
+set-diff: expr10, s, -"-", careful-ws, expr11.
 #+END_SRC
 
 Note that whitespace is required after the 
@@ -764,8 +768,9 @@ Note that whitespace is required after the
 *** Cardinality (#) (/expr11/)
 
 #+BEGIN_SRC ixml :tangle yes
+{ expr11: cardinality }
 -expr11:  cardinality; expr12.
-cardinality: "#", s, expr12.
+cardinality: -"#", s, expr12.
 #+END_SRC
 
 *** Override (++) (/expr12/)
@@ -774,8 +779,9 @@ names to the two operands of "~++~".  The left-hand
 operand is the /base/ relation, the right-hand operand
 is the /overlay/. 
 #+BEGIN_SRC ixml :tangle yes 
+{ expr12: override expressions }
 -expr12: override; expr13.
-override: base, s, "++", s, overlay.
+override: base, s, -"++", s, overlay.
 base: expr12.
 overlay: expr13.
 #+END_SRC
@@ -783,8 +789,9 @@ overlay: expr13.
 *** Intersection (&) (/expr13/)
 
 #+BEGIN_SRC ixml :tangle yes 
+{ expr13: intersection }
 -expr13:  intersection; expr14.
-intersection:  expr13, s, "&", s, expr14.
+intersection:  expr13, s, -"&", s, expr14.
 #+END_SRC
 
 *** Arrow product (->) (/expr14/)
@@ -792,6 +799,7 @@ Arrow operators are used to define relations.  They get
 a little complex because they can specify multiplicity
 on each side of the operator.
 #+BEGIN_SRC ixml :tangle yes
+{ expr14: arrow expressions }
 -expr14: arrow-expr; expr15.
 arrow-expr: expr14, (S, left-mult)?, s, -"->", s, (right-mult, S)?, expr15.
 left-mult:  -mult; "set".
@@ -820,10 +828,11 @@ restriction operators up when I want to use them, because I forget
 which way they point.  So for both left- and right-restriction, I'm
 going to name the operands as a set or a rel[ation].
 #+BEGIN_SRC ixml :tangle yes
+{ expr15, 16: left and right restriction }
 -expr15: left-restriction; expr16.
 -expr16: right-restriction; expr17.
-left-restriction: lr-set, s, "<:", s, lr-rel.
-right-restriction: rr-rel, s, ":>", s, rr-set.
+left-restriction: lr-set, s, -"<:", s, lr-rel.
+right-restriction: rr-rel, s, -":>", s, rr-set.
 lr-set: expr15.
 lr-rel: expr16.
 rr-rel: expr16.
@@ -838,6 +847,7 @@ that they can be (and are in some examples) relation-valued conditionals.
 White space is allowed before the left square
 bracket, because the examples show it being used.
 #+BEGIN_SRC ixml :tangle yes
+{ expr17: box joins }
 -expr17: box-join; expr18.
 box-join: box-left, s, -"[", s, (selector ++ comma, s)?, -"]".
 box-left: expr17; sum; integer-cast.
@@ -879,8 +889,9 @@ cannot be expressed in Alloy.
 
 *** Dot join (/expr18/)
 #+BEGIN_SRC ixml :tangle yes
+{ expr18: dot joins }
 -expr18: dot-join; expr19.
-dot-join: expr17, s, ".", s, expr19.
+dot-join: expr17, s, -".", s, expr19.
 #+END_SRC
 
 Note that we define /dot-join/ as accepting /expr17/ on its
@@ -898,10 +909,11 @@ But the sample model in ~examples/algorithms/opt_spantree.als~
 includes the expression ~Process in Root.*~(s.parent)~, where they
 are clearly meant to be right-associative.
 #+BEGIN_SRC ixml :tangle yes
+{ expr19: inverse, closures }
 -expr19: inverse; t-closure; rt-closure; expr20.
-inverse: "~", s, expr19.
-t-closure: "^", s, expr19.
-rt-closure: "*", s, expr19.
+inverse: -"~", s, expr19.
+t-closure: -"^", s, expr19.
+rt-closure: -"*", s, expr19.
 #+END_SRC
 
 *** Base expressions
@@ -910,6 +922,7 @@ There are several forms of expression which contain no operators; we
 define them here.
 
 #+BEGIN_SRC ixml :tangle yes
+{ expr20: base expressions }
 -expr20:  OQName;
           unexpanded;
           THIS;
@@ -921,7 +934,7 @@ define them here.
           declarations-block;
           block.
 unexpanded: -"@", s, name.
-negative-number: "-", -number.
+negative-number: -"-", -number.
 declarations-block: -"{", s, 
                     decl ++ comma, s, 
                     block-or-bar, s, -"}".
@@ -1074,7 +1087,7 @@ quant ::= "all" | "no" | "some" | "lone" | "one" | "sum"
 In the ixml grammar, these productions are unreachable (I hope)
 and are here only for the moment.
 
-#+BEGIN_SRC ixml :tangle yes
+#+BEGIN_SRC ixml :tangle no
 binOp: "||" | "or" | "&&" | "and" | "&" | "<=>" | "iff"
         | "=>" | "implies" | "+" | "-" | "++" | "<:" | ":>" | "." | "<<" | ">>" | ">>>".
 
@@ -1211,9 +1224,14 @@ set-difference operator.)
 
 But it is not hard to describe the desired language with a
 finite state automaton which is simple enough to inspire some
-confidence:
+confidence.
 
-[[file:images/slash-star.dot.png]]
+*** Slash-star, first cut
+
+The following FSA describes the language of slash-star comments
+in a straightforward way.
+
+[[file:../images/slash-star.dot.png]]
 
 This, in turn, can be translated readily into a regular grammar:
 
@@ -1274,9 +1292,142 @@ modifying the grammar.
    #+END_SRC 
 
 This gives us the desired single-rule definition of /slash-star/.
-#+BEGIN_SRC ixml :tangle yes
+#+BEGIN_SRC ixml :tangle no
 -slash-star: -"/*", ~["*"]*, "*", ((~["/"; "*"], ~["*"]*)?, "*")*, "/".
 #+END_SRC
+
+*** Slash-star, second and third cuts
+
+There is, however, a problem with the development just given.  The
+closing delimiter "=*/=" is not given as a single string, so it cannot
+be conveniently suppressed in the XML.  The final slash can, but the
+star immediately in front of it cannot, because it's not uniquely
+identified.  I noticed this problem only after completing the analysis
+above.
+
+The problem goes all the way back to the FSA we started with, so we
+have to do the development all over again.  Let's start with a
+different FSA, in which both delimiters are given explicitly and
+uniquely.
+
+[[./../images/slash-star-bis.dot.png]]
+
+This FSA is simpler than the previous one; we might be able to turn it
+into a regular expression without complicated development.  Out of an
+abundance of caution (justified by experience), however, let's start
+with a regular grammar:
+
+#+BEGIN_SRC ixml :tangle no
+          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: ~["*"], ready-for-star-slash
+                    | "*", found-star
+                    | "*/", end-comment.
+          found-star: ~["/"], ready-for-star-slash
+                    | {nil} ready-for-star-slash.
+         end-comment: {}.
+#+END_SRC
+Unlike the earlier FSA, this one is non-deterministic: it requires a
+two-character lookahead to distinguish an asterisk which is followed
+by a slash and thus part of the comment-closing delimiter from any
+other asterisk.  But neither ixml nor most regular-expression libraries
+require deterministic regular expressions.
+
+A simple first step is to simplify /found-star/:
+#+BEGIN_SRC ixml :tangle no
+          found-star: ~["/"]?, ready-for-star-slash.
+#+END_SRC
+
+We can then substitute for /found-star/ in the rule for
+/ready-for-star-slash/:
+#+BEGIN_SRC ixml :tangle no
+          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: ~["*"], ready-for-star-slash
+                    | "*", ~["/"]?, ready-for-star-slash
+                    | "*/", end-comment.
+         end-comment: {}.
+#+END_SRC
+
+Applying Arden's Lemma to /ready-for-star-slash/ yields a rule with a
+single right-hand-side:
+#+BEGIN_SRC ixml :tangle no
+          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: (~["*"] | "*", ~["/"]?)*, "*/", end-comment.
+         end-comment: {}.
+#+END_SRC
+
+This can be turned into a single-rule definition of slash-star comments:
+#+BEGIN_SRC ixml :tangle no
+-slash-star: -"/*", (~["*"] | "*", ~["/"]?)*, -"*/". 
+#+END_SRC
+However, this definition is faulty, because it is not cautious
+enough about the slash character.
+
+Note:  the initial attempt at this revised definition was simpler:
+#+BEGIN_SRC ixml :tangle no
+-slash-star: -"/*", ~[]*, -"*/". 
+#+END_SRC
+But this does not prohibit the string star-slash from appearing
+within a comment.
+
+*** Slash-star, fourth cut
+
+Let us try again, with yet another FSA:
+
+[[file:../images/slash-star-ter.dot.png]]
+
+A listeral translation into a regular grammar produces the following.
+#+BEGIN_SRC ixml :tangle no
+      slash-star: -"/*", looking-for-star.
+looking-for-star: ~["*"], looking-for-star
+                | "*", found-star
+                | "*/", end-comment.
+      found-star: "*/", end-comment
+                | "*", found-star
+                | ~["/"; "*"], looking-for-star.
+     end-comment: {}.
+#+END_SRC 
+
+Again, we derive the rule we want by manipulating this grammar.
+
+1. Applying Arden's Lemma to /found-star/, and then distributing
+   concatenation over disjunction, we get:
+   #+begin_src ixml :tangle no
+      found-star: "*"*, "*/", end-comment
+                | "*"*, ~["/"; "*"], looking-for-star.
+   #+end_src
+2. Substituting this into /looking-for-star/ and re-ordering the
+   right-hand sides, we get:
+   #+begin_src ixml :tangle no
+looking-for-star: ~["*"], looking-for-star
+                | "*", "*"*, ~["/"; "*"], looking-for-star
+                | "*", "*"*, "*/", end-comment
+                | "*/", end-comment.
+   #+end_src
+3. Simplifying the right-hand sides and merging the last two yields:
+   #+begin_src ixml :tangle no
+looking-for-star: ~["*"], looking-for-star
+                | "*"+, ~["/"; "*"], looking-for-star
+                | "*"*, "*/", end-comment.
+   #+end_src
+4. Applying Arden's Lemma gives us:
+   #+begin_src ixml :tangle no
+looking-for-star: (~["*"] | "*"+, ~["/"; "*"])*, "*"*, "*/", end-comment.
+   #+end_src
+
+From this, we can derive a single-rule formulation:
+#+begin_src ixml :tangle yes
+-slash-star: -"/*", (~["*"] | "*"+, ~["/"; "*"])*, "*"*, -"*/".
+#+end_src
+
+It may be noted that a set-difference operator would
+simplify this to:
+#+begin_src ixml :tangle no
+-slash-star: -"/*", (anystring except (anystring, '*/', anystring), "*/".
+ -anystring: ~[]*.
+#+end_src
+which may be paraphrased in English as: a slash-star comment is "/*",
+followed by any string which does not contain "*/", followed by "*/".
+
 
 ** Keywords
 
@@ -1295,6 +1446,8 @@ abstract: "abstract".
 EXACTLY: "exactly".
 #+END_SRC
 
+
+
 * Miscellaneous
 
 There is some stuff that doesn't have a good home.  Some of it I don't know anything about.
@@ -1304,7 +1457,7 @@ Enumerations are not present in /J/ but are added as a new
 form of paragraph in /G/.
 
 #+BEGIN_SRC ixml :tangle yes
-enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
+enum-decl: -"enum", s, name, s, -"{", s, name++comma, s, -"}".
 #+END_SRC
 
 /G/ defines them thus:

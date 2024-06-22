@@ -1,0 +1,3459 @@
+namespace db = "http://docbook.org/ns/docbook"
+namespace local = ""
+namespace ra = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace rng = "http://relaxng.org/ns/structure/1.0"
+
+ra:documentation [
+  "This Relax NG schema was generated from an invisible-XML grammar\x{a}" ~
+  " by ixml-to-rng.xsl, on 2024-06-20."
+]
+start = Alloy-module
+[
+  db:refname [ "Alloy-module" ]
+  ra:documentation [ "Default rule for nonterminal 'Alloy-module'" ]
+]
+Alloy-module = e.Alloy-module
+[
+  db:refname [ "e.Alloy-module" ]
+  ra:documentation [
+    "Nonterminal 'Alloy-module', serialized as element"
+  ]
+]
+e.Alloy-module =
+  element Alloy-module {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (module-decl, s)?,
+        ((import, (s, import)*),
+         s)?,
+        ((paragraph, (s, paragraph)*),
+         s)?))
+  }
+[
+  db:refname [ "module-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'module-decl'" ]
+]
+module-decl = h.module-decl
+[
+  db:refname [ "h.module-decl" ]
+  ra:documentation [
+    "Nonterminal 'module-decl', not serialized (hidden)"
+  ]
+]
+h.module-decl = s, module-name, (s, parameters)?
+[
+  db:refname [ "module-name" ]
+  ra:documentation [ "Default rule for nonterminal 'module-name'" ]
+]
+module-name = e.module-name
+[
+  db:refname [ "e.module-name" ]
+  ra:documentation [
+    "Nonterminal 'module-name', serialized as element"
+  ]
+]
+e.module-name =
+  element module-name {
+    extension-attributes, (extension-elements & OQName)
+  }
+[
+  db:refname [ "parameters" ]
+  ra:documentation [ "Default rule for nonterminal 'parameters'" ]
+]
+parameters = e.parameters
+[
+  db:refname [ "e.parameters" ]
+  ra:documentation [ "Nonterminal 'parameters', serialized as element" ]
+]
+e.parameters =
+  element parameters {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (((EXACTLY, s)?, name),
+         (comma,
+          ((EXACTLY, s)?, name))*),
+        s))
+  }
+[
+  db:refname [ "import" ]
+  ra:documentation [ "Default rule for nonterminal 'import'" ]
+]
+import = e.import
+[
+  db:refname [ "e.import" ]
+  ra:documentation [ "Nonterminal 'import', serialized as element" ]
+]
+e.import =
+  element import {
+    extension-attributes,
+    (extension-elements
+     & ((private, S)?,
+        s,
+        OQName,
+        (s, module-arguments)?,
+        (s, s, alias)?))
+  }
+[
+  db:refname [ "module-arguments" ]
+  ra:documentation [ "Default rule for nonterminal 'module-arguments'" ]
+]
+module-arguments = e.module-arguments
+[
+  db:refname [ "e.module-arguments" ]
+  ra:documentation [
+    "Nonterminal 'module-arguments', serialized as element"
+  ]
+]
+e.module-arguments =
+  element module-arguments {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (ref, (comma, ref)*),
+        s))
+  }
+[
+  db:refname [ "alias" ]
+  ra:documentation [ "Default rule for nonterminal 'alias'" ]
+]
+alias = e.alias
+[
+  db:refname [ "e.alias" ]
+  ra:documentation [ "Nonterminal 'alias', serialized as element" ]
+]
+e.alias =
+  element alias { extension-attributes, (extension-elements & h.name) }
+[
+  db:refname [ "paragraph" ]
+  ra:documentation [ "Default rule for nonterminal 'paragraph'" ]
+]
+paragraph = e.paragraph
+[
+  db:refname [ "e.paragraph" ]
+  ra:documentation [ "Nonterminal 'paragraph', serialized as element" ]
+]
+e.paragraph =
+  element paragraph {
+    extension-attributes,
+    (extension-elements
+     & (fact-decl
+        | assert-decl
+        | fun-decl
+        | pred-decl
+        | cmd-decl
+        | enum-decl
+        | sig-decl))
+  }
+[
+  db:refname [ "sig-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'sig-decl'" ]
+]
+sig-decl = e.sig-decl
+[
+  db:refname [ "e.sig-decl" ]
+  ra:documentation [ "Nonterminal 'sig-decl', serialized as element" ]
+]
+e.sig-decl =
+  element sig-decl {
+    extension-attributes,
+    (extension-elements
+     & ((private, S)?,
+        (abstract, S)?,
+        (a.mult, S)?,
+        S,
+        (name, (comma, name)*),
+        S,
+        (sig-ext, s)?,
+        sig-body,
+        (s, sig-constraints)?))
+  }
+[
+  db:refname [ "sig-ext" ]
+  ra:documentation [ "Default rule for nonterminal 'sig-ext'" ]
+]
+sig-ext = e.sig-ext
+[
+  db:refname [ "e.sig-ext" ]
+  ra:documentation [ "Nonterminal 'sig-ext', serialized as element" ]
+]
+e.sig-ext =
+  element sig-ext {
+    extension-attributes,
+    (extension-elements & (extends | subset-of))
+  }
+[
+  db:refname [ "extends" ]
+  ra:documentation [ "Default rule for nonterminal 'extends'" ]
+]
+extends = e.extends
+[
+  db:refname [ "e.extends" ]
+  ra:documentation [ "Nonterminal 'extends', serialized as element" ]
+]
+e.extends =
+  element extends {
+    extension-attributes,
+    (extension-elements & (S, ref))
+  }
+[
+  db:refname [ "subset-of" ]
+  ra:documentation [ "Default rule for nonterminal 'subset-of'" ]
+]
+subset-of = e.subset-of
+[
+  db:refname [ "e.subset-of" ]
+  ra:documentation [ "Nonterminal 'subset-of', serialized as element" ]
+]
+e.subset-of =
+  element subset-of {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (ref, (plus, ref)*)))
+  }
+[
+  db:refname [ "sig-body" ]
+  ra:documentation [ "Default rule for nonterminal 'sig-body'" ]
+]
+sig-body = e.sig-body
+[
+  db:refname [ "e.sig-body" ]
+  ra:documentation [ "Nonterminal 'sig-body', serialized as element" ]
+]
+e.sig-body =
+  element sig-body {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        ((decl, (comma, decl)*),
+         s)?))
+  }
+[
+  db:refname [ "sig-constraints" ]
+  ra:documentation [ "Default rule for nonterminal 'sig-constraints'" ]
+]
+sig-constraints = e.sig-constraints
+[
+  db:refname [ "e.sig-constraints" ]
+  ra:documentation [
+    "Nonterminal 'sig-constraints', serialized as element"
+  ]
+]
+e.sig-constraints =
+  element sig-constraints {
+    extension-attributes, (extension-elements & h.block)
+  }
+[
+  db:refname [ "fun-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'fun-decl'" ]
+]
+fun-decl = e.fun-decl
+[
+  db:refname [ "e.fun-decl" ]
+  ra:documentation [ "Nonterminal 'fun-decl', serialized as element" ]
+]
+e.fun-decl =
+  element fun-decl {
+    extension-attributes,
+    (extension-elements
+     & ((private, S)?,
+        S,
+        ref?,
+        name,
+        s,
+        (args, s)?,
+        s,
+        function-bounds,
+        s,
+        block))
+  }
+[
+  db:refname [ "function-bounds" ]
+  ra:documentation [ "Default rule for nonterminal 'function-bounds'" ]
+]
+function-bounds = a.function-bounds
+[
+  db:refname [ "a.function-bounds" ]
+  ra:documentation [
+    "Nonterminal 'function-bounds', serialized as attribute"
+  ]
+]
+a.function-bounds =
+  attribute function-bounds {
+    # No annotations found, falling back to 'text'.
+    text
+  }
+[
+  db:refname [ "pred-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'pred-decl'" ]
+]
+pred-decl = e.pred-decl
+[
+  db:refname [ "e.pred-decl" ]
+  ra:documentation [ "Nonterminal 'pred-decl', serialized as element" ]
+]
+e.pred-decl =
+  element pred-decl {
+    extension-attributes,
+    (extension-elements
+     & ((private, S)?, S, ref?, name, s, (args, s)?, block))
+  }
+[
+  db:refname [ "args" ]
+  ra:documentation [ "Default rule for nonterminal 'args'" ]
+]
+args = e.args
+[
+  db:refname [ "e.args" ]
+  ra:documentation [ "Nonterminal 'args', serialized as element" ]
+]
+e.args =
+  element args {
+    extension-attributes,
+    (extension-elements
+     & ((s,
+         (decl, (comma, decl)*)?,
+         s)
+        | (s,
+           (decl, (comma, decl)*)?,
+           s)))
+  }
+[
+  db:refname [ "fact-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'fact-decl'" ]
+]
+fact-decl = e.fact-decl
+[
+  db:refname [ "e.fact-decl" ]
+  ra:documentation [ "Nonterminal 'fact-decl', serialized as element" ]
+]
+e.fact-decl =
+  element fact-decl {
+    extension-attributes,
+    (extension-elements
+     & (S, (name, s)?, block))
+  }
+[
+  db:refname [ "assert-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'assert-decl'" ]
+]
+assert-decl = e.assert-decl
+[
+  db:refname [ "e.assert-decl" ]
+  ra:documentation [
+    "Nonterminal 'assert-decl', serialized as element"
+  ]
+]
+e.assert-decl =
+  element assert-decl {
+    extension-attributes,
+    (extension-elements
+     & (S, (name, s)?, block))
+  }
+[
+  db:refname [ "cmd-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'cmd-decl'" ]
+]
+cmd-decl = e.cmd-decl
+[
+  db:refname [ "e.cmd-decl" ]
+  ra:documentation [ "Nonterminal 'cmd-decl', serialized as element" ]
+]
+e.cmd-decl =
+  element cmd-decl {
+    extension-attributes,
+    (extension-elements
+     & ((a.name, s, s)?, a.verb, S, (name | block), (S, scope)?))
+  }
+[
+  db:refname [ "verb" ]
+  ra:documentation [ "Default rule for nonterminal 'verb'" ]
+]
+verb = e.verb
+[
+  db:refname [ "e.verb" ]
+  ra:documentation [ "Nonterminal 'verb', serialized as element" ]
+]
+e.verb =
+  element verb {
+    extension-attributes,
+    (extension-elements
+     & (# can a data element be used?
+        text
+        | # can a data element be used?
+          text))
+  }
+[
+  db:refname [ "a.verb" ]
+  ra:documentation [ "Nonterminal 'verb', serialized as attribute" ]
+]
+a.verb =
+  attribute verb {
+    # No annotations found, falling back to 'text'.
+    text
+  }
+[
+  db:refname [ "scope" ]
+  ra:documentation [ "Default rule for nonterminal 'scope'" ]
+]
+scope = e.scope
+[
+  db:refname [ "e.scope" ]
+  ra:documentation [ "Nonterminal 'scope', serialized as element" ]
+]
+e.scope =
+  element scope {
+    extension-attributes,
+    (extension-elements & (expectation | typescopes))
+  }
+[
+  db:refname [ "typescopes" ]
+  ra:documentation [ "Default rule for nonterminal 'typescopes'" ]
+]
+typescopes = e.typescopes
+[
+  db:refname [ "e.typescopes" ]
+  ra:documentation [ "Nonterminal 'typescopes', serialized as element" ]
+]
+e.typescopes =
+  element typescopes {
+    extension-attributes,
+    (extension-elements
+     & (S, numbers, (S, expectation)?))
+  }
+[
+  db:refname [ "numbers" ]
+  ra:documentation [ "Default rule for nonterminal 'numbers'" ]
+]
+numbers = h.numbers
+[
+  db:refname [ "h.numbers" ]
+  ra:documentation [ "Nonterminal 'numbers', not serialized (hidden)" ]
+]
+h.numbers =
+  (number, (s, exceptions)?)
+  | (typescope, (comma, typescope)*)
+[
+  db:refname [ "expectation" ]
+  ra:documentation [ "Default rule for nonterminal 'expectation'" ]
+]
+expectation = e.expectation
+[
+  db:refname [ "e.expectation" ]
+  ra:documentation [
+    "Nonterminal 'expectation', serialized as element"
+  ]
+]
+e.expectation =
+  element expectation {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (# can a data element be used?
+         text
+         | # can a data element be used?
+           text)))
+  }
+[
+  db:refname [ "typescope" ]
+  ra:documentation [ "Default rule for nonterminal 'typescope'" ]
+]
+typescope = e.typescope
+[
+  db:refname [ "e.typescope" ]
+  ra:documentation [ "Nonterminal 'typescope', serialized as element" ]
+]
+e.typescope =
+  element typescope {
+    extension-attributes,
+    (extension-elements & (exact-scope | max-scope))
+  }
+[
+  db:refname [ "exact-scope" ]
+  ra:documentation [ "Default rule for nonterminal 'exact-scope'" ]
+]
+exact-scope = e.exact-scope
+[
+  db:refname [ "e.exact-scope" ]
+  ra:documentation [
+    "Nonterminal 'exact-scope', serialized as element"
+  ]
+]
+e.exact-scope =
+  element exact-scope {
+    extension-attributes,
+    (extension-elements & (h.EXACTLY, s, h.max-scope))
+  }
+[
+  db:refname [ "max-scope" ]
+  ra:documentation [ "Default rule for nonterminal 'max-scope'" ]
+]
+max-scope = e.max-scope
+[
+  db:refname [ "e.max-scope" ]
+  ra:documentation [ "Nonterminal 'max-scope', serialized as element" ]
+]
+e.max-scope =
+  element max-scope {
+    extension-attributes,
+    (extension-elements
+     & (number,
+        s,
+        (OQName
+         | # can a data element be used?
+           text
+         | # can a data element be used?
+           text
+         | # can a data element be used?
+           text)))
+  }
+[
+  db:refname [ "h.max-scope" ]
+  ra:documentation [
+    "Nonterminal 'max-scope', not serialized (hidden)"
+  ]
+]
+h.max-scope =
+  number,
+  s,
+  (OQName
+   | # can a data element be used?
+     text
+   | # can a data element be used?
+     text
+   | # can a data element be used?
+     text)
+[
+  db:refname [ "exceptions" ]
+  ra:documentation [ "Default rule for nonterminal 'exceptions'" ]
+]
+exceptions = e.exceptions
+[
+  db:refname [ "e.exceptions" ]
+  ra:documentation [ "Nonterminal 'exceptions', serialized as element" ]
+]
+e.exceptions =
+  element exceptions {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (typescope, (comma, typescope)*)))
+  }
+[
+  db:refname [ "decl" ]
+  ra:documentation [ "Default rule for nonterminal 'decl'" ]
+]
+decl = e.decl
+[
+  db:refname [ "e.decl" ]
+  ra:documentation [ "Nonterminal 'decl', serialized as element" ]
+]
+e.decl =
+  element decl {
+    extension-attributes,
+    (extension-elements
+     & ((private, s)?,
+        (disj, S)?,
+        (variable, (comma, variable)*),
+        s,
+        s,
+        bounds))
+  }
+[
+  db:refname [ "disj" ]
+  ra:documentation [ "Default rule for nonterminal 'disj'" ]
+]
+disj = e.disj
+[
+  db:refname [ "e.disj" ]
+  ra:documentation [ "Nonterminal 'disj', serialized as element" ]
+]
+e.disj =
+  element disj {
+    extension-attributes,
+    (extension-elements
+     & # alt with no realized children
+       empty)
+  }
+[
+  db:refname [ "variable" ]
+  ra:documentation [ "Default rule for nonterminal 'variable'" ]
+]
+variable = e.variable
+[
+  db:refname [ "e.variable" ]
+  ra:documentation [ "Nonterminal 'variable', serialized as element" ]
+]
+e.variable =
+  element variable {
+    extension-attributes, (extension-elements & h.name)
+  }
+[
+  db:refname [ "bounds" ]
+  ra:documentation [ "Default rule for nonterminal 'bounds'" ]
+]
+bounds = e.bounds
+[
+  db:refname [ "e.bounds" ]
+  ra:documentation [ "Nonterminal 'bounds', serialized as element" ]
+]
+e.bounds =
+  element bounds {
+    extension-attributes,
+    (extension-elements
+     & ((disj, S)?, expr))
+  }
+[
+  db:refname [ "expr" ]
+  ra:documentation [ "Default rule for nonterminal 'expr'" ]
+]
+expr = h.expr
+[
+  db:refname [ "h.expr" ]
+  ra:documentation [ "Nonterminal 'expr', not serialized (hidden)" ]
+]
+h.expr = expr01
+[
+  db:refname [ "expr01" ]
+  ra:documentation [ "Default rule for nonterminal 'expr01'" ]
+]
+expr01 = h.expr01
+[
+  db:refname [ "h.expr01" ]
+  ra:documentation [ "Nonterminal 'expr01', not serialized (hidden)" ]
+]
+h.expr01 =
+  let-expr
+  | all-ex01
+  | none-ex01
+  | some-ex01
+  | lone-ex01
+  | one-ex01
+  | sum-ex01
+  | expr02
+[
+  db:refname [ "let-expr" ]
+  ra:documentation [ "Default rule for nonterminal 'let-expr'" ]
+]
+let-expr = e.let-expr
+[
+  db:refname [ "e.let-expr" ]
+  ra:documentation [ "Nonterminal 'let-expr', serialized as element" ]
+]
+e.let-expr =
+  element let-expr {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (let-decl, (comma, let-decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "let-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'let-decl'" ]
+]
+let-decl = e.let-decl
+[
+  db:refname [ "e.let-decl" ]
+  ra:documentation [ "Nonterminal 'let-decl', serialized as element" ]
+]
+e.let-decl =
+  element let-decl {
+    extension-attributes,
+    (extension-elements & (variable, s, s, value))
+  }
+[
+  db:refname [ "value" ]
+  ra:documentation [ "Default rule for nonterminal 'value'" ]
+]
+value = e.value
+[
+  db:refname [ "e.value" ]
+  ra:documentation [ "Nonterminal 'value', serialized as element" ]
+]
+e.value =
+  element value { extension-attributes, (extension-elements & expr) }
+[
+  db:refname [ "all-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'all-ex01'" ]
+]
+all-ex01 = e.all-ex01
+[
+  db:refname [ "e.all-ex01" ]
+  ra:documentation [ "Nonterminal 'all-ex01', serialized as element" ]
+]
+e.all-ex01 =
+  element all-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "none-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'none-ex01'" ]
+]
+none-ex01 = e.none-ex01
+[
+  db:refname [ "e.none-ex01" ]
+  ra:documentation [ "Nonterminal 'none-ex01', serialized as element" ]
+]
+e.none-ex01 =
+  element none-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "some-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'some-ex01'" ]
+]
+some-ex01 = e.some-ex01
+[
+  db:refname [ "e.some-ex01" ]
+  ra:documentation [ "Nonterminal 'some-ex01', serialized as element" ]
+]
+e.some-ex01 =
+  element some-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "lone-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'lone-ex01'" ]
+]
+lone-ex01 = e.lone-ex01
+[
+  db:refname [ "e.lone-ex01" ]
+  ra:documentation [ "Nonterminal 'lone-ex01', serialized as element" ]
+]
+e.lone-ex01 =
+  element lone-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "one-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'one-ex01'" ]
+]
+one-ex01 = e.one-ex01
+[
+  db:refname [ "e.one-ex01" ]
+  ra:documentation [ "Nonterminal 'one-ex01', serialized as element" ]
+]
+e.one-ex01 =
+  element one-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "sum-ex01" ]
+  ra:documentation [ "Default rule for nonterminal 'sum-ex01'" ]
+]
+sum-ex01 = e.sum-ex01
+[
+  db:refname [ "e.sum-ex01" ]
+  ra:documentation [ "Nonterminal 'sum-ex01', serialized as element" ]
+]
+e.sum-ex01 =
+  element sum-ex01 {
+    extension-attributes,
+    (extension-elements
+     & (S,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar))
+  }
+[
+  db:refname [ "expr02" ]
+  ra:documentation [ "Default rule for nonterminal 'expr02'" ]
+]
+expr02 = h.expr02
+[
+  db:refname [ "h.expr02" ]
+  ra:documentation [ "Nonterminal 'expr02', not serialized (hidden)" ]
+]
+h.expr02 = disjunction | expr03
+[
+  db:refname [ "disjunction" ]
+  ra:documentation [ "Default rule for nonterminal 'disjunction'" ]
+]
+disjunction = e.disjunction
+[
+  db:refname [ "e.disjunction" ]
+  ra:documentation [
+    "Nonterminal 'disjunction', serialized as element"
+  ]
+]
+e.disjunction =
+  element disjunction {
+    extension-attributes,
+    (extension-elements & (expr02, OR, expr03))
+  }
+[
+  db:refname [ "OR" ]
+  ra:documentation [ "Default rule for nonterminal 'OR'" ]
+]
+OR = e.OR
+[
+  db:refname [ "e.OR" ]
+  ra:documentation [ "Nonterminal 'OR', serialized as element" ]
+]
+e.OR =
+  element OR {
+    extension-attributes,
+    (extension-elements
+     & ((s, s) | (S, S)))
+  }
+[
+  db:refname [ "expr03" ]
+  ra:documentation [ "Default rule for nonterminal 'expr03'" ]
+]
+expr03 = h.expr03
+[
+  db:refname [ "h.expr03" ]
+  ra:documentation [ "Nonterminal 'expr03', not serialized (hidden)" ]
+]
+h.expr03 = bi-implication | expr04
+[
+  db:refname [ "bi-implication" ]
+  ra:documentation [ "Default rule for nonterminal 'bi-implication'" ]
+]
+bi-implication = e.bi-implication
+[
+  db:refname [ "e.bi-implication" ]
+  ra:documentation [
+    "Nonterminal 'bi-implication', serialized as element"
+  ]
+]
+e.bi-implication =
+  element bi-implication {
+    extension-attributes,
+    (extension-elements & (expr03, IFF, expr04))
+  }
+[
+  db:refname [ "IFF" ]
+  ra:documentation [ "Default rule for nonterminal 'IFF'" ]
+]
+IFF = e.IFF
+[
+  db:refname [ "e.IFF" ]
+  ra:documentation [ "Nonterminal 'IFF', serialized as element" ]
+]
+e.IFF =
+  element IFF {
+    extension-attributes,
+    (extension-elements
+     & ((s, s) | (S, S)))
+  }
+[
+  db:refname [ "expr04" ]
+  ra:documentation [ "Default rule for nonterminal 'expr04'" ]
+]
+expr04 = h.expr04
+[
+  db:refname [ "h.expr04" ]
+  ra:documentation [ "Nonterminal 'expr04', not serialized (hidden)" ]
+]
+h.expr04 = if-then | expr04-bis
+[
+  db:refname [ "expr04-bis" ]
+  ra:documentation [ "Default rule for nonterminal 'expr04-bis'" ]
+]
+expr04-bis = h.expr04-bis
+[
+  db:refname [ "h.expr04-bis" ]
+  ra:documentation [
+    "Nonterminal 'expr04-bis', not serialized (hidden)"
+  ]
+]
+h.expr04-bis = if-then-else | expr05
+[
+  db:refname [ "if-then" ]
+  ra:documentation [ "Default rule for nonterminal 'if-then'" ]
+]
+if-then = e.if-then
+[
+  db:refname [ "e.if-then" ]
+  ra:documentation [ "Nonterminal 'if-then', serialized as element" ]
+]
+e.if-then =
+  element if-then {
+    extension-attributes,
+    (extension-elements & (condition, IMPLIES, consequent))
+  }
+[
+  db:refname [ "if-then-else" ]
+  ra:documentation [ "Default rule for nonterminal 'if-then-else'" ]
+]
+if-then-else = e.if-then-else
+[
+  db:refname [ "e.if-then-else" ]
+  ra:documentation [
+    "Nonterminal 'if-then-else', serialized as element"
+  ]
+]
+e.if-then-else =
+  element if-then-else {
+    extension-attributes,
+    (extension-elements
+     & (condition, IMPLIES, then-clause, S, else-clause))
+  }
+[
+  db:refname [ "IMPLIES" ]
+  ra:documentation [ "Default rule for nonterminal 'IMPLIES'" ]
+]
+IMPLIES = e.IMPLIES
+[
+  db:refname [ "e.IMPLIES" ]
+  ra:documentation [ "Nonterminal 'IMPLIES', serialized as element" ]
+]
+e.IMPLIES =
+  element IMPLIES {
+    extension-attributes,
+    (extension-elements
+     & ((s, s) | (S, S)))
+  }
+[
+  db:refname [ "condition" ]
+  ra:documentation [ "Default rule for nonterminal 'condition'" ]
+]
+condition = e.condition
+[
+  db:refname [ "e.condition" ]
+  ra:documentation [ "Nonterminal 'condition', serialized as element" ]
+]
+e.condition =
+  element condition {
+    extension-attributes, (extension-elements & expr05)
+  }
+[
+  db:refname [ "consequent" ]
+  ra:documentation [ "Default rule for nonterminal 'consequent'" ]
+]
+consequent = e.consequent
+[
+  db:refname [ "e.consequent" ]
+  ra:documentation [ "Nonterminal 'consequent', serialized as element" ]
+]
+e.consequent =
+  element consequent {
+    extension-attributes, (extension-elements & expr04)
+  }
+[
+  db:refname [ "then-clause" ]
+  ra:documentation [ "Default rule for nonterminal 'then-clause'" ]
+]
+then-clause = e.then-clause
+[
+  db:refname [ "e.then-clause" ]
+  ra:documentation [
+    "Nonterminal 'then-clause', serialized as element"
+  ]
+]
+e.then-clause =
+  element then-clause {
+    extension-attributes, (extension-elements & expr04-bis)
+  }
+[
+  db:refname [ "else-clause" ]
+  ra:documentation [ "Default rule for nonterminal 'else-clause'" ]
+]
+else-clause = e.else-clause
+[
+  db:refname [ "e.else-clause" ]
+  ra:documentation [
+    "Nonterminal 'else-clause', serialized as element"
+  ]
+]
+e.else-clause =
+  element else-clause {
+    extension-attributes,
+    (extension-elements & (S, expr04))
+  }
+[
+  db:refname [ "expr05" ]
+  ra:documentation [ "Default rule for nonterminal 'expr05'" ]
+]
+expr05 = h.expr05
+[
+  db:refname [ "h.expr05" ]
+  ra:documentation [ "Nonterminal 'expr05', not serialized (hidden)" ]
+]
+h.expr05 = conjunction | expr06
+[
+  db:refname [ "conjunction" ]
+  ra:documentation [ "Default rule for nonterminal 'conjunction'" ]
+]
+conjunction = e.conjunction
+[
+  db:refname [ "e.conjunction" ]
+  ra:documentation [
+    "Nonterminal 'conjunction', serialized as element"
+  ]
+]
+e.conjunction =
+  element conjunction {
+    extension-attributes,
+    (extension-elements & (expr05, AND, expr06))
+  }
+[
+  db:refname [ "AND" ]
+  ra:documentation [ "Default rule for nonterminal 'AND'" ]
+]
+AND = h.AND
+[
+  db:refname [ "h.AND" ]
+  ra:documentation [ "Nonterminal 'AND', not serialized (hidden)" ]
+]
+h.AND = (s, s) | (S, S)
+[
+  db:refname [ "expr06" ]
+  ra:documentation [ "Default rule for nonterminal 'expr06'" ]
+]
+expr06 = h.expr06
+[
+  db:refname [ "h.expr06" ]
+  ra:documentation [ "Nonterminal 'expr06', not serialized (hidden)" ]
+]
+h.expr06 = negation | expr07
+[
+  db:refname [ "negation" ]
+  ra:documentation [ "Default rule for nonterminal 'negation'" ]
+]
+negation = e.negation
+[
+  db:refname [ "e.negation" ]
+  ra:documentation [ "Nonterminal 'negation', serialized as element" ]
+]
+e.negation =
+  element negation {
+    extension-attributes,
+    (extension-elements & (NOT, expr06))
+  }
+[
+  db:refname [ "NOT" ]
+  ra:documentation [ "Default rule for nonterminal 'NOT'" ]
+]
+NOT = e.NOT
+[
+  db:refname [ "e.NOT" ]
+  ra:documentation [ "Nonterminal 'NOT', serialized as element" ]
+]
+e.NOT =
+  element NOT {
+    extension-attributes,
+    (extension-elements & (s | S))
+  }
+[
+  db:refname [ "expr07" ]
+  ra:documentation [ "Default rule for nonterminal 'expr07'" ]
+]
+expr07 = h.expr07
+[
+  db:refname [ "h.expr07" ]
+  ra:documentation [ "Nonterminal 'expr07', not serialized (hidden)" ]
+]
+h.expr07 = comparison | expr08
+[
+  db:refname [ "comparison" ]
+  ra:documentation [ "Default rule for nonterminal 'comparison'" ]
+]
+comparison = h.comparison
+[
+  db:refname [ "h.comparison" ]
+  ra:documentation [
+    "Nonterminal 'comparison', not serialized (hidden)"
+  ]
+]
+h.comparison =
+  in
+  | eq
+  | lt
+  | gt
+  | le
+  | ge
+  | not-in
+  | not-eq
+  | not-lt
+  | not-gt
+  | not-le
+  | not-ge
+[
+  db:refname [ "in" ]
+  ra:documentation [ "Default rule for nonterminal 'in'" ]
+]
+in = e.in
+[
+  db:refname [ "e.in" ]
+  ra:documentation [ "Nonterminal 'in', serialized as element" ]
+]
+e.in =
+  element in {
+    extension-attributes,
+    (extension-elements & (expr07, S, S, expr08))
+  }
+[
+  db:refname [ "eq" ]
+  ra:documentation [ "Default rule for nonterminal 'eq'" ]
+]
+eq = e.eq
+[
+  db:refname [ "e.eq" ]
+  ra:documentation [ "Nonterminal 'eq', serialized as element" ]
+]
+e.eq =
+  element eq {
+    extension-attributes,
+    (extension-elements & (expr07, s, s, expr08))
+  }
+[
+  db:refname [ "lt" ]
+  ra:documentation [ "Default rule for nonterminal 'lt'" ]
+]
+lt = e.lt
+[
+  db:refname [ "e.lt" ]
+  ra:documentation [ "Nonterminal 'lt', serialized as element" ]
+]
+e.lt =
+  element lt {
+    extension-attributes,
+    (extension-elements & (expr07, s, s, expr08))
+  }
+[
+  db:refname [ "gt" ]
+  ra:documentation [ "Default rule for nonterminal 'gt'" ]
+]
+gt = e.gt
+[
+  db:refname [ "e.gt" ]
+  ra:documentation [ "Nonterminal 'gt', serialized as element" ]
+]
+e.gt =
+  element gt {
+    extension-attributes,
+    (extension-elements & (expr07, s, s, expr08))
+  }
+[
+  db:refname [ "le" ]
+  ra:documentation [ "Default rule for nonterminal 'le'" ]
+]
+le = e.le
+[
+  db:refname [ "e.le" ]
+  ra:documentation [ "Nonterminal 'le', serialized as element" ]
+]
+e.le =
+  element le {
+    extension-attributes,
+    (extension-elements & (expr07, s, s, expr08))
+  }
+[
+  db:refname [ "ge" ]
+  ra:documentation [ "Default rule for nonterminal 'ge'" ]
+]
+ge = e.ge
+[
+  db:refname [ "e.ge" ]
+  ra:documentation [ "Nonterminal 'ge', serialized as element" ]
+]
+e.ge =
+  element ge {
+    extension-attributes,
+    (extension-elements & (expr07, s, s, expr08))
+  }
+[
+  db:refname [ "not-in" ]
+  ra:documentation [ "Default rule for nonterminal 'not-in'" ]
+]
+not-in = e.not-in
+[
+  db:refname [ "e.not-in" ]
+  ra:documentation [ "Nonterminal 'not-in', serialized as element" ]
+]
+e.not-in =
+  element not-in {
+    extension-attributes,
+    (extension-elements & (expr07, S, NOT, S, expr08))
+  }
+[
+  db:refname [ "not-eq" ]
+  ra:documentation [ "Default rule for nonterminal 'not-eq'" ]
+]
+not-eq = e.not-eq
+[
+  db:refname [ "e.not-eq" ]
+  ra:documentation [ "Nonterminal 'not-eq', serialized as element" ]
+]
+e.not-eq =
+  element not-eq {
+    extension-attributes,
+    (extension-elements & (expr07, s, NOT, s, expr08))
+  }
+[
+  db:refname [ "not-lt" ]
+  ra:documentation [ "Default rule for nonterminal 'not-lt'" ]
+]
+not-lt = e.not-lt
+[
+  db:refname [ "e.not-lt" ]
+  ra:documentation [ "Nonterminal 'not-lt', serialized as element" ]
+]
+e.not-lt =
+  element not-lt {
+    extension-attributes,
+    (extension-elements & (expr07, s, NOT, s, expr08))
+  }
+[
+  db:refname [ "not-gt" ]
+  ra:documentation [ "Default rule for nonterminal 'not-gt'" ]
+]
+not-gt = e.not-gt
+[
+  db:refname [ "e.not-gt" ]
+  ra:documentation [ "Nonterminal 'not-gt', serialized as element" ]
+]
+e.not-gt =
+  element not-gt {
+    extension-attributes,
+    (extension-elements & (expr07, s, NOT, s, expr08))
+  }
+[
+  db:refname [ "not-le" ]
+  ra:documentation [ "Default rule for nonterminal 'not-le'" ]
+]
+not-le = e.not-le
+[
+  db:refname [ "e.not-le" ]
+  ra:documentation [ "Nonterminal 'not-le', serialized as element" ]
+]
+e.not-le =
+  element not-le {
+    extension-attributes,
+    (extension-elements & (expr07, s, NOT, s, expr08))
+  }
+[
+  db:refname [ "not-ge" ]
+  ra:documentation [ "Default rule for nonterminal 'not-ge'" ]
+]
+not-ge = e.not-ge
+[
+  db:refname [ "e.not-ge" ]
+  ra:documentation [ "Nonterminal 'not-ge', serialized as element" ]
+]
+e.not-ge =
+  element not-ge {
+    extension-attributes,
+    (extension-elements & (expr07, s, NOT, s, expr08))
+  }
+[
+  db:refname [ "expr08" ]
+  ra:documentation [ "Default rule for nonterminal 'expr08'" ]
+]
+expr08 = h.expr08
+[
+  db:refname [ "h.expr08" ]
+  ra:documentation [ "Nonterminal 'expr08', not serialized (hidden)" ]
+]
+h.expr08 = quantified-expression | expr09
+[
+  db:refname [ "quantified-expression" ]
+  ra:documentation [
+    "Default rule for nonterminal 'quantified-expression'"
+  ]
+]
+quantified-expression = h.quantified-expression
+[
+  db:refname [ "h.quantified-expression" ]
+  ra:documentation [
+    "Nonterminal 'quantified-expression', not serialized (hidden)"
+  ]
+]
+h.quantified-expression =
+  no-ex08 | some-ex08 | lone-ex08 | one-ex08 | set-ex08 | seq-ex08
+[
+  db:refname [ "no-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'no-ex08'" ]
+]
+no-ex08 = e.no-ex08
+[
+  db:refname [ "e.no-ex08" ]
+  ra:documentation [ "Nonterminal 'no-ex08', serialized as element" ]
+]
+e.no-ex08 =
+  element no-ex08 {
+    extension-attributes,
+    (extension-elements & (S, expr09))
+  }
+[
+  db:refname [ "some-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'some-ex08'" ]
+]
+some-ex08 = e.some-ex08
+[
+  db:refname [ "e.some-ex08" ]
+  ra:documentation [ "Nonterminal 'some-ex08', serialized as element" ]
+]
+e.some-ex08 =
+  element some-ex08 {
+    extension-attributes,
+    (extension-elements & (S, expr09))
+  }
+[
+  db:refname [ "lone-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'lone-ex08'" ]
+]
+lone-ex08 = e.lone-ex08
+[
+  db:refname [ "e.lone-ex08" ]
+  ra:documentation [ "Nonterminal 'lone-ex08', serialized as element" ]
+]
+e.lone-ex08 =
+  element lone-ex08 {
+    extension-attributes,
+    (extension-elements & (S, expr09))
+  }
+[
+  db:refname [ "one-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'one-ex08'" ]
+]
+one-ex08 = e.one-ex08
+[
+  db:refname [ "e.one-ex08" ]
+  ra:documentation [ "Nonterminal 'one-ex08', serialized as element" ]
+]
+e.one-ex08 =
+  element one-ex08 {
+    extension-attributes,
+    (extension-elements & (S, expr09))
+  }
+[
+  db:refname [ "set-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'set-ex08'" ]
+]
+set-ex08 = e.set-ex08
+[
+  db:refname [ "e.set-ex08" ]
+  ra:documentation [ "Nonterminal 'set-ex08', serialized as element" ]
+]
+e.set-ex08 =
+  element set-ex08 {
+    extension-attributes,
+    (extension-elements & (S, member-type))
+  }
+[
+  db:refname [ "member-type" ]
+  ra:documentation [ "Default rule for nonterminal 'member-type'" ]
+]
+member-type = h.member-type
+[
+  db:refname [ "h.member-type" ]
+  ra:documentation [
+    "Nonterminal 'member-type', not serialized (hidden)"
+  ]
+]
+h.member-type = expr09
+[
+  db:refname [ "seq-ex08" ]
+  ra:documentation [ "Default rule for nonterminal 'seq-ex08'" ]
+]
+seq-ex08 = e.seq-ex08
+[
+  db:refname [ "e.seq-ex08" ]
+  ra:documentation [ "Nonterminal 'seq-ex08', serialized as element" ]
+]
+e.seq-ex08 =
+  element seq-ex08 {
+    extension-attributes,
+    (extension-elements & (S, expr09))
+  }
+[
+  db:refname [ "expr09" ]
+  ra:documentation [ "Default rule for nonterminal 'expr09'" ]
+]
+expr09 = h.expr09
+[
+  db:refname [ "h.expr09" ]
+  ra:documentation [ "Nonterminal 'expr09', not serialized (hidden)" ]
+]
+h.expr09 = SHL-expr | SHR-expr | SHA-expr | expr10
+[
+  db:refname [ "SHL-expr" ]
+  ra:documentation [ "Default rule for nonterminal 'SHL-expr'" ]
+]
+SHL-expr = e.SHL-expr
+[
+  db:refname [ "e.SHL-expr" ]
+  ra:documentation [ "Nonterminal 'SHL-expr', serialized as element" ]
+]
+e.SHL-expr =
+  element SHL-expr {
+    extension-attributes,
+    (extension-elements & (expr09, s, s, expr10))
+  }
+[
+  db:refname [ "SHR-expr" ]
+  ra:documentation [ "Default rule for nonterminal 'SHR-expr'" ]
+]
+SHR-expr = e.SHR-expr
+[
+  db:refname [ "e.SHR-expr" ]
+  ra:documentation [ "Nonterminal 'SHR-expr', serialized as element" ]
+]
+e.SHR-expr =
+  element SHR-expr {
+    extension-attributes,
+    (extension-elements & (expr09, s, s, expr10))
+  }
+[
+  db:refname [ "SHA-expr" ]
+  ra:documentation [ "Default rule for nonterminal 'SHA-expr'" ]
+]
+SHA-expr = e.SHA-expr
+[
+  db:refname [ "e.SHA-expr" ]
+  ra:documentation [ "Nonterminal 'SHA-expr', serialized as element" ]
+]
+e.SHA-expr =
+  element SHA-expr {
+    extension-attributes,
+    (extension-elements & (expr09, s, s, expr10))
+  }
+[
+  db:refname [ "expr10" ]
+  ra:documentation [ "Default rule for nonterminal 'expr10'" ]
+]
+expr10 = h.expr10
+[
+  db:refname [ "h.expr10" ]
+  ra:documentation [ "Nonterminal 'expr10', not serialized (hidden)" ]
+]
+h.expr10 = union | set-diff | expr11
+[
+  db:refname [ "union" ]
+  ra:documentation [ "Default rule for nonterminal 'union'" ]
+]
+union = e.union
+[
+  db:refname [ "e.union" ]
+  ra:documentation [ "Nonterminal 'union', serialized as element" ]
+]
+e.union =
+  element union {
+    extension-attributes,
+    (extension-elements & (expr10, s, s, expr11))
+  }
+[
+  db:refname [ "set-diff" ]
+  ra:documentation [ "Default rule for nonterminal 'set-diff'" ]
+]
+set-diff = e.set-diff
+[
+  db:refname [ "e.set-diff" ]
+  ra:documentation [ "Nonterminal 'set-diff', serialized as element" ]
+]
+e.set-diff =
+  element set-diff {
+    extension-attributes,
+    (extension-elements & (expr10, s, careful-ws, expr11))
+  }
+[
+  db:refname [ "expr11" ]
+  ra:documentation [ "Default rule for nonterminal 'expr11'" ]
+]
+expr11 = h.expr11
+[
+  db:refname [ "h.expr11" ]
+  ra:documentation [ "Nonterminal 'expr11', not serialized (hidden)" ]
+]
+h.expr11 = cardinality | expr12
+[
+  db:refname [ "cardinality" ]
+  ra:documentation [ "Default rule for nonterminal 'cardinality'" ]
+]
+cardinality = e.cardinality
+[
+  db:refname [ "e.cardinality" ]
+  ra:documentation [
+    "Nonterminal 'cardinality', serialized as element"
+  ]
+]
+e.cardinality =
+  element cardinality {
+    extension-attributes,
+    (extension-elements & (s, expr12))
+  }
+[
+  db:refname [ "expr12" ]
+  ra:documentation [ "Default rule for nonterminal 'expr12'" ]
+]
+expr12 = h.expr12
+[
+  db:refname [ "h.expr12" ]
+  ra:documentation [ "Nonterminal 'expr12', not serialized (hidden)" ]
+]
+h.expr12 = override | expr13
+[
+  db:refname [ "override" ]
+  ra:documentation [ "Default rule for nonterminal 'override'" ]
+]
+override = e.override
+[
+  db:refname [ "e.override" ]
+  ra:documentation [ "Nonterminal 'override', serialized as element" ]
+]
+e.override =
+  element override {
+    extension-attributes,
+    (extension-elements & (base, s, s, overlay))
+  }
+[
+  db:refname [ "base" ]
+  ra:documentation [ "Default rule for nonterminal 'base'" ]
+]
+base = e.base
+[
+  db:refname [ "e.base" ]
+  ra:documentation [ "Nonterminal 'base', serialized as element" ]
+]
+e.base =
+  element base { extension-attributes, (extension-elements & expr12) }
+[
+  db:refname [ "overlay" ]
+  ra:documentation [ "Default rule for nonterminal 'overlay'" ]
+]
+overlay = e.overlay
+[
+  db:refname [ "e.overlay" ]
+  ra:documentation [ "Nonterminal 'overlay', serialized as element" ]
+]
+e.overlay =
+  element overlay {
+    extension-attributes, (extension-elements & expr13)
+  }
+[
+  db:refname [ "expr13" ]
+  ra:documentation [ "Default rule for nonterminal 'expr13'" ]
+]
+expr13 = h.expr13
+[
+  db:refname [ "h.expr13" ]
+  ra:documentation [ "Nonterminal 'expr13', not serialized (hidden)" ]
+]
+h.expr13 = intersection | expr14
+[
+  db:refname [ "intersection" ]
+  ra:documentation [ "Default rule for nonterminal 'intersection'" ]
+]
+intersection = e.intersection
+[
+  db:refname [ "e.intersection" ]
+  ra:documentation [
+    "Nonterminal 'intersection', serialized as element"
+  ]
+]
+e.intersection =
+  element intersection {
+    extension-attributes,
+    (extension-elements & (expr13, s, s, expr14))
+  }
+[
+  db:refname [ "expr14" ]
+  ra:documentation [ "Default rule for nonterminal 'expr14'" ]
+]
+expr14 = h.expr14
+[
+  db:refname [ "h.expr14" ]
+  ra:documentation [ "Nonterminal 'expr14', not serialized (hidden)" ]
+]
+h.expr14 = arrow-expr | expr15
+[
+  db:refname [ "arrow-expr" ]
+  ra:documentation [ "Default rule for nonterminal 'arrow-expr'" ]
+]
+arrow-expr = e.arrow-expr
+[
+  db:refname [ "e.arrow-expr" ]
+  ra:documentation [ "Nonterminal 'arrow-expr', serialized as element" ]
+]
+e.arrow-expr =
+  element arrow-expr {
+    extension-attributes,
+    (extension-elements
+     & (expr14, (S, left-mult)?, s, s, (right-mult, S)?, expr15))
+  }
+[
+  db:refname [ "left-mult" ]
+  ra:documentation [ "Default rule for nonterminal 'left-mult'" ]
+]
+left-mult = e.left-mult
+[
+  db:refname [ "e.left-mult" ]
+  ra:documentation [ "Nonterminal 'left-mult', serialized as element" ]
+]
+e.left-mult =
+  element left-mult {
+    extension-attributes,
+    (extension-elements
+     & (h.mult
+        | # can a data element be used?
+          text))
+  }
+[
+  db:refname [ "right-mult" ]
+  ra:documentation [ "Default rule for nonterminal 'right-mult'" ]
+]
+right-mult = e.right-mult
+[
+  db:refname [ "e.right-mult" ]
+  ra:documentation [ "Nonterminal 'right-mult', serialized as element" ]
+]
+e.right-mult =
+  element right-mult {
+    extension-attributes,
+    (extension-elements
+     & (h.mult
+        | # can a data element be used?
+          text))
+  }
+[
+  db:refname [ "expr15" ]
+  ra:documentation [ "Default rule for nonterminal 'expr15'" ]
+]
+expr15 = h.expr15
+[
+  db:refname [ "h.expr15" ]
+  ra:documentation [ "Nonterminal 'expr15', not serialized (hidden)" ]
+]
+h.expr15 = left-restriction | expr16
+[
+  db:refname [ "expr16" ]
+  ra:documentation [ "Default rule for nonterminal 'expr16'" ]
+]
+expr16 = h.expr16
+[
+  db:refname [ "h.expr16" ]
+  ra:documentation [ "Nonterminal 'expr16', not serialized (hidden)" ]
+]
+h.expr16 = right-restriction | expr17
+[
+  db:refname [ "left-restriction" ]
+  ra:documentation [ "Default rule for nonterminal 'left-restriction'" ]
+]
+left-restriction = e.left-restriction
+[
+  db:refname [ "e.left-restriction" ]
+  ra:documentation [
+    "Nonterminal 'left-restriction', serialized as element"
+  ]
+]
+e.left-restriction =
+  element left-restriction {
+    extension-attributes,
+    (extension-elements & (lr-set, s, s, lr-rel))
+  }
+[
+  db:refname [ "right-restriction" ]
+  ra:documentation [
+    "Default rule for nonterminal 'right-restriction'"
+  ]
+]
+right-restriction = e.right-restriction
+[
+  db:refname [ "e.right-restriction" ]
+  ra:documentation [
+    "Nonterminal 'right-restriction', serialized as element"
+  ]
+]
+e.right-restriction =
+  element right-restriction {
+    extension-attributes,
+    (extension-elements & (rr-rel, s, s, rr-set))
+  }
+[
+  db:refname [ "lr-set" ]
+  ra:documentation [ "Default rule for nonterminal 'lr-set'" ]
+]
+lr-set = e.lr-set
+[
+  db:refname [ "e.lr-set" ]
+  ra:documentation [ "Nonterminal 'lr-set', serialized as element" ]
+]
+e.lr-set =
+  element lr-set { extension-attributes, (extension-elements & expr15) }
+[
+  db:refname [ "lr-rel" ]
+  ra:documentation [ "Default rule for nonterminal 'lr-rel'" ]
+]
+lr-rel = e.lr-rel
+[
+  db:refname [ "e.lr-rel" ]
+  ra:documentation [ "Nonterminal 'lr-rel', serialized as element" ]
+]
+e.lr-rel =
+  element lr-rel { extension-attributes, (extension-elements & expr16) }
+[
+  db:refname [ "rr-rel" ]
+  ra:documentation [ "Default rule for nonterminal 'rr-rel'" ]
+]
+rr-rel = e.rr-rel
+[
+  db:refname [ "e.rr-rel" ]
+  ra:documentation [ "Nonterminal 'rr-rel', serialized as element" ]
+]
+e.rr-rel =
+  element rr-rel { extension-attributes, (extension-elements & expr16) }
+[
+  db:refname [ "rr-set" ]
+  ra:documentation [ "Default rule for nonterminal 'rr-set'" ]
+]
+rr-set = e.rr-set
+[
+  db:refname [ "e.rr-set" ]
+  ra:documentation [ "Nonterminal 'rr-set', serialized as element" ]
+]
+e.rr-set =
+  element rr-set { extension-attributes, (extension-elements & expr17) }
+[
+  db:refname [ "expr17" ]
+  ra:documentation [ "Default rule for nonterminal 'expr17'" ]
+]
+expr17 = h.expr17
+[
+  db:refname [ "h.expr17" ]
+  ra:documentation [ "Nonterminal 'expr17', not serialized (hidden)" ]
+]
+h.expr17 = box-join | expr18
+[
+  db:refname [ "box-join" ]
+  ra:documentation [ "Default rule for nonterminal 'box-join'" ]
+]
+box-join = e.box-join
+[
+  db:refname [ "e.box-join" ]
+  ra:documentation [ "Nonterminal 'box-join', serialized as element" ]
+]
+e.box-join =
+  element box-join {
+    extension-attributes,
+    (extension-elements
+     & (box-left,
+        s,
+        s,
+        ((selector, (comma, selector)*),
+         s)?))
+  }
+[
+  db:refname [ "box-left" ]
+  ra:documentation [ "Default rule for nonterminal 'box-left'" ]
+]
+box-left = e.box-left
+[
+  db:refname [ "e.box-left" ]
+  ra:documentation [ "Nonterminal 'box-left', serialized as element" ]
+]
+e.box-left =
+  element box-left {
+    extension-attributes,
+    (extension-elements & (expr17 | sum | integer-cast))
+  }
+[
+  db:refname [ "selector" ]
+  ra:documentation [ "Default rule for nonterminal 'selector'" ]
+]
+selector = e.selector
+[
+  db:refname [ "e.selector" ]
+  ra:documentation [ "Nonterminal 'selector', serialized as element" ]
+]
+e.selector =
+  element selector {
+    extension-attributes,
+    (extension-elements & (expr10 | if-then-else))
+  }
+[
+  db:refname [ "sum" ]
+  ra:documentation [ "Default rule for nonterminal 'sum'" ]
+]
+sum = e.sum
+[
+  db:refname [ "e.sum" ]
+  ra:documentation [ "Nonterminal 'sum', serialized as element" ]
+]
+e.sum =
+  element sum {
+    extension-attributes,
+    (extension-elements
+     & # alt with no realized children
+       empty)
+  }
+[
+  db:refname [ "integer-cast" ]
+  ra:documentation [ "Default rule for nonterminal 'integer-cast'" ]
+]
+integer-cast = e.integer-cast
+[
+  db:refname [ "e.integer-cast" ]
+  ra:documentation [
+    "Nonterminal 'integer-cast', serialized as element"
+  ]
+]
+e.integer-cast =
+  element integer-cast {
+    extension-attributes,
+    (extension-elements
+     & # alt with no realized children
+       empty)
+  }
+[
+  db:refname [ "expr18" ]
+  ra:documentation [ "Default rule for nonterminal 'expr18'" ]
+]
+expr18 = h.expr18
+[
+  db:refname [ "h.expr18" ]
+  ra:documentation [ "Nonterminal 'expr18', not serialized (hidden)" ]
+]
+h.expr18 = dot-join | expr19
+[
+  db:refname [ "dot-join" ]
+  ra:documentation [ "Default rule for nonterminal 'dot-join'" ]
+]
+dot-join = e.dot-join
+[
+  db:refname [ "e.dot-join" ]
+  ra:documentation [ "Nonterminal 'dot-join', serialized as element" ]
+]
+e.dot-join =
+  element dot-join {
+    extension-attributes,
+    (extension-elements & (expr17, s, s, expr19))
+  }
+[
+  db:refname [ "expr19" ]
+  ra:documentation [ "Default rule for nonterminal 'expr19'" ]
+]
+expr19 = h.expr19
+[
+  db:refname [ "h.expr19" ]
+  ra:documentation [ "Nonterminal 'expr19', not serialized (hidden)" ]
+]
+h.expr19 = inverse | t-closure | rt-closure | expr20
+[
+  db:refname [ "inverse" ]
+  ra:documentation [ "Default rule for nonterminal 'inverse'" ]
+]
+inverse = e.inverse
+[
+  db:refname [ "e.inverse" ]
+  ra:documentation [ "Nonterminal 'inverse', serialized as element" ]
+]
+e.inverse =
+  element inverse {
+    extension-attributes,
+    (extension-elements & (s, expr19))
+  }
+[
+  db:refname [ "t-closure" ]
+  ra:documentation [ "Default rule for nonterminal 't-closure'" ]
+]
+t-closure = e.t-closure
+[
+  db:refname [ "e.t-closure" ]
+  ra:documentation [ "Nonterminal 't-closure', serialized as element" ]
+]
+e.t-closure =
+  element t-closure {
+    extension-attributes,
+    (extension-elements & (s, expr19))
+  }
+[
+  db:refname [ "rt-closure" ]
+  ra:documentation [ "Default rule for nonterminal 'rt-closure'" ]
+]
+rt-closure = e.rt-closure
+[
+  db:refname [ "e.rt-closure" ]
+  ra:documentation [ "Nonterminal 'rt-closure', serialized as element" ]
+]
+e.rt-closure =
+  element rt-closure {
+    extension-attributes,
+    (extension-elements & (s, expr19))
+  }
+[
+  db:refname [ "expr20" ]
+  ra:documentation [ "Default rule for nonterminal 'expr20'" ]
+]
+expr20 = h.expr20
+[
+  db:refname [ "h.expr20" ]
+  ra:documentation [ "Nonterminal 'expr20', not serialized (hidden)" ]
+]
+h.expr20 =
+  OQName
+  | unexpanded
+  | THIS
+  | NONE
+  | IDEN
+  | UNIV
+  | INT
+  | SEQINT
+  | number
+  | negative-number
+  | (s, expr, s)
+  | declarations-block
+  | block
+[
+  db:refname [ "unexpanded" ]
+  ra:documentation [ "Default rule for nonterminal 'unexpanded'" ]
+]
+unexpanded = e.unexpanded
+[
+  db:refname [ "e.unexpanded" ]
+  ra:documentation [ "Nonterminal 'unexpanded', serialized as element" ]
+]
+e.unexpanded =
+  element unexpanded {
+    extension-attributes,
+    (extension-elements & (s, name))
+  }
+[
+  db:refname [ "negative-number" ]
+  ra:documentation [ "Default rule for nonterminal 'negative-number'" ]
+]
+negative-number = e.negative-number
+[
+  db:refname [ "e.negative-number" ]
+  ra:documentation [
+    "Nonterminal 'negative-number', serialized as element"
+  ]
+]
+e.negative-number =
+  element negative-number {
+    extension-attributes, (extension-elements & h.number)
+  }
+[
+  db:refname [ "declarations-block" ]
+  ra:documentation [
+    "Default rule for nonterminal 'declarations-block'"
+  ]
+]
+declarations-block = e.declarations-block
+[
+  db:refname [ "e.declarations-block" ]
+  ra:documentation [
+    "Nonterminal 'declarations-block', serialized as element"
+  ]
+]
+e.declarations-block =
+  element declarations-block {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        (decl, (comma, decl)*),
+        s,
+        block-or-bar,
+        s))
+  }
+[
+  db:refname [ "block" ]
+  ra:documentation [ "Default rule for nonterminal 'block'" ]
+]
+block = e.block
+[
+  db:refname [ "e.block" ]
+  ra:documentation [ "Nonterminal 'block', serialized as element" ]
+]
+e.block =
+  element block {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        ((expr, (S, expr)*),
+         s)?))
+  }
+[
+  db:refname [ "h.block" ]
+  ra:documentation [ "Nonterminal 'block', not serialized (hidden)" ]
+]
+h.block =
+  s,
+  ((expr, (S, expr)*),
+   s)?
+[
+  db:refname [ "block-or-bar" ]
+  ra:documentation [ "Default rule for nonterminal 'block-or-bar'" ]
+]
+block-or-bar = e.block-or-bar
+[
+  db:refname [ "e.block-or-bar" ]
+  ra:documentation [
+    "Nonterminal 'block-or-bar', serialized as element"
+  ]
+]
+e.block-or-bar =
+  element block-or-bar {
+    extension-attributes,
+    (extension-elements
+     & (block | (s, expr)))
+  }
+[
+  db:refname [ "ref" ]
+  ra:documentation [ "Default rule for nonterminal 'ref'" ]
+]
+ref = e.ref
+[
+  db:refname [ "e.ref" ]
+  ra:documentation [ "Nonterminal 'ref', serialized as element" ]
+]
+e.ref =
+  element ref {
+    extension-attributes,
+    (extension-elements & (OQName | UNIV | INT | SEQINT))
+  }
+[
+  db:refname [ "OQName" ]
+  ra:documentation [ "Default rule for nonterminal 'OQName'" ]
+]
+OQName = h.OQName
+[
+  db:refname [ "h.OQName" ]
+  ra:documentation [ "Nonterminal 'OQName', not serialized (hidden)" ]
+]
+h.OQName = qual-name | name
+[
+  db:refname [ "qual-name" ]
+  ra:documentation [ "Default rule for nonterminal 'qual-name'" ]
+]
+qual-name = e.qual-name
+[
+  db:refname [ "e.qual-name" ]
+  ra:documentation [ "Nonterminal 'qual-name', serialized as element" ]
+]
+e.qual-name =
+  element qual-name {
+    extension-attributes,
+    (extension-elements
+     & ((THIS, qual*, name) | (qual+, name)))
+  }
+[
+  db:refname [ "qual" ]
+  ra:documentation [ "Default rule for nonterminal 'qual'" ]
+]
+qual = e.qual
+[
+  db:refname [ "e.qual" ]
+  ra:documentation [ "Nonterminal 'qual', serialized as element" ]
+]
+e.qual =
+  element qual {
+    extension-attributes,
+    (extension-elements & h.name-minus-reserved-words)
+  }
+[
+  db:refname [ "number" ]
+  ra:documentation [ "Default rule for nonterminal 'number'" ]
+]
+number = e.number
+[
+  db:refname [ "e.number" ]
+  ra:documentation [ "Nonterminal 'number', serialized as element" ]
+]
+e.number =
+  element number {
+    extension-attributes,
+    (extension-elements
+     & (# can a data element be used?
+        text
+        | (# can a data element be used?
+           text,
+           digit*)))
+  }
+[
+  db:refname [ "h.number" ]
+  ra:documentation [ "Nonterminal 'number', not serialized (hidden)" ]
+]
+h.number =
+  # can a data element be used?
+  text
+  | (# can a data element be used?
+     text,
+     digit*)
+[
+  db:refname [ "digit" ]
+  ra:documentation [ "Default rule for nonterminal 'digit'" ]
+]
+digit = h.digit
+[
+  db:refname [ "h.digit" ]
+  ra:documentation [ "Nonterminal 'digit', not serialized (hidden)" ]
+]
+h.digit =
+  # can a data element be used?
+  text
+[
+  db:refname [ "ID" ]
+  ra:documentation [ "Default rule for nonterminal 'ID'" ]
+]
+ID = h.ID
+[
+  db:refname [ "h.ID" ]
+  ra:documentation [ "Nonterminal 'ID', not serialized (hidden)" ]
+]
+h.ID =
+  letter,
+  (letter
+   | digit
+   | # can a data element be used?
+     text
+   | sq
+   | dq)*
+[
+  db:refname [ "letter" ]
+  ra:documentation [ "Default rule for nonterminal 'letter'" ]
+]
+letter = h.letter
+[
+  db:refname [ "h.letter" ]
+  ra:documentation [ "Nonterminal 'letter', not serialized (hidden)" ]
+]
+h.letter =
+  # can a data element be used?
+  text
+[
+  db:refname [ "sq" ]
+  ra:documentation [ "Default rule for nonterminal 'sq'" ]
+]
+sq = h.sq
+[
+  db:refname [ "h.sq" ]
+  ra:documentation [ "Nonterminal 'sq', not serialized (hidden)" ]
+]
+h.sq =
+  # can a data element be used?
+  text
+[
+  db:refname [ "dq" ]
+  ra:documentation [ "Default rule for nonterminal 'dq'" ]
+]
+dq = h.dq
+[
+  db:refname [ "h.dq" ]
+  ra:documentation [ "Nonterminal 'dq', not serialized (hidden)" ]
+]
+h.dq =
+  # can a data element be used?
+  text
+[
+  db:refname [ "quant" ]
+  ra:documentation [ "Default rule for nonterminal 'quant'" ]
+]
+quant = e.quant
+[
+  db:refname [ "e.quant" ]
+  ra:documentation [ "Nonterminal 'quant', serialized as element" ]
+]
+e.quant =
+  element quant {
+    extension-attributes,
+    (extension-elements
+     & (# can a data element be used?
+        text
+        | # can a data element be used?
+          text
+        | h.mult
+        | # can a data element be used?
+          text))
+  }
+[
+  db:refname [ "mult" ]
+  ra:documentation [ "Default rule for nonterminal 'mult'" ]
+]
+mult = e.mult
+[
+  db:refname [ "e.mult" ]
+  ra:documentation [ "Nonterminal 'mult', serialized as element" ]
+]
+e.mult =
+  element mult {
+    extension-attributes,
+    (extension-elements
+     & (# can a data element be used?
+        text
+        | # can a data element be used?
+          text
+        | # can a data element be used?
+          text))
+  }
+[
+  db:refname [ "a.mult" ]
+  ra:documentation [ "Nonterminal 'mult', serialized as attribute" ]
+]
+a.mult =
+  attribute mult {
+    # No annotations found, falling back to 'text'.
+    text
+  }
+[
+  db:refname [ "h.mult" ]
+  ra:documentation [ "Nonterminal 'mult', not serialized (hidden)" ]
+]
+h.mult =
+  # can a data element be used?
+  text
+  | # can a data element be used?
+    text
+  | # can a data element be used?
+    text
+[
+  db:refname [ "comma" ]
+  ra:documentation [ "Default rule for nonterminal 'comma'" ]
+]
+comma = h.comma
+[
+  db:refname [ "h.comma" ]
+  ra:documentation [ "Nonterminal 'comma', not serialized (hidden)" ]
+]
+h.comma = s, s
+[
+  db:refname [ "slash" ]
+  ra:documentation [ "Default rule for nonterminal 'slash'" ]
+]
+slash = e.slash
+[
+  db:refname [ "e.slash" ]
+  ra:documentation [ "Nonterminal 'slash', serialized as element" ]
+]
+e.slash =
+  element slash {
+    extension-attributes,
+    (extension-elements & (s, s))
+  }
+[
+  db:refname [ "plus" ]
+  ra:documentation [ "Default rule for nonterminal 'plus'" ]
+]
+plus = e.plus
+[
+  db:refname [ "e.plus" ]
+  ra:documentation [ "Nonterminal 'plus', serialized as element" ]
+]
+e.plus =
+  element plus {
+    extension-attributes,
+    (extension-elements & (s, s))
+  }
+[
+  db:refname [ "S" ]
+  ra:documentation [ "Default rule for nonterminal 'S'" ]
+]
+S = h.S
+[
+  db:refname [ "h.S" ]
+  ra:documentation [ "Nonterminal 'S', not serialized (hidden)" ]
+]
+h.S = (ws_char | comment)+
+[
+  db:refname [ "s" ]
+  ra:documentation [ "Default rule for nonterminal 's'" ]
+]
+s = h.s
+[
+  db:refname [ "h.s" ]
+  ra:documentation [ "Nonterminal 's', not serialized (hidden)" ]
+]
+h.s = S?
+[
+  db:refname [ "ws_char" ]
+  ra:documentation [ "Default rule for nonterminal 'ws_char'" ]
+]
+ws_char = h.ws_char
+[
+  db:refname [ "h.ws_char" ]
+  ra:documentation [ "Nonterminal 'ws_char', not serialized (hidden)" ]
+]
+h.ws_char =
+  # alt with no realized children
+  empty
+[
+  db:refname [ "comment" ]
+  ra:documentation [ "Default rule for nonterminal 'comment'" ]
+]
+comment = e.comment
+[
+  db:refname [ "e.comment" ]
+  ra:documentation [ "Nonterminal 'comment', serialized as element" ]
+]
+e.comment =
+  element comment {
+    extension-attributes,
+    (extension-elements & (double-slash | double-hyphen | slash-star))
+  }
+[
+  db:refname [ "double-slash" ]
+  ra:documentation [ "Default rule for nonterminal 'double-slash'" ]
+]
+double-slash = h.double-slash
+[
+  db:refname [ "h.double-slash" ]
+  ra:documentation [
+    "Nonterminal 'double-slash', not serialized (hidden)"
+  ]
+]
+h.double-slash =
+  # can a data element be used?
+  text*,
+  NL
+[
+  db:refname [ "double-hyphen" ]
+  ra:documentation [ "Default rule for nonterminal 'double-hyphen'" ]
+]
+double-hyphen = h.double-hyphen
+[
+  db:refname [ "h.double-hyphen" ]
+  ra:documentation [
+    "Nonterminal 'double-hyphen', not serialized (hidden)"
+  ]
+]
+h.double-hyphen =
+  # can a data element be used?
+  text*,
+  NL
+[
+  db:refname [ "NL" ]
+  ra:documentation [ "Default rule for nonterminal 'NL'" ]
+]
+NL = h.NL
+[
+  db:refname [ "h.NL" ]
+  ra:documentation [ "Nonterminal 'NL', not serialized (hidden)" ]
+]
+h.NL =
+  empty
+  # <rng:group>
+  #    <rng:optional/>
+  # </rng:group>
+  
+[
+  db:refname [ "careful-ws" ]
+  ra:documentation [ "Default rule for nonterminal 'careful-ws'" ]
+]
+careful-ws = e.careful-ws
+[
+  db:refname [ "e.careful-ws" ]
+  ra:documentation [ "Nonterminal 'careful-ws', serialized as element" ]
+]
+e.careful-ws =
+  element careful-ws {
+    extension-attributes,
+    (extension-elements
+     & ((ws_char | double-slash | slash-star), s)?)
+  }
+[
+  db:refname [ "slash-star" ]
+  ra:documentation [ "Default rule for nonterminal 'slash-star'" ]
+]
+slash-star = h.slash-star
+[
+  db:refname [ "h.slash-star" ]
+  ra:documentation [
+    "Nonterminal 'slash-star', not serialized (hidden)"
+  ]
+]
+h.slash-star =
+  (# can a data element be used?
+   text
+   | (# can a data element be used?
+      text+,
+      # can a data element be used?
+      text))*,
+  # can a data element be used?
+  text*
+[
+  db:refname [ "THIS" ]
+  ra:documentation [ "Default rule for nonterminal 'THIS'" ]
+]
+THIS = e.THIS
+[
+  db:refname [ "e.THIS" ]
+  ra:documentation [ "Nonterminal 'THIS', serialized as element" ]
+]
+e.THIS =
+  element THIS {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "PRIVATE" ]
+  ra:documentation [ "Default rule for nonterminal 'PRIVATE'" ]
+]
+PRIVATE = e.PRIVATE
+[
+  db:refname [ "e.PRIVATE" ]
+  ra:documentation [ "Nonterminal 'PRIVATE', serialized as element" ]
+]
+e.PRIVATE =
+  element PRIVATE {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "UNIV" ]
+  ra:documentation [ "Default rule for nonterminal 'UNIV'" ]
+]
+UNIV = e.UNIV
+[
+  db:refname [ "e.UNIV" ]
+  ra:documentation [ "Nonterminal 'UNIV', serialized as element" ]
+]
+e.UNIV =
+  element UNIV {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "INT" ]
+  ra:documentation [ "Default rule for nonterminal 'INT'" ]
+]
+INT = e.INT
+[
+  db:refname [ "e.INT" ]
+  ra:documentation [ "Nonterminal 'INT', serialized as element" ]
+]
+e.INT =
+  element INT {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "SEQINT" ]
+  ra:documentation [ "Default rule for nonterminal 'SEQINT'" ]
+]
+SEQINT = e.SEQINT
+[
+  db:refname [ "e.SEQINT" ]
+  ra:documentation [ "Nonterminal 'SEQINT', serialized as element" ]
+]
+e.SEQINT =
+  element SEQINT {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "NONE" ]
+  ra:documentation [ "Default rule for nonterminal 'NONE'" ]
+]
+NONE = e.NONE
+[
+  db:refname [ "e.NONE" ]
+  ra:documentation [ "Nonterminal 'NONE', serialized as element" ]
+]
+e.NONE =
+  element NONE {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "IDEN" ]
+  ra:documentation [ "Default rule for nonterminal 'IDEN'" ]
+]
+IDEN = e.IDEN
+[
+  db:refname [ "e.IDEN" ]
+  ra:documentation [ "Nonterminal 'IDEN', serialized as element" ]
+]
+e.IDEN =
+  element IDEN {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "private" ]
+  ra:documentation [ "Default rule for nonterminal 'private'" ]
+]
+private = e.private
+[
+  db:refname [ "e.private" ]
+  ra:documentation [ "Nonterminal 'private', serialized as element" ]
+]
+e.private =
+  element private {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "abstract" ]
+  ra:documentation [ "Default rule for nonterminal 'abstract'" ]
+]
+abstract = e.abstract
+[
+  db:refname [ "e.abstract" ]
+  ra:documentation [ "Nonterminal 'abstract', serialized as element" ]
+]
+e.abstract =
+  element abstract {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "EXACTLY" ]
+  ra:documentation [ "Default rule for nonterminal 'EXACTLY'" ]
+]
+EXACTLY = e.EXACTLY
+[
+  db:refname [ "e.EXACTLY" ]
+  ra:documentation [ "Nonterminal 'EXACTLY', serialized as element" ]
+]
+e.EXACTLY =
+  element EXACTLY {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "h.EXACTLY" ]
+  ra:documentation [ "Nonterminal 'EXACTLY', not serialized (hidden)" ]
+]
+h.EXACTLY =
+  # can a data element be used?
+  text
+[
+  db:refname [ "enum-decl" ]
+  ra:documentation [ "Default rule for nonterminal 'enum-decl'" ]
+]
+enum-decl = e.enum-decl
+[
+  db:refname [ "e.enum-decl" ]
+  ra:documentation [ "Nonterminal 'enum-decl', serialized as element" ]
+]
+e.enum-decl =
+  element enum-decl {
+    extension-attributes,
+    (extension-elements
+     & (s,
+        name,
+        s,
+        s,
+        (name, (comma, name)*),
+        s))
+  }
+[
+  db:refname [ "namechar" ]
+  ra:documentation [ "Default rule for nonterminal 'namechar'" ]
+]
+namechar = h.namechar
+[
+  db:refname [ "h.namechar" ]
+  ra:documentation [ "Nonterminal 'namechar', not serialized (hidden)" ]
+]
+h.namechar =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-a" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-a'" ]
+]
+nc-not-a = h.nc-not-a
+[
+  db:refname [ "h.nc-not-a" ]
+  ra:documentation [ "Nonterminal 'nc-not-a', not serialized (hidden)" ]
+]
+h.nc-not-a =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-b" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-b'" ]
+]
+nc-not-b = h.nc-not-b
+[
+  db:refname [ "h.nc-not-b" ]
+  ra:documentation [ "Nonterminal 'nc-not-b', not serialized (hidden)" ]
+]
+h.nc-not-b =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-c" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-c'" ]
+]
+nc-not-c = h.nc-not-c
+[
+  db:refname [ "h.nc-not-c" ]
+  ra:documentation [ "Nonterminal 'nc-not-c', not serialized (hidden)" ]
+]
+h.nc-not-c =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-d" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-d'" ]
+]
+nc-not-d = h.nc-not-d
+[
+  db:refname [ "h.nc-not-d" ]
+  ra:documentation [ "Nonterminal 'nc-not-d', not serialized (hidden)" ]
+]
+h.nc-not-d =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-e" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-e'" ]
+]
+nc-not-e = h.nc-not-e
+[
+  db:refname [ "h.nc-not-e" ]
+  ra:documentation [ "Nonterminal 'nc-not-e', not serialized (hidden)" ]
+]
+h.nc-not-e =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-f" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-f'" ]
+]
+nc-not-f = h.nc-not-f
+[
+  db:refname [ "h.nc-not-f" ]
+  ra:documentation [ "Nonterminal 'nc-not-f', not serialized (hidden)" ]
+]
+h.nc-not-f =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-g" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-g'" ]
+]
+nc-not-g = h.nc-not-g
+[
+  db:refname [ "h.nc-not-g" ]
+  ra:documentation [ "Nonterminal 'nc-not-g', not serialized (hidden)" ]
+]
+h.nc-not-g =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-h" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-h'" ]
+]
+nc-not-h = h.nc-not-h
+[
+  db:refname [ "h.nc-not-h" ]
+  ra:documentation [ "Nonterminal 'nc-not-h', not serialized (hidden)" ]
+]
+h.nc-not-h =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-i" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-i'" ]
+]
+nc-not-i = h.nc-not-i
+[
+  db:refname [ "h.nc-not-i" ]
+  ra:documentation [ "Nonterminal 'nc-not-i', not serialized (hidden)" ]
+]
+h.nc-not-i =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-j" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-j'" ]
+]
+nc-not-j = h.nc-not-j
+[
+  db:refname [ "h.nc-not-j" ]
+  ra:documentation [ "Nonterminal 'nc-not-j', not serialized (hidden)" ]
+]
+h.nc-not-j =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-k" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-k'" ]
+]
+nc-not-k = h.nc-not-k
+[
+  db:refname [ "h.nc-not-k" ]
+  ra:documentation [ "Nonterminal 'nc-not-k', not serialized (hidden)" ]
+]
+h.nc-not-k =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-l" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-l'" ]
+]
+nc-not-l = h.nc-not-l
+[
+  db:refname [ "h.nc-not-l" ]
+  ra:documentation [ "Nonterminal 'nc-not-l', not serialized (hidden)" ]
+]
+h.nc-not-l =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-m" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-m'" ]
+]
+nc-not-m = h.nc-not-m
+[
+  db:refname [ "h.nc-not-m" ]
+  ra:documentation [ "Nonterminal 'nc-not-m', not serialized (hidden)" ]
+]
+h.nc-not-m =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-n" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-n'" ]
+]
+nc-not-n = h.nc-not-n
+[
+  db:refname [ "h.nc-not-n" ]
+  ra:documentation [ "Nonterminal 'nc-not-n', not serialized (hidden)" ]
+]
+h.nc-not-n =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-o" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-o'" ]
+]
+nc-not-o = h.nc-not-o
+[
+  db:refname [ "h.nc-not-o" ]
+  ra:documentation [ "Nonterminal 'nc-not-o', not serialized (hidden)" ]
+]
+h.nc-not-o =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-p" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-p'" ]
+]
+nc-not-p = h.nc-not-p
+[
+  db:refname [ "h.nc-not-p" ]
+  ra:documentation [ "Nonterminal 'nc-not-p', not serialized (hidden)" ]
+]
+h.nc-not-p =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-r" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-r'" ]
+]
+nc-not-r = h.nc-not-r
+[
+  db:refname [ "h.nc-not-r" ]
+  ra:documentation [ "Nonterminal 'nc-not-r', not serialized (hidden)" ]
+]
+h.nc-not-r =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-s" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-s'" ]
+]
+nc-not-s = h.nc-not-s
+[
+  db:refname [ "h.nc-not-s" ]
+  ra:documentation [ "Nonterminal 'nc-not-s', not serialized (hidden)" ]
+]
+h.nc-not-s =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-t" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-t'" ]
+]
+nc-not-t = h.nc-not-t
+[
+  db:refname [ "h.nc-not-t" ]
+  ra:documentation [ "Nonterminal 'nc-not-t', not serialized (hidden)" ]
+]
+h.nc-not-t =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-u" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-u'" ]
+]
+nc-not-u = h.nc-not-u
+[
+  db:refname [ "h.nc-not-u" ]
+  ra:documentation [ "Nonterminal 'nc-not-u', not serialized (hidden)" ]
+]
+h.nc-not-u =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-v" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-v'" ]
+]
+nc-not-v = h.nc-not-v
+[
+  db:refname [ "h.nc-not-v" ]
+  ra:documentation [ "Nonterminal 'nc-not-v', not serialized (hidden)" ]
+]
+h.nc-not-v =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-x" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-x'" ]
+]
+nc-not-x = h.nc-not-x
+[
+  db:refname [ "h.nc-not-x" ]
+  ra:documentation [ "Nonterminal 'nc-not-x', not serialized (hidden)" ]
+]
+h.nc-not-x =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-y" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-y'" ]
+]
+nc-not-y = h.nc-not-y
+[
+  db:refname [ "h.nc-not-y" ]
+  ra:documentation [ "Nonterminal 'nc-not-y', not serialized (hidden)" ]
+]
+h.nc-not-y =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-I" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-I'" ]
+]
+nc-not-I = h.nc-not-I
+[
+  db:refname [ "h.nc-not-I" ]
+  ra:documentation [ "Nonterminal 'nc-not-I', not serialized (hidden)" ]
+]
+h.nc-not-I =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-aou" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-aou'" ]
+]
+nc-not-aou = h.nc-not-aou
+[
+  db:refname [ "h.nc-not-aou" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-aou', not serialized (hidden)"
+  ]
+]
+h.nc-not-aou =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-at" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-at'" ]
+]
+nc-not-at = h.nc-not-at
+[
+  db:refname [ "h.nc-not-at" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-at', not serialized (hidden)"
+  ]
+]
+h.nc-not-at =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-blns" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-blns'" ]
+]
+nc-not-blns = h.nc-not-blns
+[
+  db:refname [ "h.nc-not-blns" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-blns', not serialized (hidden)"
+  ]
+]
+h.nc-not-blns =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-dfmn" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-dfmn'" ]
+]
+nc-not-dfmn = h.nc-not-dfmn
+[
+  db:refname [ "h.nc-not-dfmn" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-dfmn', not serialized (hidden)"
+  ]
+]
+h.nc-not-dfmn =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-eiou" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-eiou'" ]
+]
+nc-not-eiou = h.nc-not-eiou
+[
+  db:refname [ "h.nc-not-eiou" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-eiou', not serialized (hidden)"
+  ]
+]
+h.nc-not-eiou =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-eo" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-eo'" ]
+]
+nc-not-eo = h.nc-not-eo
+[
+  db:refname [ "h.nc-not-eo" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-eo', not serialized (hidden)"
+  ]
+]
+h.nc-not-eo =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-lx" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-lx'" ]
+]
+nc-not-lx = h.nc-not-lx
+[
+  db:refname [ "h.nc-not-lx" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-lx', not serialized (hidden)"
+  ]
+]
+h.nc-not-lx =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-npr" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-npr'" ]
+]
+nc-not-npr = h.nc-not-npr
+[
+  db:refname [ "h.nc-not-npr" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-npr', not serialized (hidden)"
+  ]
+]
+h.nc-not-npr =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-nt" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-nt'" ]
+]
+nc-not-nt = h.nc-not-nt
+[
+  db:refname [ "h.nc-not-nt" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-nt', not serialized (hidden)"
+  ]
+]
+h.nc-not-nt =
+  # can a data element be used?
+  text
+[
+  db:refname [ "nc-not-qt" ]
+  ra:documentation [ "Default rule for nonterminal 'nc-not-qt'" ]
+]
+nc-not-qt = h.nc-not-qt
+[
+  db:refname [ "h.nc-not-qt" ]
+  ra:documentation [
+    "Nonterminal 'nc-not-qt', not serialized (hidden)"
+  ]
+]
+h.nc-not-qt =
+  # can a data element be used?
+  text
+[
+  db:refname [ "letter-no-abcdefiIlmnoprstu" ]
+  ra:documentation [
+    "Default rule for nonterminal 'letter-no-abcdefiIlmnoprstu'"
+  ]
+]
+letter-no-abcdefiIlmnoprstu = e.letter-no-abcdefiIlmnoprstu
+[
+  db:refname [ "e.letter-no-abcdefiIlmnoprstu" ]
+  ra:documentation [
+    "Nonterminal 'letter-no-abcdefiIlmnoprstu', serialized as element"
+  ]
+]
+e.letter-no-abcdefiIlmnoprstu =
+  element letter-no-abcdefiIlmnoprstu {
+    extension-attributes,
+    (extension-elements
+     & # can a data element be used?
+       text)
+  }
+[
+  db:refname [ "h.letter-no-abcdefiIlmnoprstu" ]
+  ra:documentation [
+    "Nonterminal 'letter-no-abcdefiIlmnoprstu', not serialized (hidden)"
+  ]
+]
+h.letter-no-abcdefiIlmnoprstu =
+  # can a data element be used?
+  text
+[
+  db:refname [ "name-minus-reserved-words" ]
+  ra:documentation [
+    "Default rule for nonterminal 'name-minus-reserved-words'"
+  ]
+]
+name-minus-reserved-words = h.name-minus-reserved-words
+[
+  db:refname [ "h.name-minus-reserved-words" ]
+  ra:documentation [
+    "Nonterminal 'name-minus-reserved-words', not serialized (hidden)"
+  ]
+]
+h.name-minus-reserved-words =
+  (h.letter-no-abcdefiIlmnoprstu, namechar*)
+  | (# can a data element be used?
+     text,
+     (nc-not-blns, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-r, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-a, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-c, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-l, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-d, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     nc-not-s,
+     namechar*)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-r, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-u, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-h, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-c, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-k, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-i, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-j, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-lx, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-at, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-c, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-l, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-y, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-d, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-aou, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-c, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-r, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-dfmn, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-f, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-p, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-l, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-i, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     nc-not-t,
+     namechar*)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-eo, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-t, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-o, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-d, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-u, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-l, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-o, namechar*)?)
+  | (# can a data element be used?
+     text,
+     nc-not-nt,
+     namechar*)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-npr, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-r, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-d, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-u, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-eiou, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-qt, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-g, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-m, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-e, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-m, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-h, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-i, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-s, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+  | (# can a data element be used?
+     text,
+     (nc-not-n, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-i, namechar*)?)
+  | (# can a data element be used?
+     text,
+     (nc-not-v, namechar*)?)
+  | (# can a data element be used?
+     text,
+     namechar+)
+[
+  db:refname [ "name" ]
+  ra:documentation [ "Default rule for nonterminal 'name'" ]
+]
+name = e.name
+[
+  db:refname [ "e.name" ]
+  ra:documentation [ "Nonterminal 'name', serialized as element" ]
+]
+e.name =
+  element name {
+    extension-attributes,
+    (extension-elements & h.name-minus-reserved-words)
+  }
+[
+  db:refname [ "a.name" ]
+  ra:documentation [ "Nonterminal 'name', serialized as attribute" ]
+]
+a.name =
+  attribute name {
+    # No annotations found, falling back to 'text'.
+    text
+  }
+[
+  db:refname [ "h.name" ]
+  ra:documentation [ "Nonterminal 'name', not serialized (hidden)" ]
+]
+h.name = h.name-minus-reserved-words
+extension-attributes = nsq-att*
+nsq-att = attribute * - local:* { text }
+extension-elements = nsq-element*
+nsq-element = element * - local:* { anything }
+anything = (any-element | any-attribute | text)*
+any-element = element * { anything }
+any-attribute = attribute * { text }

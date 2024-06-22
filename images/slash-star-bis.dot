@@ -1,0 +1,12 @@
+digraph slashstar {
+  rankdir=LR;
+  
+  rfss [label="ready for\nstar slash"];
+  end [label="end of\ncomment"; peripheries=2];
+  
+  start -> rfss [label="\"/*\""];
+  rfss -> rfss [label="~[\"*\"]\n(any non-star)"];
+  rfss -> fs [label="\"*\""];
+  fs -> rfss [label="~[\"/\"]?\n(optional non-slash)"];
+  rfss -> end [label="\"*/\""];
+}

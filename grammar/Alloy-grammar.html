@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-03-26 Tue 16:26 -->
+<!-- 2024-06-20 Thu 16:51 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Alloy grammar in invisible XML</title>
@@ -201,8 +201,8 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org0c862ec">0.0.1. Revision history</a></li>
-<li><a href="#org9a382f0">0.0.2. To do</a></li>
+<li><a href="#org0e58105">0.0.1. Revision history</a></li>
+<li><a href="#orgb291ee0">0.0.2. To do</a></li>
 </ul>
 </li>
 </ul>
@@ -210,72 +210,78 @@
 <li><a href="#notes">1. Preliminary notes</a></li>
 <li><a href="#toplevel">2. Top level:  modules</a>
 <ul>
-<li><a href="#orgc92f1b2">2.1. Module declaration</a></li>
-<li><a href="#org28371a6">2.2. Imports</a></li>
-<li><a href="#orgfaa419c">2.3. Kinds of paragraphs</a></li>
+<li><a href="#org6e00f28">2.1. Module declaration</a></li>
+<li><a href="#org39723dd">2.2. Imports</a></li>
+<li><a href="#orge1f02f3">2.3. Kinds of paragraphs</a></li>
 </ul>
 </li>
 <li><a href="#signatures">3. Signatures</a></li>
-<li><a href="#org2aeb231">4. Functions and predicates</a></li>
-<li><a href="#orge9e89af">5. Facts and assertions</a></li>
-<li><a href="#org3a6820e">6. Commands</a></li>
-<li><a href="#org241526f">7. Common constructs</a>
+<li><a href="#orgbdc108d">4. Functions and predicates</a></li>
+<li><a href="#orgc8f0eb1">5. Facts and assertions</a></li>
+<li><a href="#org5b8766f">6. Commands</a></li>
+<li><a href="#org0b3d702">7. Common constructs</a>
 <ul>
-<li><a href="#org132a60f">7.1. Declarations</a></li>
+<li><a href="#org70296ae">7.1. Declarations</a></li>
 <li><a href="#expressions">7.2. Expressions</a>
 <ul>
 <li><a href="#expr01">7.2.1. <i>Let</i> expressions, quantified expressions (<i>expr01</i>)</a></li>
-<li><a href="#org3ee4cc3">7.2.2. Disjunctions (<i>expr02</i>)</a></li>
-<li><a href="#org82aa5a5">7.2.3. Bi-implications (<i>expr03</i>)</a></li>
-<li><a href="#orgce86747">7.2.4. Implications (<i>expr04</i>)</a></li>
-<li><a href="#org31ecc04">7.2.5. Conjunctions (<i>expr05</i>)</a></li>
-<li><a href="#orga6828de">7.2.6. Negated expressions (<i>expr06</i>)</a></li>
-<li><a href="#org8f5e5da">7.2.7. Comparisons and negated comparisons (<i>expr07</i>)</a></li>
-<li><a href="#org634f4d4">7.2.8. Expression quantifiers and multiplicities (<i>expr08</i>)</a></li>
-<li><a href="#orgf8535c5">7.2.9. Bit-shifting operators (<i>expr09</i>)</a></li>
-<li><a href="#org148ca1b">7.2.10. Union and difference (<i>expr10</i>)</a></li>
-<li><a href="#orgc35e581">7.2.11. Cardinality (#) (<i>expr11</i>)</a></li>
-<li><a href="#org73bac31">7.2.12. Override (++) (<i>expr12</i>)</a></li>
-<li><a href="#orge73c5c3">7.2.13. Intersection (&amp;) (<i>expr13</i>)</a></li>
-<li><a href="#orgf103133">7.2.14. Arrow product (-&gt;) (<i>expr14</i>)</a></li>
-<li><a href="#org473cdce">7.2.15. Restriction operators (&lt;: and :&gt;) (<i>expr15</i>, <i>expr16</i>)</a></li>
-<li><a href="#org6bb496d">7.2.16. Box join (<i>expr17</i>)</a></li>
-<li><a href="#org4bc154b">7.2.17. Dot join (<i>expr18</i>)</a></li>
-<li><a href="#orga2d3c99">7.2.18. Tightly binding unary operators (<i>expr19</i>)</a></li>
-<li><a href="#org41d49f0">7.2.19. Base expressions</a></li>
+<li><a href="#org97f6cbe">7.2.2. Disjunctions (<i>expr02</i>)</a></li>
+<li><a href="#org7489810">7.2.3. Bi-implications (<i>expr03</i>)</a></li>
+<li><a href="#org3015d72">7.2.4. Implications (<i>expr04</i>)</a></li>
+<li><a href="#org57e8c2f">7.2.5. Conjunctions (<i>expr05</i>)</a></li>
+<li><a href="#org867f700">7.2.6. Negated expressions (<i>expr06</i>)</a></li>
+<li><a href="#org4bf7669">7.2.7. Comparisons and negated comparisons (<i>expr07</i>)</a></li>
+<li><a href="#orge66696f">7.2.8. Expression quantifiers and multiplicities (<i>expr08</i>)</a></li>
+<li><a href="#orgc48bc60">7.2.9. Bit-shifting operators (<i>expr09</i>)</a></li>
+<li><a href="#org475a26a">7.2.10. Union and difference (<i>expr10</i>)</a></li>
+<li><a href="#orga1f0eba">7.2.11. Cardinality (#) (<i>expr11</i>)</a></li>
+<li><a href="#orge955c1b">7.2.12. Override (++) (<i>expr12</i>)</a></li>
+<li><a href="#org0c4a084">7.2.13. Intersection (&amp;) (<i>expr13</i>)</a></li>
+<li><a href="#org908692f">7.2.14. Arrow product (-&gt;) (<i>expr14</i>)</a></li>
+<li><a href="#org6bd75b6">7.2.15. Restriction operators (&lt;: and :&gt;) (<i>expr15</i>, <i>expr16</i>)</a></li>
+<li><a href="#orgf77855e">7.2.16. Box join (<i>expr17</i>)</a></li>
+<li><a href="#orgfaa7884">7.2.17. Dot join (<i>expr18</i>)</a></li>
+<li><a href="#org957594f">7.2.18. Tightly binding unary operators (<i>expr19</i>)</a></li>
+<li><a href="#orgb794558">7.2.19. Base expressions</a></li>
 </ul>
 </li>
-<li><a href="#org7d94d07">7.3. Blocks</a></li>
+<li><a href="#org899b085">7.3. Blocks</a></li>
 </ul>
 </li>
-<li><a href="#orgd5ae8a3">8. Low-level constructs</a>
+<li><a href="#org784fac0">8. Low-level constructs</a>
 <ul>
 <li><a href="#names-nums">8.1. Names and numbers</a></li>
-<li><a href="#org2248611">8.2. Multiplicities and quantifiers</a></li>
+<li><a href="#orgce2f401">8.2. Multiplicities and quantifiers</a></li>
 <li><a href="#ops">8.3. Operators</a>
 <ul>
-<li><a href="#orgbd10b2c">8.3.1. Unary operators</a></li>
-<li><a href="#org2bbc704">8.3.2. Binary operators</a></li>
-<li><a href="#orgde5d2cd">8.3.3. Precedence</a></li>
+<li><a href="#org7f0bf17">8.3.1. Unary operators</a></li>
+<li><a href="#org7349af0">8.3.2. Binary operators</a></li>
+<li><a href="#orgc5b996c">8.3.3. Precedence</a></li>
 </ul>
 </li>
-<li><a href="#orgb2f6117">8.4. Constants</a></li>
-<li><a href="#orgcff4919">8.5. Separators</a></li>
-<li><a href="#org006047e">8.6. Whitespace</a></li>
-<li><a href="#orgacaa290">8.7. Comments</a></li>
-<li><a href="#org5651924">8.8. Keywords</a></li>
-</ul>
-</li>
-<li><a href="#org0ce1505">9. Miscellaneous</a>
+<li><a href="#orgccc4ec3">8.4. Constants</a></li>
+<li><a href="#org3bfceb6">8.5. Separators</a></li>
+<li><a href="#orgc209048">8.6. Whitespace</a></li>
+<li><a href="#org56d0b12">8.7. Comments</a>
 <ul>
-<li><a href="#orga7bb687">9.1. Enumerations</a></li>
+<li><a href="#org21bb90c">8.7.1. Slash-star, first cut</a></li>
+<li><a href="#orgd2557bd">8.7.2. Slash-star, second and third cuts</a></li>
+<li><a href="#org1039d9c">8.7.3. Slash-star, fourth cut</a></li>
+</ul>
+</li>
+<li><a href="#org7ac5076">8.8. Keywords</a></li>
+</ul>
+</li>
+<li><a href="#orgd889e98">9. Miscellaneous</a>
+<ul>
+<li><a href="#org8a2da54">9.1. Enumerations</a></li>
 <li><a href="#names-minus">9.2. Avoiding ambiguity between keywords and names</a></li>
 <li><a href="#BOP-POP">9.3. Operator precedence and interactions of binary and unary operators</a></li>
-<li><a href="#org20fb625">9.4. Testing</a>
+<li><a href="#orgd766612">9.4. Testing</a>
 <ul>
-<li><a href="#org72ddfd8">9.4.1. Expected discrepancies</a></li>
-<li><a href="#org4663590">9.4.2. Unexpected discrepancies (to be fixed)</a></li>
-<li><a href="#org3dec07a">9.4.3. Unexpected discrepancies now fixed</a></li>
+<li><a href="#org2277aae">9.4.1. Expected discrepancies</a></li>
+<li><a href="#org22b4cc2">9.4.2. Unexpected discrepancies (to be fixed)</a></li>
+<li><a href="#org42b4bf1">9.4.3. Unexpected discrepancies now fixed</a></li>
 </ul>
 </div>
 </div>
@@ -289,8 +295,8 @@ The reader is assumed to have some familiarity with Alloy and
 context-free grammars.  Details of ixml syntax will not be explained.
 </p>
 
-<div id="outline-container-org0c862ec" class="outline-4">
-<h4 id="org0c862ec"><span class="section-number-4">0.0.1.</span> Revision history</h4>
+<div id="outline-container-org0e58105" class="outline-4">
+<h4 id="org0e58105"><span class="section-number-4">0.0.1.</span> Revision history</h4>
 <div class="outline-text-4" id="text-0-0-1">
 <p>
 Revisions:
@@ -313,19 +319,19 @@ examples that ship with Alloy</li>
 </div>
 </div>
 
-<div id="outline-container-org9a382f0" class="outline-4">
-<h4 id="org9a382f0"><span class="section-number-4">0.0.2.</span> To do</h4>
+<div id="outline-container-orgb291ee0" class="outline-4">
+<h4 id="orgb291ee0"><span class="section-number-4">0.0.2.</span> To do</h4>
 <div class="outline-text-4" id="text-0-0-2">
 </div>
 <ol class="org-ol">
-<li><a id="orgf75b7eb"></a><span class="done DONE">DONE</span> Clean up <i>name</i> handling (again) - issue #5<br />
+<li><a id="org56d1a8e"></a><span class="done DONE">DONE</span> Clean up <i>name</i> handling (again) - issue #5<br />
 <div class="outline-text-5" id="text-0-0-2-1">
 <p>
 <a href="https://github.com/MLCD-code/Alloy-XML/issues/5">https://github.com/MLCD-code/Alloy-XML/issues/5</a>
 </p>
 </div>
 </li>
-<li><a id="org40695b3"></a><span class="todo TODO">TODO</span> Check grammar against quick guide to Alloy 4<br />
+<li><a id="org63166ae"></a><span class="todo TODO">TODO</span> Check grammar against quick guide to Alloy 4<br />
 <div class="outline-text-5" id="text-0-0-2-2">
 <p>
 <a href="http://alloytools.org/quickguide/">http://alloytools.org/quickguide/</a>
@@ -337,14 +343,14 @@ examples that ship with Alloy</li>
 </ul>
 </div>
 </li>
-<li><a id="org3d19241"></a>Support macros as described in quick guide?<br />
+<li><a id="org3609ca1"></a>Support macros as described in quick guide?<br />
 <div class="outline-text-5" id="text-0-0-2-3">
 <p>
 <a href="http://alloytools.org/quickguide/macro.html">http://alloytools.org/quickguide/macro.html</a>
 </p>
 </div>
 </li>
-<li><a id="org2881b24"></a>Support grammar of 6.0?<br />
+<li><a id="org75e7b38"></a>Support grammar of 6.0?<br />
 <div class="outline-text-5" id="text-0-0-2-4">
 <p>
 <a href="http://alloytools.org/spec.html">http://alloytools.org/spec.html</a>
@@ -491,8 +497,8 @@ For comparison, <i>J</i> has:
 </div>
 </div>
 
-<div id="outline-container-orgc92f1b2" class="outline-3">
-<h3 id="orgc92f1b2"><span class="section-number-3">2.1.</span> Module declaration</h3>
+<div id="outline-container-org6e00f28" class="outline-3">
+<h3 id="org6e00f28"><span class="section-number-3">2.1.</span> Module declaration</h3>
 <div class="outline-text-3" id="text-2-1">
 <p>
 A module declaration gives the module a name (optionally
@@ -564,8 +570,8 @@ name') is used.
 </div>
 </div>
 
-<div id="outline-container-org28371a6" class="outline-3">
-<h3 id="org28371a6"><span class="section-number-3">2.2.</span> Imports</h3>
+<div id="outline-container-org39723dd" class="outline-3">
+<h3 id="org39723dd"><span class="section-number-3">2.2.</span> Imports</h3>
 <div class="outline-text-3" id="text-2-2">
 <p>
 Import statements identify modules to be imported.  If the module
@@ -578,7 +584,7 @@ be given an alias.
 <pre class="src src-ixml">import: (private, S)?, -"open", s, OQName,
         (s, module-arguments)?,
         (s, -"as", s, alias)?.
-module-arguments: "[", s, ref++comma, s, "]".
+module-arguments: -"[", s, ref++comma, s, -"]".
 alias: -name.
 </pre>
 </div>
@@ -602,8 +608,8 @@ alias: -name.
 </div>
 </div>
 
-<div id="outline-container-orgfaa419c" class="outline-3">
-<h3 id="orgfaa419c"><span class="section-number-3">2.3.</span> Kinds of paragraphs</h3>
+<div id="outline-container-orge1f02f3" class="outline-3">
+<h3 id="orge1f02f3"><span class="section-number-3">2.3.</span> Kinds of paragraphs</h3>
 <div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 <pre class="src src-ixml">paragraph: fact-decl | assert-decl | fun-decl | pred-decl 
@@ -675,15 +681,16 @@ sigExt ::= "in" ref ["+" ref]*
 </div>
 </div>
 
-<div id="outline-container-org2aeb231" class="outline-2">
-<h2 id="org2aeb231"><span class="section-number-2">4.</span> Functions and predicates</h2>
+<div id="outline-container-orgbdc108d" class="outline-2">
+<h2 id="orgbdc108d"><span class="section-number-2">4.</span> Functions and predicates</h2>
 <div class="outline-text-2" id="text-4">
 <div class="org-src-container">
 <pre class="src src-ixml">fun-decl: (private, S)?, 
-          -"fun", S, (ref, ".")?, name, s, (args, s)?, ":", s, 
-          expr, s, block.
+          -"fun", S, (ref, -".")?, name, s, (args, s)?, -":", s, 
+          function-bounds, s, block.
+@function-bounds &gt; bounds: expr.
 pred-decl: (private, S)?, 
-           -"pred", S, (ref, ".")?, name, s, (args, s)?, block.
+           -"pred", S, (ref, -".")?, name, s, (args, s)?, block.
 args:  -"(", s, decl**comma, s, -")"
     |  -"[", s, decl**comma, s, -"]".
 </pre>
@@ -715,8 +722,8 @@ funDecl ::= ["private"] "pred" [ref "."] name                block
 </div>
 </div>
 
-<div id="outline-container-orge9e89af" class="outline-2">
-<h2 id="orge9e89af"><span class="section-number-2">5.</span> Facts and assertions</h2>
+<div id="outline-container-orgc8f0eb1" class="outline-2">
+<h2 id="orgc8f0eb1"><span class="section-number-2">5.</span> Facts and assertions</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 Facts and assertions are statements about the universe.
@@ -748,8 +755,8 @@ assertDecl ::= "assert" [name] block
 </div>
 </div>
 
-<div id="outline-container-org3a6820e" class="outline-2">
-<h2 id="org3a6820e"><span class="section-number-2">6.</span> Commands</h2>
+<div id="outline-container-org5b8766f" class="outline-2">
+<h2 id="org5b8766f"><span class="section-number-2">6.</span> Commands</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 Commands are instructions to the Alloy Analyser to check certain
@@ -769,7 +776,7 @@ expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
 max-scope: number, s, (OQName|"int"|"Int"|"seq").
-exceptions: "but", s, typescope++comma.
+exceptions: -"but", s, typescope++comma.
 </pre>
 </div>
 
@@ -802,12 +809,12 @@ some kind.
 </p>
 </div>
 </div>
-<div id="outline-container-org241526f" class="outline-2">
-<h2 id="org241526f"><span class="section-number-2">7.</span> Common constructs</h2>
+<div id="outline-container-org0b3d702" class="outline-2">
+<h2 id="org0b3d702"><span class="section-number-2">7.</span> Common constructs</h2>
 <div class="outline-text-2" id="text-7">
 </div>
-<div id="outline-container-org132a60f" class="outline-3">
-<h3 id="org132a60f"><span class="section-number-3">7.1.</span> Declarations</h3>
+<div id="outline-container-org70296ae" class="outline-3">
+<h3 id="org70296ae"><span class="section-number-3">7.1.</span> Declarations</h3>
 <div class="outline-text-3" id="text-7-1">
 <p>
 Declarations are used in many places, so I've given them their
@@ -934,7 +941,7 @@ In their pure form, the levels look something like this:
 <i>(And so also for <code>eq</code>, <code>lt</code>, <code>gt</code>, <code>le</code>, <code>gt</code>, <code>not-in</code>, etc.)</i></li>
 <li>8: quantified-expression: QUANT, s, expr07.
 <i>(For QUANT in: <code>no</code>, <code>some</code>, <code>lone</code>, <code>one</code>, <code>set</code>, <code>seq</code>.)</i></li>
-<li>9: bit-shift: expr09, s, ("<a id="org9c3c4cc"></a>"; "&gt;&gt;&gt;"), s, expr10.</li>
+<li>9: bit-shift: expr09, s, ("<a id="org4e0c2d0"></a>"; "&gt;&gt;&gt;"), s, expr10.</li>
 <li>10: union, difference: expr10, s, ["+-"], s, expr11.</li>
 <li>11: cardinality: "#", s, expr12.</li>
 <li>12: override: base-12, s, "++", s, overlay-13.</li>
@@ -980,7 +987,7 @@ below.
          expr02.
 
 let-expr:  -"let", s, let-decl++comma, s, block-or-bar.
-let-decl: variable, s, "=", s, value.
+let-decl: variable, s, -"=", s, value.
 value: expr.
 
 { quantified expressions }
@@ -1017,8 +1024,8 @@ The various quantified expressions are instances of a single pattern:
 </div>
 </div>
 
-<div id="outline-container-org3ee4cc3" class="outline-4">
-<h4 id="org3ee4cc3"><span class="section-number-4">7.2.2.</span> Disjunctions (<i>expr02</i>)</h4>
+<div id="outline-container-org97f6cbe" class="outline-4">
+<h4 id="org97f6cbe"><span class="section-number-4">7.2.2.</span> Disjunctions (<i>expr02</i>)</h4>
 <div class="outline-text-4" id="text-7-2-2">
 <div class="org-src-container">
 <pre class="src src-ixml">{ expr02:  disjunctions }
@@ -1040,8 +1047,8 @@ the pattern shown for all binary operators:
 </div>
 </div>
 
-<div id="outline-container-org82aa5a5" class="outline-4">
-<h4 id="org82aa5a5"><span class="section-number-4">7.2.3.</span> Bi-implications (<i>expr03</i>)</h4>
+<div id="outline-container-org7489810" class="outline-4">
+<h4 id="org7489810"><span class="section-number-4">7.2.3.</span> Bi-implications (<i>expr03</i>)</h4>
 <div class="outline-text-4" id="text-7-2-3">
 <p>
 Bi-implication is another binary operator.
@@ -1056,8 +1063,8 @@ IFF: s, -"&lt;=&gt;", s; S, -"iff", S.
 </div>
 </div>
 
-<div id="outline-container-orgce86747" class="outline-4">
-<h4 id="orgce86747"><span class="section-number-4">7.2.4.</span> Implications (<i>expr04</i>)</h4>
+<div id="outline-container-org3015d72" class="outline-4">
+<h4 id="org3015d72"><span class="section-number-4">7.2.4.</span> Implications (<i>expr04</i>)</h4>
 <div class="outline-text-4" id="text-7-2-4">
 <p>
 Conditionals / implications are right-associative:  an embedded
@@ -1112,9 +1119,9 @@ Can we enforce the nearest-then-clause rule grammatically?
 <p>
 Consider the simple case "if a then if b then c else d".  The rule
 says we want the parse tree for this case to be
-<img src="images/ifthenelse-1.dot.png" alt="ifthenelse-1.dot.png" />
+<img src="../images/ifthenelse-1.dot.png" alt="ifthenelse-1.dot.png" />
 and not
-<img src="images/ifthenelse-2.dot.png" alt="ifthenelse-2.dot.png" />
+<img src="../images/ifthenelse-2.dot.png" alt="ifthenelse-2.dot.png" />
 </p>
 
 <p>
@@ -1200,21 +1207,21 @@ capture the required difference in allowed content.
 </div>
 </div>
 
-<div id="outline-container-org31ecc04" class="outline-4">
-<h4 id="org31ecc04"><span class="section-number-4">7.2.5.</span> Conjunctions (<i>expr05</i>)</h4>
+<div id="outline-container-org57e8c2f" class="outline-4">
+<h4 id="org57e8c2f"><span class="section-number-4">7.2.5.</span> Conjunctions (<i>expr05</i>)</h4>
 <div class="outline-text-4" id="text-7-2-5">
 <div class="org-src-container">
 <pre class="src src-ixml">{ expr05:  conjunction }
 -expr05:  conjunction; expr06.
 conjunction:  expr05, AND, expr06.
-AND: s, "&amp;&amp;", s; S, "and", S.
+-AND: s, -"&amp;&amp;", s; S, -"and", S.
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orga6828de" class="outline-4">
-<h4 id="orga6828de"><span class="section-number-4">7.2.6.</span> Negated expressions (<i>expr06</i>)</h4>
+<div id="outline-container-org867f700" class="outline-4">
+<h4 id="org867f700"><span class="section-number-4">7.2.6.</span> Negated expressions (<i>expr06</i>)</h4>
 <div class="outline-text-4" id="text-7-2-6">
 <p>
 Jackson appears not to say explicitly that negation is
@@ -1226,7 +1233,7 @@ a double negation requires parentheses.
 <pre class="src src-ixml">{ expr06:  negated expressions }
 -expr06:  negation; expr07.
 negation:  NOT, expr06.
-NOT: "!", s; "not", S.
+NOT: -"!", s; -"not", S.
 </pre>
 </div>
 
@@ -1240,8 +1247,8 @@ In <i>J</i> and <i>G</i>, negation is just an instance of <i>unOp</i>:
 </div>
 </div>
 
-<div id="outline-container-org8f5e5da" class="outline-4">
-<h4 id="org8f5e5da"><span class="section-number-4">7.2.7.</span> Comparisons and negated comparisons (<i>expr07</i>)</h4>
+<div id="outline-container-org4bf7669" class="outline-4">
+<h4 id="org4bf7669"><span class="section-number-4">7.2.7.</span> Comparisons and negated comparisons (<i>expr07</i>)</h4>
 <div class="outline-text-4" id="text-7-2-7">
 <p>
 Since Alloy allows negation symbols both on the overall comparison
@@ -1279,8 +1286,8 @@ not-ge:  expr07, s, NOT, -"&gt;=", s, expr08.
 </div>
 </div>
 </div>
-<div id="outline-container-org634f4d4" class="outline-4">
-<h4 id="org634f4d4"><span class="section-number-4">7.2.8.</span> Expression quantifiers and multiplicities (<i>expr08</i>)</h4>
+<div id="outline-container-orge66696f" class="outline-4">
+<h4 id="orge66696f"><span class="section-number-4">7.2.8.</span> Expression quantifiers and multiplicities (<i>expr08</i>)</h4>
 <div class="outline-text-4" id="text-7-2-8">
 <p>
 Quantifiers may be used not only on formulas (see <a href="#expr01">above</a>)
@@ -1323,11 +1330,11 @@ as follows in <i>J</i> and <i>G</i>:
 </div>
 </div>
 
-<div id="outline-container-orgf8535c5" class="outline-4">
-<h4 id="orgf8535c5"><span class="section-number-4">7.2.9.</span> Bit-shifting operators (<i>expr09</i>)</h4>
+<div id="outline-container-orgc48bc60" class="outline-4">
+<h4 id="orgc48bc60"><span class="section-number-4">7.2.9.</span> Bit-shifting operators (<i>expr09</i>)</h4>
 <div class="outline-text-4" id="text-7-2-9">
 <p>
-The grammar file defines operators "<a id="orgcc7b00a"></a>", and "&gt;&gt;&gt;" at precedence
+The grammar file defines operators "<a id="org90bb1f8"></a>", and "&gt;&gt;&gt;" at precedence
 level 9.  These are not documented in Jackson's book¸but in the
 <a href="http://alloytools.org/quickguide/a4.html">supplementary documentation of Alloy 4</a> on the Alloy Tools web site, they are
 identified as left shift ("<code>&lt;&lt;</code>"), sign-extended right shift ("<code>&gt;&gt;</code>"),
@@ -1343,21 +1350,21 @@ pattern for them.
 
 <div class="org-src-container">
 <pre class="src src-ixml">-expr09: SHL-expr; SHR-expr; SHA-expr; expr10.
-SHL-expr: expr09, s, "&lt;&lt;", s, expr10.
-SHR-expr: expr09, s, "&gt;&gt;&gt;", s, expr10.
-SHA-expr: expr09, s, "&gt;&gt;", s, expr10.
+SHL-expr: expr09, s, -"&lt;&lt;", s, expr10.
+SHR-expr: expr09, s, -"&gt;&gt;&gt;", s, expr10.
+SHA-expr: expr09, s, -"&gt;&gt;", s, expr10.
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org148ca1b" class="outline-4">
-<h4 id="org148ca1b"><span class="section-number-4">7.2.10.</span> Union and difference (<i>expr10</i>)</h4>
+<div id="outline-container-org475a26a" class="outline-4">
+<h4 id="org475a26a"><span class="section-number-4">7.2.10.</span> Union and difference (<i>expr10</i>)</h4>
 <div class="outline-text-4" id="text-7-2-10">
 <div class="org-src-container">
 <pre class="src src-ixml">-expr10:  union; set-diff; expr11.
-union: expr10, s, "+", s, expr11.
-set-diff: expr10, s, "-", careful-ws, expr11.
+union: expr10, s, -"+", s, expr11.
+set-diff: expr10, s, -"-", careful-ws, expr11.
 </pre>
 </div>
 
@@ -1367,19 +1374,19 @@ Note that whitespace is required after the
 </div>
 </div>
 
-<div id="outline-container-orgc35e581" class="outline-4">
-<h4 id="orgc35e581"><span class="section-number-4">7.2.11.</span> Cardinality (#) (<i>expr11</i>)</h4>
+<div id="outline-container-orga1f0eba" class="outline-4">
+<h4 id="orga1f0eba"><span class="section-number-4">7.2.11.</span> Cardinality (#) (<i>expr11</i>)</h4>
 <div class="outline-text-4" id="text-7-2-11">
 <div class="org-src-container">
 <pre class="src src-ixml">-expr11:  cardinality; expr12.
-cardinality: "#", s, expr12.
+cardinality: -"#", s, expr12.
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org73bac31" class="outline-4">
-<h4 id="org73bac31"><span class="section-number-4">7.2.12.</span> Override (++) (<i>expr12</i>)</h4>
+<div id="outline-container-orge955c1b" class="outline-4">
+<h4 id="orge955c1b"><span class="section-number-4">7.2.12.</span> Override (++) (<i>expr12</i>)</h4>
 <div class="outline-text-4" id="text-7-2-12">
 <p>
 To try to guide later readers, we give distinct
@@ -1389,7 +1396,7 @@ is the <i>overlay</i>.
 </p>
 <div class="org-src-container">
 <pre class="src src-ixml">-expr12: override; expr13.
-override: base, s, "++", s, overlay.
+override: base, s, -"++", s, overlay.
 base: expr12.
 overlay: expr13.
 </pre>
@@ -1397,19 +1404,19 @@ overlay: expr13.
 </div>
 </div>
 
-<div id="outline-container-orge73c5c3" class="outline-4">
-<h4 id="orge73c5c3"><span class="section-number-4">7.2.13.</span> Intersection (&amp;) (<i>expr13</i>)</h4>
+<div id="outline-container-org0c4a084" class="outline-4">
+<h4 id="org0c4a084"><span class="section-number-4">7.2.13.</span> Intersection (&amp;) (<i>expr13</i>)</h4>
 <div class="outline-text-4" id="text-7-2-13">
 <div class="org-src-container">
 <pre class="src src-ixml">-expr13:  intersection; expr14.
-intersection:  expr13, s, "&amp;", s, expr14.
+intersection:  expr13, s, -"&amp;", s, expr14.
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgf103133" class="outline-4">
-<h4 id="orgf103133"><span class="section-number-4">7.2.14.</span> Arrow product (-&gt;) (<i>expr14</i>)</h4>
+<div id="outline-container-org908692f" class="outline-4">
+<h4 id="org908692f"><span class="section-number-4">7.2.14.</span> Arrow product (-&gt;) (<i>expr14</i>)</h4>
 <div class="outline-text-4" id="text-7-2-14">
 <p>
 Arrow operators are used to define relations.  They get
@@ -1433,8 +1440,8 @@ right-mult:  -mult; "set".
 </div>
 </div>
 </div>
-<div id="outline-container-org473cdce" class="outline-4">
-<h4 id="org473cdce"><span class="section-number-4">7.2.15.</span> Restriction operators (&lt;: and :&gt;) (<i>expr15</i>, <i>expr16</i>)</h4>
+<div id="outline-container-org6bd75b6" class="outline-4">
+<h4 id="org6bd75b6"><span class="section-number-4">7.2.15.</span> Restriction operators (&lt;: and :&gt;) (<i>expr15</i>, <i>expr16</i>)</h4>
 <div class="outline-text-4" id="text-7-2-15">
 <p>
 Out of blind faith in generality, I follow Jackson's statement that
@@ -1459,8 +1466,8 @@ going to name the operands as a set or a rel[ation].
 <div class="org-src-container">
 <pre class="src src-ixml">-expr15: left-restriction; expr16.
 -expr16: right-restriction; expr17.
-left-restriction: lr-set, s, "&lt;:", s, lr-rel.
-right-restriction: rr-rel, s, ":&gt;", s, rr-set.
+left-restriction: lr-set, s, -"&lt;:", s, lr-rel.
+right-restriction: rr-rel, s, -":&gt;", s, rr-set.
 lr-set: expr15.
 lr-rel: expr16.
 rr-rel: expr16.
@@ -1470,8 +1477,8 @@ rr-set: expr17.
 </div>
 </div>
 
-<div id="outline-container-org6bb496d" class="outline-4">
-<h4 id="org6bb496d"><span class="section-number-4">7.2.16.</span> Box join (<i>expr17</i>)</h4>
+<div id="outline-container-orgf77855e" class="outline-4">
+<h4 id="orgf77855e"><span class="section-number-4">7.2.16.</span> Box join (<i>expr17</i>)</h4>
 <div class="outline-text-4" id="text-7-2-16">
 <p>
 It is not clear what kind of expressions should be allowed within the
@@ -1536,12 +1543,12 @@ cannot be expressed in Alloy.
 </div>
 </div>
 
-<div id="outline-container-org4bc154b" class="outline-4">
-<h4 id="org4bc154b"><span class="section-number-4">7.2.17.</span> Dot join (<i>expr18</i>)</h4>
+<div id="outline-container-orgfaa7884" class="outline-4">
+<h4 id="orgfaa7884"><span class="section-number-4">7.2.17.</span> Dot join (<i>expr18</i>)</h4>
 <div class="outline-text-4" id="text-7-2-17">
 <div class="org-src-container">
 <pre class="src src-ixml">-expr18: dot-join; expr19.
-dot-join: expr17, s, ".", s, expr19.
+dot-join: expr17, s, -".", s, expr19.
 </pre>
 </div>
 
@@ -1554,8 +1561,8 @@ which in context.)
 </p>
 </div>
 </div>
-<div id="outline-container-orga2d3c99" class="outline-4">
-<h4 id="orga2d3c99"><span class="section-number-4">7.2.18.</span> Tightly binding unary operators (<i>expr19</i>)</h4>
+<div id="outline-container-org957594f" class="outline-4">
+<h4 id="org957594f"><span class="section-number-4">7.2.18.</span> Tightly binding unary operators (<i>expr19</i>)</h4>
 <div class="outline-text-4" id="text-7-2-18">
 <p>
 It's not completely clear whether Alloy 4 intends these three unary
@@ -1571,16 +1578,16 @@ are clearly meant to be right-associative.
 </p>
 <div class="org-src-container">
 <pre class="src src-ixml">-expr19: inverse; t-closure; rt-closure; expr20.
-inverse: "~", s, expr19.
-t-closure: "^", s, expr19.
-rt-closure: "*", s, expr19.
+inverse: -"~", s, expr19.
+t-closure: -"^", s, expr19.
+rt-closure: -"*", s, expr19.
 </pre>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org41d49f0" class="outline-4">
-<h4 id="org41d49f0"><span class="section-number-4">7.2.19.</span> Base expressions</h4>
+<div id="outline-container-orgb794558" class="outline-4">
+<h4 id="orgb794558"><span class="section-number-4">7.2.19.</span> Base expressions</h4>
 <div class="outline-text-4" id="text-7-2-19">
 <p>
 There are several forms of expression which contain no operators; we
@@ -1599,7 +1606,7 @@ define them here.
           declarations-block;
           block.
 unexpanded: -"@", s, name.
-negative-number: "-", -number.
+negative-number: -"-", -number.
 declarations-block: -"{", s, 
                     decl ++ comma, s, 
                     block-or-bar, s, -"}".
@@ -1621,8 +1628,8 @@ handle it appropriately.
 </div>
 
 
-<div id="outline-container-org7d94d07" class="outline-3">
-<h3 id="org7d94d07"><span class="section-number-3">7.3.</span> Blocks</h3>
+<div id="outline-container-org899b085" class="outline-3">
+<h3 id="org899b085"><span class="section-number-3">7.3.</span> Blocks</h3>
 <div class="outline-text-3" id="text-7-3">
 <p>
 A block is just a sequence of expressions enclosed in braces; in some
@@ -1670,8 +1677,8 @@ blockOrBar ::= "|" expr
 
 
 
-<div id="outline-container-orgd5ae8a3" class="outline-2">
-<h2 id="orgd5ae8a3"><span class="section-number-2">8.</span> Low-level constructs</h2>
+<div id="outline-container-org784fac0" class="outline-2">
+<h2 id="org784fac0"><span class="section-number-2">8.</span> Low-level constructs</h2>
 <div class="outline-text-2" id="text-8">
 </div>
 <div id="outline-container-names-nums" class="outline-3">
@@ -1769,8 +1776,8 @@ But the Analyzer accepts "<code>0</code>" as a numeric constant (e.g. in
 </div>
 </div>
 
-<div id="outline-container-org2248611" class="outline-3">
-<h3 id="org2248611"><span class="section-number-3">8.2.</span> Multiplicities and quantifiers</h3>
+<div id="outline-container-orgce2f401" class="outline-3">
+<h3 id="orgce2f401"><span class="section-number-3">8.2.</span> Multiplicities and quantifiers</h3>
 <div class="outline-text-3" id="text-8-2">
 <div class="org-src-container">
 <pre class="src src-ixml">quant: "all" | "no" | -mult | "sum".
@@ -1829,8 +1836,8 @@ generically.
 </p>
 </div>
 
-<div id="outline-container-orgbd10b2c" class="outline-4">
-<h4 id="orgbd10b2c"><span class="section-number-4">8.3.1.</span> Unary operators</h4>
+<div id="outline-container-org7f0bf17" class="outline-4">
+<h4 id="org7f0bf17"><span class="section-number-4">8.3.1.</span> Unary operators</h4>
 <div class="outline-text-4" id="text-8-3-1">
 <p>
 <i>J</i> has:
@@ -1850,8 +1857,8 @@ generically.
 </div>
 </div>
 
-<div id="outline-container-org2bbc704" class="outline-4">
-<h4 id="org2bbc704"><span class="section-number-4">8.3.2.</span> Binary operators</h4>
+<div id="outline-container-org7349af0" class="outline-4">
+<h4 id="org7349af0"><span class="section-number-4">8.3.2.</span> Binary operators</h4>
 <div class="outline-text-4" id="text-8-3-2">
 <p>
 Both <i>J</i> and <i>G</i> distinguish arrow operators and comparison operators
@@ -1887,8 +1894,8 @@ compareOp ::= "=" | "in" | "&lt;" | "&gt;" | "=&lt;" | "&gt;="
 </div>
 
 
-<div id="outline-container-orgde5d2cd" class="outline-4">
-<h4 id="orgde5d2cd"><span class="section-number-4">8.3.3.</span> Precedence</h4>
+<div id="outline-container-orgc5b996c" class="outline-4">
+<h4 id="orgc5b996c"><span class="section-number-4">8.3.3.</span> Precedence</h4>
 <div class="outline-text-4" id="text-8-3-3">
 <p>
 <i>G</i> starts with a list of operator precedence values (low to high):
@@ -1925,8 +1932,8 @@ the implication (<code>a=&gt;b</code>), and if-then-else (<code>a=&gt;b else c</
 </div>
 
 
-<div id="outline-container-orgb2f6117" class="outline-3">
-<h3 id="orgb2f6117"><span class="section-number-3">8.4.</span> Constants</h3>
+<div id="outline-container-orgccc4ec3" class="outline-3">
+<h3 id="orgccc4ec3"><span class="section-number-3">8.4.</span> Constants</h3>
 <div class="outline-text-3" id="text-8-4">
 <p>
 <i>J</i>:
@@ -1942,8 +1949,8 @@ In <i>G</i>, constants are not separately identified.
 </div>
 </div>
 
-<div id="outline-container-orgcff4919" class="outline-3">
-<h3 id="orgcff4919"><span class="section-number-3">8.5.</span> Separators</h3>
+<div id="outline-container-org3bfceb6" class="outline-3">
+<h3 id="org3bfceb6"><span class="section-number-3">8.5.</span> Separators</h3>
 <div class="outline-text-3" id="text-8-5">
 <div class="org-src-container">
 <pre class="src src-ixml">-comma: s, -",", s.
@@ -1954,8 +1961,8 @@ plus:  s, -"+", s.
 </div>
 </div>
 
-<div id="outline-container-org006047e" class="outline-3">
-<h3 id="org006047e"><span class="section-number-3">8.6.</span> Whitespace</h3>
+<div id="outline-container-orgc209048" class="outline-3">
+<h3 id="orgc209048"><span class="section-number-3">8.6.</span> Whitespace</h3>
 <div class="outline-text-3" id="text-8-6">
 <div class="org-src-container">
 <pre class="src src-ixml">-S = (ws_char | comment)+.
@@ -1972,8 +1979,8 @@ CR: #D. }
 </div>
 </div>
 
-<div id="outline-container-orgacaa290" class="outline-3">
-<h3 id="orgacaa290"><span class="section-number-3">8.7.</span> Comments</h3>
+<div id="outline-container-org56d0b12" class="outline-3">
+<h3 id="org56d0b12"><span class="section-number-3">8.7.</span> Comments</h3>
 <div class="outline-text-3" id="text-8-7">
 <p>
 There are two kinds of comments: from "//" or "&#x2013;" to the end of the
@@ -2009,12 +2016,21 @@ set-difference operator.)
 <p>
 But it is not hard to describe the desired language with a
 finite state automaton which is simple enough to inspire some
-confidence:
+confidence.
+</p>
+</div>
+
+<div id="outline-container-org21bb90c" class="outline-4">
+<h4 id="org21bb90c"><span class="section-number-4">8.7.1.</span> Slash-star, first cut</h4>
+<div class="outline-text-4" id="text-8-7-1">
+<p>
+The following FSA describes the language of slash-star comments
+in a straightforward way.
 </p>
 
 
-<div id="orgf92a731" class="figure">
-<p><img src="images/slash-star.dot.png" alt="slash-star.dot.png" />
+<div id="org93e20f2" class="figure">
+<p><img src="../images/slash-star.dot.png" alt="slash-star.dot.png" />
 </p>
 </div>
 
@@ -2114,8 +2130,213 @@ This gives us the desired single-rule definition of <i>slash-star</i>.
 </div>
 </div>
 
-<div id="outline-container-org5651924" class="outline-3">
-<h3 id="org5651924"><span class="section-number-3">8.8.</span> Keywords</h3>
+<div id="outline-container-orgd2557bd" class="outline-4">
+<h4 id="orgd2557bd"><span class="section-number-4">8.7.2.</span> Slash-star, second and third cuts</h4>
+<div class="outline-text-4" id="text-8-7-2">
+<p>
+There is, however, a problem with the development just given.  The
+closing delimiter "<code>*/</code>" is not given as a single string, so it cannot
+be conveniently suppressed in the XML.  The final slash can, but the
+star immediately in front of it cannot, because it's not uniquely
+identified.  I noticed this problem only after completing the analysis
+above.
+</p>
+
+<p>
+The problem goes all the way back to the FSA we started with, so we
+have to do the development all over again.  Let's start with a
+different FSA, in which both delimiters are given explicitly and
+uniquely.
+</p>
+
+
+<div id="org35160ce" class="figure">
+<p><img src="./../images/slash-star-bis.dot.png" alt="slash-star-bis.dot.png" />
+</p>
+</div>
+
+<p>
+This FSA is simpler than the previous one; we might be able to turn it
+into a regular expression without complicated development.  Out of an
+abundance of caution (justified by experience), however, let's start
+with a regular grammar:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-ixml">          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: ~["*"], ready-for-star-slash
+                    | "*", found-star
+                    | "*/", end-comment.
+          found-star: ~["/"], ready-for-star-slash
+                    | {nil} ready-for-star-slash.
+         end-comment: {}.
+</pre>
+</div>
+<p>
+Unlike the earlier FSA, this one is non-deterministic: it requires a
+two-character lookahead to distinguish an asterisk which is followed
+by a slash and thus part of the comment-closing delimiter from any
+other asterisk.  But neither ixml nor most regular-expression libraries
+require deterministic regular expressions.
+</p>
+
+<p>
+A simple first step is to simplify <i>found-star</i>:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">found-star: ~["/"]?, ready-for-star-slash.
+</pre>
+</div>
+
+<p>
+We can then substitute for <i>found-star</i> in the rule for
+<i>ready-for-star-slash</i>:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: ~["*"], ready-for-star-slash
+                    | "*", ~["/"]?, ready-for-star-slash
+                    | "*/", end-comment.
+         end-comment: {}.
+</pre>
+</div>
+
+<p>
+Applying Arden's Lemma to <i>ready-for-star-slash</i> yields a rule with a
+single right-hand-side:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">          slash-star: -"/*", ready-for-star-slash.
+ready-for-star-slash: (~["*"] | "*", ~["/"]?)*, "*/", end-comment.
+         end-comment: {}.
+</pre>
+</div>
+
+<p>
+This can be turned into a single-rule definition of slash-star comments:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">-slash-star: -"/*", (~["*"] | "*", ~["/"]?)*, -"*/". 
+</pre>
+</div>
+<p>
+However, this definition is faulty, because it is not cautious
+enough about the slash character.
+</p>
+
+<p>
+Note:  the initial attempt at this revised definition was simpler:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">-slash-star: -"/*", ~[]*, -"*/". 
+</pre>
+</div>
+<p>
+But this does not prohibit the string star-slash from appearing
+within a comment.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1039d9c" class="outline-4">
+<h4 id="org1039d9c"><span class="section-number-4">8.7.3.</span> Slash-star, fourth cut</h4>
+<div class="outline-text-4" id="text-8-7-3">
+<p>
+Let us try again, with yet another FSA:
+</p>
+
+
+<div id="org6112baa" class="figure">
+<p><img src="../images/slash-star-ter.dot.png" alt="slash-star-ter.dot.png" />
+</p>
+</div>
+
+<p>
+A listeral translation into a regular grammar produces the following.
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">      slash-star: -"/*", looking-for-star.
+looking-for-star: ~["*"], looking-for-star
+                | "*", found-star
+                | "*/", end-comment.
+      found-star: "*/", end-comment
+                | "*", found-star
+                | ~["/"; "*"], looking-for-star.
+     end-comment: {}.
+</pre>
+</div>
+
+<p>
+Again, we derive the rule we want by manipulating this grammar.
+</p>
+
+<ol class="org-ol">
+<li><p>
+Applying Arden's Lemma to <i>found-star</i>, and then distributing
+concatenation over disjunction, we get:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">found-star: "*"*, "*/", end-comment
+          | "*"*, ~["/"; "*"], looking-for-star.
+</pre>
+</div></li>
+<li><p>
+Substituting this into <i>looking-for-star</i> and re-ordering the
+right-hand sides, we get:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">looking-for-star: ~["*"], looking-for-star
+                | "*", "*"*, ~["/"; "*"], looking-for-star
+                | "*", "*"*, "*/", end-comment
+                | "*/", end-comment.
+</pre>
+</div></li>
+<li><p>
+Simplifying the right-hand sides and merging the last two yields:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">looking-for-star: ~["*"], looking-for-star
+                | "*"+, ~["/"; "*"], looking-for-star
+                | "*"*, "*/", end-comment.
+</pre>
+</div></li>
+<li><p>
+Applying Arden's Lemma gives us:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">looking-for-star: (~["*"] | "*"+, ~["/"; "*"])*, "*"*, "*/", end-comment.
+</pre>
+</div></li>
+</ol>
+
+<p>
+From this, we can derive a single-rule formulation:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">-slash-star: -"/*", (~["*"] | "*"+, ~["/"; "*"])*, "*"*, "*/".
+</pre>
+</div>
+
+<p>
+It may be noted that a set-difference operator would
+simplify this to:
+</p>
+<div class="org-src-container">
+<pre class="src src-ixml">-slash-star: -"/*", (anystring except (anystring, '*/', anystring), "*/".
+ -anystring: ~[]*.
+</pre>
+</div>
+<p>
+which may be paraphrased in English as: a slash-star comment is "<i><b>",
+followed by any string which does not contain "</b></i>", followed by "*/".
+</p>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org7ac5076" class="outline-3">
+<h3 id="org7ac5076"><span class="section-number-3">8.8.</span> Keywords</h3>
 <div class="outline-text-3" id="text-8-8">
 <p>
 Are these used?  Should they be?
@@ -2138,16 +2359,18 @@ EXACTLY: "exactly".
 </div>
 </div>
 
-<div id="outline-container-org0ce1505" class="outline-2">
-<h2 id="org0ce1505"><span class="section-number-2">9.</span> Miscellaneous</h2>
+
+
+<div id="outline-container-orgd889e98" class="outline-2">
+<h2 id="orgd889e98"><span class="section-number-2">9.</span> Miscellaneous</h2>
 <div class="outline-text-2" id="text-9">
 <p>
 There is some stuff that doesn't have a good home.  Some of it I don't know anything about.
 </p>
 </div>
 
-<div id="outline-container-orga7bb687" class="outline-3">
-<h3 id="orga7bb687"><span class="section-number-3">9.1.</span> Enumerations</h3>
+<div id="outline-container-org8a2da54" class="outline-3">
+<h3 id="org8a2da54"><span class="section-number-3">9.1.</span> Enumerations</h3>
 <div class="outline-text-3" id="text-9-1">
 <p>
 Enumerations are not present in <i>J</i> but are added as a new
@@ -2155,7 +2378,7 @@ form of paragraph in <i>G</i>.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-ixml">enum-decl: "enum", s, name, s, "{", s, name++comma, s, "}".
+<pre class="src src-ixml">enum-decl: -"enum", s, name, s, -"{", s, name++comma, s, -"}".
 </pre>
 </div>
 
@@ -2630,7 +2853,7 @@ only when the parent binds less tightly than the child. Thus in a
 language with two left-associative binary operators Bop and BOP, in
 which BOP binds tighter than Bop, the input
 </p>
-<pre class="example" id="org60363b0">
+<pre class="example" id="orgb7c188c">
 a Bop b BOP c
 </pre>
 <p>
@@ -2639,7 +2862,7 @@ whose right-hand argument is a BOP.  To use the notation of Prolog
 structures: Bop(a, BOP(b, c)). Since BOP is left-associative, then the
 input
 </p>
-<pre class="example" id="orgc20c352">
+<pre class="example" id="orgae5a482">
 a BOP b BOP c
 </pre>
 <p>
@@ -2666,13 +2889,13 @@ If our imaginary language also has a unary prefix operator Pop, which
 binds less tightly than Bop or BOP, then both views agree that the
 input
 </p>
-<pre class="example" id="orgc292679">
+<pre class="example" id="orgb3d811e">
 Pop a BOP b
 </pre>
 <p>
 will produce Pop(BOP(a, b)).  But what about the input
 </p>
-<pre class="example" id="orgb391d18">
+<pre class="example" id="orgdaa74d3">
 a BOP Pop b
 </pre>
 <p>
@@ -2718,7 +2941,7 @@ if they bind less tightly.
 But this change to the grammar has the unfortunate side effect that an
 input of the form
 </p>
-<pre class="example" id="orge54d65f">
+<pre class="example" id="org3b5be11">
 a BOP Pop b BOP c
 </pre>
 <p>
@@ -2745,8 +2968,8 @@ Further investigation is needed.
 </div>
 </div>
 
-<div id="outline-container-org20fb625" class="outline-3">
-<h3 id="org20fb625"><span class="section-number-3">9.4.</span> Testing</h3>
+<div id="outline-container-orgd766612" class="outline-3">
+<h3 id="orgd766612"><span class="section-number-3">9.4.</span> Testing</h3>
 <div class="outline-text-3" id="text-9-4">
 <p>
 There is not currently a systematic test suite for this grammar; one
@@ -2775,8 +2998,8 @@ unexpected discrepancies have been fixed, others not.)
 </p>
 </div>
 
-<div id="outline-container-org72ddfd8" class="outline-4">
-<h4 id="org72ddfd8"><span class="section-number-4">9.4.1.</span> Expected discrepancies</h4>
+<div id="outline-container-org2277aae" class="outline-4">
+<h4 id="org2277aae"><span class="section-number-4">9.4.1.</span> Expected discrepancies</h4>
 <div class="outline-text-4" id="text-9-4-1">
 <p>
 Because of the discrepances between the language accepted by this
@@ -2802,7 +3025,7 @@ quantified formula within conditional).</li>
 <p>
 For example, model <code>book/chapter6/hotel4.als</code> contains the following fact:
 </p>
-<pre class="example" id="orgfa79ff4">
+<pre class="example" id="orgc98eb4b">
 fact NoIntervening {
 	all c: Checkin |
 		c.post = last
@@ -2822,7 +3045,7 @@ quantified formula over <i>e</i>: "<code>some e: ... c.guest</code>".
 In <code>book/chapter6/mediaAssets.als</code> the issue is a <i>let</i>-expression
 in the consequent-clause of a conditional.
 </p>
-<pre class="example" id="org515cce4">
+<pre class="example" id="orgc23e543">
 assert PasteNotAffectHidden {
 	all xs, xs": ApplicationState |
 		(appInv [xs] and paste [xs, xs"]) =&gt; 
@@ -2848,7 +3071,7 @@ does not have keywords or syntax for temporal logic:
 Currently, these all fail on an unrecognized <code>var</code> keyword.  Model
 <code>examples/temporal/trash.als</code>, for example fails on line 1:
 </p>
-<pre class="example" id="orgeaa0ecb">
+<pre class="example" id="orgffa4ae3">
 var sig File {}
 </pre>
 
@@ -2954,8 +3177,8 @@ thereof.
 </div>
 </div>
 
-<div id="outline-container-org4663590" class="outline-4">
-<h4 id="org4663590"><span class="section-number-4">9.4.2.</span> Unexpected discrepancies (to be fixed)</h4>
+<div id="outline-container-org22b4cc2" class="outline-4">
+<h4 id="org22b4cc2"><span class="section-number-4">9.4.2.</span> Unexpected discrepancies (to be fixed)</h4>
 <div class="outline-text-4" id="text-9-4-2">
 <p>
 This category initially had a number of members, but some of the
@@ -2966,8 +3189,8 @@ discrepancies.
 </div>
 </div>
 
-<div id="outline-container-org3dec07a" class="outline-4">
-<h4 id="org3dec07a"><span class="section-number-4">9.4.3.</span> Unexpected discrepancies now fixed</h4>
+<div id="outline-container-org42b4bf1" class="outline-4">
+<h4 id="org42b4bf1"><span class="section-number-4">9.4.3.</span> Unexpected discrepancies now fixed</h4>
 <div class="outline-text-4" id="text-9-4-3">
 <p>
 Others have now have been fixed.
@@ -2994,7 +3217,7 @@ whitespace; now fixed).</li>
 <div id="postamble" class="status">
 <p class="date">Date: 2024-02-23/2024-03/13</p>
 <p class="author">Author: Michael Sperberg-McQueen</p>
-<p class="date">Created: 2024-03-26 Tue 16:26</p>
+<p class="date">Created: 2024-06-20 Thu 16:51</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
