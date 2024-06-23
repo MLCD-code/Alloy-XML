@@ -46,7 +46,8 @@ typescopes: -"for", S, numbers, (S, expectation)?.
 expectation:  -"expect", s, ("0" | "1").
 typescope: exact-scope; max-scope.
 exact-scope: -EXACTLY, s, -max-scope.
-max-scope: number, s, (OQName|"int"|"Int"|"seq").
+max-scope: number, s, (OQName|scope-target).
+scope-target: "int"|"Int"|"seq".
 exceptions: -"but", s, typescope++comma.
 
 decl: (private, s)?, (disj, S)?, variable++comma, s, -":", s, bounds.
